@@ -1,0 +1,261 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+#container {
+    padding: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+header .header-icons {
+    font-size: 1.5rem;
+}
+
+header .header-icons span {
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.main-content {
+    position: relative;
+}
+
+.sidebar {
+    position: absolute;
+    width: 250px;
+    padding-right: 20px;
+}
+
+.sidebar nav ul {
+    list-style: none;
+}
+
+.sidebar nav ul li a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #495057;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar .has-submenu > a {
+    position: relative;
+}
+
+.sidebar .has-submenu > a::after {
+    content: '+';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.sidebar .has-submenu.active > a::after {
+    content: '−';
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.sidebar .submenu {
+    padding-left: 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease-in-out;
+}
+
+.sidebar .has-submenu.active .submenu {
+    max-height: 500px; /* 충분히 큰 값으로 설정 */
+}
+
+.sidebar .count {
+    color: #868e96;
+    margin-left: 4px;
+}
+
+#content-main {
+    margin-left: 270px;
+}
+
+.content-grid {
+    /* grid 스타일 제거, 레이아웃 컨테이너 역할만 */
+}
+
+.grid-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.content-detail {
+    padding: 10px 20px;
+}
+
+a.grid-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.grid-item {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.grid-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.grid-item p {
+    padding: 15px;
+    font-size: 0.9rem;
+}
+
+/* Detail Page Styles */
+.detail-header {
+    margin-bottom: 8px;
+}
+
+.detail-header h1 {
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.detail-header .author {
+    color: #868e96;
+    margin-top: 5px;
+    font-size: 1rem;
+}
+
+.detail-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 24px 0 32px 0;
+}
+
+.detail-center {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.codepen-embed {
+    width: 100%;
+    max-width: 1000px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 0;
+}
+
+.back-to-list {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #495057;
+    transition: background-color 0.2s;
+}
+
+.back-to-list:hover {
+    background-color: #e9ecef;
+}
+
+.detail-body {
+    display: flex;
+    gap: 24px;
+}
+.detail-left {
+    flex: 2;
+    min-width: 0;
+}
+.detail-right {
+    flex: 1;
+    min-width: 200px;
+    padding: 24px 0;
+    box-sizing: border-box;
+    height: fit-content;
+}
+@media (max-width: 900px) {
+    .detail-body {
+        flex-direction: column;
+    }
+    .detail-right {
+        margin-top: 20px;
+    }
+}
+
+.detail-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 0 32px 0;
+    background: transparent;
+}
+@media (max-width: 1200px) {
+    .detail-container {
+        max-width: 100%;
+        padding: 24px 4vw 24px 4vw;
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 32px 0 0 0;
+}
+.page-btn {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.page-btn.active, .page-btn:hover {
+    background: #222;
+    color: #fff;
+    border-color: #222;
+} 
