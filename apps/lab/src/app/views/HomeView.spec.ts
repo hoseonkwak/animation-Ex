@@ -1,9 +1,20 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomeView from './HomeView.vue'
 
 describe('HomeView', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          Response.json({ data: { items: [], nextCursor: null }, meta: { requestId: 'test' } }),
+        ),
+    )
+  })
+
   it('P1-UX-05 한국어 제품 메시지를 표시한다', () => {
     const wrapper = mount(HomeView)
 

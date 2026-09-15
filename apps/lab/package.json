@@ -17,6 +17,9 @@
     "test:contracts": "vitest run tests/contracts --passWithNoTests",
     "test:ingestion": "vitest run tests/ingestion --passWithNoTests",
     "test:e2e": "node tests/e2e/run.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply kwak-motion-lab-local --local",
+    "db:seed:local": "wrangler d1 execute kwak-motion-lab-local --local --file db/seeds/wp1.sql",
+    "db:setup:local": "npm run db:migrate:local && npm run db:seed:local",
     "preview": "vite preview",
     "deploy": "wrangler deploy"
   },

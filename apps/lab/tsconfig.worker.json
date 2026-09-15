@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.json",
-  "include": ["server/**/*.ts"],
+  "include": ["server/**/*.ts", "src/shared/**/*.ts"],
   "exclude": ["server/**/*.spec.ts"],
   "compilerOptions": {
     "composite": true,

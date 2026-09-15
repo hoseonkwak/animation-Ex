@@ -2,15 +2,16 @@
 
 문서 상태: Active v0.2
 목적: 설계 문서를 작고 검토 가능한 구현 단위와 검증 증거로 변환한다.
-현재 단계: WP0 완료, WP1 착수 준비
+현재 단계: WP0~WP1 완료, WP2 착수 준비
 
 ## 진행 현황
 
 | 작업 패키지 | 상태 | 증거 |
 |---|---|---|
 | WP0 · 기준선과 하네스 | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md) |
-| WP1 · 데이터와 API 수직 절편 | 다음 | D1 migration, API, 카드 3개 |
-| WP2~WP8 | 대기 | 선행 작업 완료 후 진행 |
+| WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md) |
+| WP2 · Explore와 Preview Card | 다음 | 검색·필터·실행 scheduler |
+| WP3~WP8 | 대기 | 선행 작업 완료 후 진행 |
 
 ## 1. 완료 결과
 

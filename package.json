@@ -21,7 +21,10 @@
     "test": "npm run test --workspace @kwak-motion/lab",
     "test:contracts": "npm run test:contracts --workspace @kwak-motion/lab",
     "test:ingestion": "npm run test:ingestion --workspace @kwak-motion/lab",
-    "test:e2e": "npm run test:e2e --workspace @kwak-motion/lab"
+    "test:e2e": "npm run test:e2e --workspace @kwak-motion/lab",
+    "db:migrate:local": "npm run db:migrate:local --workspace @kwak-motion/lab",
+    "db:seed:local": "npm run db:seed:local --workspace @kwak-motion/lab",
+    "db:setup:local": "npm run db:setup:local --workspace @kwak-motion/lab"
   },
   "devDependencies": {},
   "dependencies": {}

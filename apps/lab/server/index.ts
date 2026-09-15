@@ -7,14 +7,14 @@ function json(data: unknown, init: ResponseInit = {}): Response {
   const headers = new Headers(init.headers)
 
   for (const [name, value] of Object.entries(jsonHeaders)) {
-    headers.set(name, value)
+    if (!headers.has(name)) headers.set(name, value)
   }
 
   return Response.json(data, { ...init, headers })
 }
 
 export default {
-  async fetch(request): Promise<Response> {
+  async fetch(request, env): Promise<Response> {
     const url = new URL(request.url)
     const requestId = crypto.randomUUID()
 
@@ -28,6 +28,43 @@ export default {
       })
     }
 
+    if (request.method === 'GET' && url.pathname === '/api/v1/examples') {
+      try {
+        const filters = parseExampleFilters(url)
+        const items = await new ExamplesRepository(env.DB).list(filters)
+        return json(
+          { data: { items, nextCursor: null }, meta: { requestId } },
+          { headers: { 'cache-control': 'public, max-age=60' } },
+        )
+      } catch (error) {
+        if (error instanceof ApiInputError) {
+          return json(
+            {
+              error: {
+                code: error.code,
+                message: error.message,
+                fields: error.fields,
+                requestId,
+              },
+            },
+            { status: 400 },
+          )
+        }
+        throw error
+      }
+    }
+
+    const exampleMatch = url.pathname.match(/^\/api\/v1\/examples\/([a-z0-9-]+)$/)
+    if (request.method === 'GET' && exampleMatch) {
+      const item = await new ExamplesRepository(env.DB).findPublishedBySlug(exampleMatch[1]!)
+      if (item) {
+        return json(
+          { data: item, meta: { requestId } },
+          { headers: { 'cache-control': 'public, max-age=60' } },
+        )
+      }
+    }
+
     return json(
       {
         error: {
@@ -39,4 +76,9 @@ export default {
       { status: 404 },
     )
   },
-} satisfies ExportedHandler
+} satisfies ExportedHandler<Env>
+import { ApiInputError, ExamplesRepository, parseExampleFilters } from './examples'
+
+interface Env {
+  DB: D1Database
+}

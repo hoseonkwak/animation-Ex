@@ -52,12 +52,15 @@ select {
 }
 
 .home-view {
-  display: grid;
-  align-content: center;
   width: min(100% - 32px, 1440px);
-  min-height: 100vh;
   margin-inline: auto;
   padding-block: 80px;
+}
+
+.hero {
+  display: grid;
+  align-content: center;
+  min-height: calc(100vh - 160px);
 }
 
 .eyebrow {
@@ -82,4 +85,133 @@ h1 {
   color: var(--color-text-muted);
   font-size: clamp(1.0625rem, 2vw, 1.25rem);
   line-height: 1.65;
+}
+
+.examples-section {
+  padding-block: 64px 120px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.section-heading > p {
+  margin: 0 0 4px;
+  color: var(--color-text-muted);
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.example-card {
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+}
+
+.preview-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #efeee9;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.preview-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.card-body {
+  padding: 22px;
+}
+
+.card-meta,
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-meta span,
+.tag-list li {
+  padding: 5px 9px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.card-body h3 {
+  margin: 18px 0 8px;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+}
+
+.card-body > p {
+  min-height: 3em;
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.tag-list {
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+
+.status-message {
+  padding: 32px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.status-message.error {
+  color: #9f1d1d;
+}
+
+@media (max-width: 960px) {
+  .example-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home-view {
+    padding-block: 48px;
+  }
+
+  .hero {
+    min-height: calc(100vh - 96px);
+  }
+
+  .section-heading {
+    display: block;
+  }
+
+  .section-heading > p {
+    margin-top: 12px;
+  }
+
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
 }

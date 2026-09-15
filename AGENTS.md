@@ -52,6 +52,7 @@
 - Node.js 24.12 이상을 사용한다. `.nvmrc`의 검증 버전은 24.19.0이다.
 - 의존성 설치는 저장소 루트에서 `npm ci`로 재현한다.
 - 로컬 실행은 `npm run dev`, production build는 `npm run build`다.
+- 로컬 D1 초기화는 `npm run db:setup:local`로 migration과 seed를 순서대로 적용한다.
 - 기본 검증은 `npm run format:check`, `npm run typecheck`, `npm run lint`, `npm run test`다.
 - 브라우저 검증은 Playwright 브라우저 설치 후 `npm run test:e2e`로 실행한다.
 - 계약 및 수집 fixture가 생기면 `npm run test:contracts`, `npm run test:ingestion`을 필수 게이트로 올린다.

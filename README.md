@@ -185,9 +185,12 @@ node --version
 
 ```bash
 npm ci
+npm run db:setup:local
 ```
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
+
+`db:setup:local`은 0001~0007 migration을 로컬 D1에 적용하고 WP1 예제 데이터를 넣습니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 ### 3. 개발 서버 실행
 
@@ -201,6 +204,7 @@ npm run dev
 |---|---|
 | Vue 애플리케이션 | `http://localhost:5173` |
 | Worker 상태 확인 | `http://localhost:5173/api/v1/health` |
+| 공개 예제 API | `http://localhost:5173/api/v1/examples` |
 
 Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
 
@@ -225,6 +229,9 @@ npm run preview
 | `npm run test:ingestion` | 수집 파이프라인 테스트 |
 | `npm run test:e2e` | 실제 브라우저 E2E 테스트 |
 | `npm run build` | production build 검사 |
+| `npm run db:migrate:local` | 로컬 D1 migration 적용 |
+| `npm run db:seed:local` | 로컬 D1 예제 데이터 입력 |
+| `npm run db:setup:local` | migration과 seed 순차 실행 |
 
 일반적인 변경을 마친 뒤에는 다음 순서로 확인합니다.
 
@@ -297,6 +304,7 @@ npx playwright install chromium
 - [Phase 1 공개 화면 명세](docs/PUBLIC_SCREEN_SPEC.md)
 - [Phase 1 실행 계획](docs/PHASE1_EXECUTION_PLAN.md)
 - [WP0 구현 결과](docs/evidence/WP0_REPORT.md)
+- [WP1 구현 결과](docs/evidence/WP1_REPORT.md)
 - [품질 게이트](docs/QUALITY_GATES.md)
 - [Phase 1 완료 기준](docs/PHASE1_ACCEPTANCE.md)
 - [하네스 확장 로드맵](docs/HARNESS_ROADMAP.md)

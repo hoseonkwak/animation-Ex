@@ -6,7 +6,42 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.
 const workspaceRoot = path.resolve(appRoot, '../..')
 const viteCli = path.join(workspaceRoot, 'node_modules/vite/bin/vite.js')
 const playwrightCli = path.join(workspaceRoot, 'node_modules/@playwright/test/cli.js')
+const wranglerCli = path.join(workspaceRoot, 'node_modules/wrangler/bin/wrangler.js')
 const baseUrl = 'http://127.0.0.1:5173'
+
+async function runCommand(command, args) {
+  const exitCode = await new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: appRoot,
+      env: { ...process.env, WRANGLER_LOG: 'none' },
+      stdio: 'inherit',
+    })
+    child.once('error', reject)
+    child.once('exit', (code) => resolve(code ?? 1))
+  })
+
+  if (exitCode !== 0) {
+    throw new Error(`명령 실행이 실패했습니다: ${command} ${args.join(' ')}`)
+  }
+}
+
+await runCommand(process.execPath, [
+  wranglerCli,
+  'd1',
+  'migrations',
+  'apply',
+  'kwak-motion-lab-local',
+  '--local',
+])
+await runCommand(process.execPath, [
+  wranglerCli,
+  'd1',
+  'execute',
+  'kwak-motion-lab-local',
+  '--local',
+  '--file',
+  'db/seeds/wp1.sql',
+])
 
 const server = spawn(
   process.execPath,

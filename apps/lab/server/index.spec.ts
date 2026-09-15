@@ -6,7 +6,7 @@ describe('health API', () => {
   it('서비스 상태와 request ID를 반환한다', async () => {
     const response = await worker.fetch(
       new Request('https://example.test/api/v1/health'),
-      {},
+      { DB: {} as D1Database },
       {
         waitUntil() {},
         passThroughOnException() {},
