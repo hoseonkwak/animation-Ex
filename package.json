@@ -1,0 +1,27 @@
+{
+  "name": "animation-ex",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kwak Motion Lab workspace",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24.12.0"
+  },
+  "scripts": {
+    "chrome-devtools-mcp": "npx chrome-devtools-mcp@latest",
+    "dev": "npm run dev --workspace @kwak-motion/lab",
+    "build": "npm run build --workspace @kwak-motion/lab",
+    "typecheck": "npm run typecheck --workspace @kwak-motion/lab",
+    "lint": "npm run lint --workspace @kwak-motion/lab",
+    "format": "npm run format --workspace @kwak-motion/lab",
+    "format:check": "npm run format:check --workspace @kwak-motion/lab",
+    "test": "npm run test --workspace @kwak-motion/lab",
+    "test:contracts": "npm run test:contracts --workspace @kwak-motion/lab",
+    "test:ingestion": "npm run test:ingestion --workspace @kwak-motion/lab",
+    "test:e2e": "npm run test:e2e --workspace @kwak-motion/lab"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
