@@ -161,18 +161,72 @@ animation-Ex/
 └─ docs/
 ```
 
-### 로컬 실행
+## 실행 방법
 
-Node.js 24.12 이상이 필요합니다. 저장소의 `.nvmrc`는 검증한 Node 24.19.0을 지정합니다.
+### 1. 준비 사항
+
+- Node.js 24.12 이상
+- npm 10 이상
+- Git
+
+저장소의 `.nvmrc`에는 현재 검증 버전인 Node 24.19.0이 지정되어 있습니다. nvm-windows를 사용한다면 다음 명령으로 버전을 맞춥니다.
+
+```powershell
+nvm install 24.19.0
+nvm use 24.19.0
+node --version
+```
+
+`node --version` 결과가 `v24.19.0`이거나 24.12 이상의 버전인지 확인합니다.
+
+### 2. 의존성 설치
+
+저장소 루트에서 실행합니다.
 
 ```bash
 npm ci
+```
+
+`npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
+
+### 3. 개발 서버 실행
+
+```bash
 npm run dev
 ```
 
-기본 주소는 `http://localhost:5173`이며 Worker 상태 확인은 `/api/v1/health`에서 할 수 있습니다.
+개발 서버가 준비되면 다음 주소를 사용합니다.
 
-### 검증
+| 용도 | 주소 |
+|---|---|
+| Vue 애플리케이션 | `http://localhost:5173` |
+| Worker 상태 확인 | `http://localhost:5173/api/v1/health` |
+
+Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
+
+### 4. Production build와 미리보기
+
+```bash
+npm run build
+npm run preview
+```
+
+빌드 결과는 `apps/lab/dist`에 생성됩니다. `preview`는 production build 결과를 로컬에서 확인할 때 사용합니다.
+
+### 5. 코드 품질 검사
+
+| 명령 | 검사 내용 |
+|---|---|
+| `npm run format:check` | Prettier 형식 검사 |
+| `npm run typecheck` | Vue와 Worker TypeScript 검사 |
+| `npm run lint` | ESLint 정적 검사 |
+| `npm run test` | Vitest 단위 테스트 |
+| `npm run test:contracts` | API 계약 테스트 |
+| `npm run test:ingestion` | 수집 파이프라인 테스트 |
+| `npm run test:e2e` | 실제 브라우저 E2E 테스트 |
+| `npm run build` | production build 검사 |
+
+일반적인 변경을 마친 뒤에는 다음 순서로 확인합니다.
 
 ```bash
 npm run format:check
@@ -182,7 +236,49 @@ npm run test
 npm run build
 ```
 
-Playwright 브라우저를 설치한 환경에서는 `npm run test:e2e`로 실제 Vue 화면과 Worker API를 함께 검증합니다.
+### 6. Playwright E2E 실행
+
+처음 한 번 Playwright용 Chromium을 설치합니다.
+
+```bash
+npx playwright install chromium
+```
+
+설치 후 다음 명령을 실행합니다.
+
+```bash
+npm run test:e2e
+```
+
+E2E 하네스는 Cloudflare 개발 서버를 자동으로 시작하고 테스트가 끝나면 종료합니다. 현재 실제 브라우저에서 다음 항목을 확인합니다.
+
+- Vue 첫 화면 렌더링
+- Worker의 `/api/v1/health` 응답
+
+Windows에 설치된 Chrome을 직접 사용하려면 PowerShell에서 실행 경로를 지정할 수 있습니다.
+
+```powershell
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+npm run test:e2e
+```
+
+### 7. 자주 발생하는 실행 문제
+
+#### Node 버전 오류
+
+Vite 또는 Vue가 Node 버전을 지원하지 않는다는 메시지가 나오면 `node --version`을 확인하고 Node 24.12 이상으로 전환합니다.
+
+#### 5173 포트가 이미 사용 중인 경우
+
+기존 `npm run dev` 프로세스를 종료한 뒤 다시 실행합니다. E2E 테스트는 5173 포트를 고정으로 사용하므로 같은 포트의 개발 서버가 남아 있으면 시작하지 못합니다.
+
+#### Playwright 브라우저가 없다는 오류
+
+```bash
+npx playwright install chromium
+```
+
+위 명령으로 브라우저를 설치하거나 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`에 로컬 Chrome 경로를 지정합니다.
 
 ## 설계 문서
 

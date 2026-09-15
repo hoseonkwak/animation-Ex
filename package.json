@@ -13,6 +13,7 @@
     "chrome-devtools-mcp": "npx chrome-devtools-mcp@latest",
     "dev": "npm run dev --workspace @kwak-motion/lab",
     "build": "npm run build --workspace @kwak-motion/lab",
+    "preview": "npm run preview --workspace @kwak-motion/lab",
     "typecheck": "npm run typecheck --workspace @kwak-motion/lab",
     "lint": "npm run lint --workspace @kwak-motion/lab",
     "format": "npm run format --workspace @kwak-motion/lab",
