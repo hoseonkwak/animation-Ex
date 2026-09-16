@@ -29,11 +29,16 @@
 - `docs/evidence/WP0_REPORT.md`
 - `docs/evidence/WP1_REPORT.md`
 - `docs/evidence/WP2_REPORT.md`
+- `docs/evidence/WP3_REPORT.md`
+- `docs/evidence/WP3_PREVIEW_VALIDATION.json`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
 - Wrangler local D1 migration과 seed 명령
 - Preview scheduler 단위 검사와 검색·URL 복원·반응형 Playwright 검사
+- `.agents/skills/example-validation/SKILL.md`
+- 기존 목록과 manifest, D1 row를 비교하는 legacy import 계약 검사
+- headed Chromium 기반 CodePen 실행 검수 명령
 
 ### 다음 구현 단계에서 추가
 
@@ -81,7 +86,7 @@ Skill은 이름만 먼저 만들지 않는다. 다음 중 하나가 충족되면
 
 #### example-validation
 
-생성 시점: Preview Runtime과 첫 runtime validator를 구현할 때
+상태: WP3에서 생성 완료
 
 포함할 내용:
 

@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 0001~0007 migration을 로컬 D1에 적용하고 WP1 예제 데이터를 넣습니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 0001~0008 migration을 로컬 D1에 적용하고 draft 검증 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 ### 3. 개발 서버 실행
 

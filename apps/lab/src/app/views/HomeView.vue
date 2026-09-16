@@ -28,6 +28,8 @@ const filterGroups: Array<{
     options: [
       { key: 'load', label: '로드' },
       { key: 'hover', label: '호버' },
+      { key: 'pointer', label: '포인터' },
+      { key: 'drag', label: '드래그' },
       { key: 'scroll', label: '스크롤' },
     ],
   },
@@ -38,6 +40,10 @@ const filterGroups: Array<{
       { key: 'slide', label: '슬라이드' },
       { key: 'scale', label: '스케일' },
       { key: 'reveal', label: '리빌' },
+      { key: 'drag', label: '드래그 이동' },
+      { key: 'morph', label: '모핑' },
+      { key: 'draw', label: '그리기' },
+      { key: 'color', label: '색상 전환' },
     ],
   },
   {
@@ -47,6 +53,8 @@ const filterGroups: Array<{
       { key: 'hero', label: '히어로' },
       { key: 'card', label: '카드' },
       { key: 'gallery', label: '갤러리' },
+      { key: 'text', label: '텍스트' },
+      { key: 'background', label: '배경' },
     ],
   },
   {
@@ -55,6 +63,11 @@ const filterGroups: Array<{
     options: [
       { key: 'timeline', label: '타임라인' },
       { key: 'stagger', label: '스태거' },
+      { key: 'scroll-trigger', label: 'ScrollTrigger' },
+      { key: 'scroll-smoother', label: 'ScrollSmoother' },
+      { key: 'draggable', label: 'Draggable' },
+      { key: 'morph-svg', label: 'MorphSVG' },
+      { key: 'draw-svg', label: 'DrawSVG' },
     ],
   },
   {

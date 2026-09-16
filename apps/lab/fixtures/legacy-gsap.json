@@ -1,0 +1,270 @@
+[
+  {
+    "position": 1,
+    "file": "basic-1.html",
+    "penId": "LEVeYQO",
+    "slug": "gsap-basic-tween",
+    "title": "GSAP 기초 예제 1",
+    "originalTitle": "gsap 기초 -1",
+    "summary": "이동과 회전으로 GSAP의 기본 트윈을 익히는 예제입니다.",
+    "difficulty": "beginner",
+    "featured": true,
+    "tags": ["technology:gsap", "trigger:load", "motion:slide", "difficulty:beginner"]
+  },
+  {
+    "position": 2,
+    "file": "basic-2.html",
+    "penId": "KwpZamO",
+    "slug": "gsap-basic-transform",
+    "title": "GSAP 기초 예제 2",
+    "originalTitle": "gsap 기초 -2",
+    "summary": "크기와 위치 변화를 조합해 기본 transform 애니메이션을 연습하는 예제입니다.",
+    "difficulty": "beginner",
+    "featured": false,
+    "tags": ["technology:gsap", "trigger:load", "motion:scale", "difficulty:beginner"]
+  },
+  {
+    "position": 3,
+    "file": "basic-3.html",
+    "penId": "KwpZWwM",
+    "slug": "gsap-from-fromto-timeline",
+    "title": "GSAP 기초 - 3 (from, fromTo, Timeline)",
+    "originalTitle": "gsap 기초 - 3 (from, fromTo, Timeline)",
+    "summary": "from, fromTo와 Timeline의 차이를 한 화면에서 비교하는 기초 예제입니다.",
+    "difficulty": "intermediate",
+    "featured": true,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:slide",
+      "technique:timeline",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 4,
+    "file": "gasp-scrollTrigger.html",
+    "penId": "myJXOBE",
+    "slug": "gsap-scrolltrigger",
+    "title": "GSAP scrollTrigger",
+    "originalTitle": "GSAP scrollTrigger",
+    "summary": "스크롤 위치에 맞춰 요소가 등장하도록 ScrollTrigger를 구성한 예제입니다.",
+    "difficulty": "intermediate",
+    "featured": true,
+    "tags": [
+      "technology:gsap",
+      "trigger:scroll",
+      "motion:reveal",
+      "section:gallery",
+      "technique:scroll-trigger",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 5,
+    "file": "gasp-mouse.html",
+    "penId": "gbpjpWq",
+    "slug": "gsap-mouse-interaction",
+    "title": "GSAP mouse",
+    "originalTitle": "GSAP 마우스 인터랙션",
+    "summary": "포인터 움직임에 따라 요소의 위치와 크기가 반응하는 마우스 인터랙션입니다.",
+    "difficulty": "intermediate",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:pointer",
+      "motion:scale",
+      "mood:dynamic",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 6,
+    "file": "gasp-tl1.html",
+    "penId": "MYwBwYa",
+    "slug": "gsap-dynamic-timeline",
+    "title": "GSAP tl1",
+    "originalTitle": "GSAP 동적 타임라인",
+    "summary": "여러 동작의 시작 시점을 조절해 순차적으로 재생하는 동적 Timeline 예제입니다.",
+    "difficulty": "intermediate",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:slide",
+      "technique:timeline",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 7,
+    "file": "gasp-card1.html",
+    "penId": "qEdyyJG",
+    "slug": "interactive-card-hover",
+    "title": "인터랙티브 카드",
+    "originalTitle": "인터랙티브 카드",
+    "summary": "마우스 움직임에 반응하는 입체 카드 인터랙션입니다.",
+    "difficulty": "intermediate",
+    "featured": true,
+    "tags": [
+      "technology:gsap",
+      "trigger:pointer",
+      "motion:scale",
+      "section:card",
+      "mood:dynamic",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 8,
+    "file": "gasp-scrollSmother.html",
+    "penId": "QwbVorG",
+    "slug": "gsap-scrollsmoother",
+    "title": "scrollSmother",
+    "originalTitle": "scrollSmother",
+    "summary": "ScrollSmoother로 페이지 이동을 부드럽게 연결하는 스크롤 예제입니다.",
+    "difficulty": "advanced",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:scroll",
+      "motion:slide",
+      "section:hero",
+      "technique:scroll-smoother",
+      "difficulty:advanced"
+    ]
+  },
+  {
+    "position": 9,
+    "file": "gasp-draggable.html",
+    "penId": "yyNxwZz",
+    "slug": "gsap-draggable",
+    "title": "draggable",
+    "originalTitle": "Draggable",
+    "summary": "포인터로 요소를 잡아 끌고 이동시키는 GSAP Draggable 예제입니다.",
+    "difficulty": "intermediate",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:drag",
+      "motion:drag",
+      "technique:draggable",
+      "mood:dynamic",
+      "difficulty:intermediate"
+    ]
+  },
+  {
+    "position": 10,
+    "file": "gasp-flubber.html",
+    "penId": "PwqdgOm",
+    "slug": "gsap-morphsvg",
+    "title": "flubber",
+    "originalTitle": "MorphSVG",
+    "summary": "SVG 도형의 경로를 다른 형태로 자연스럽게 변환하는 MorphSVG 예제입니다.",
+    "difficulty": "advanced",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:morph",
+      "technique:morph-svg",
+      "difficulty:advanced"
+    ]
+  },
+  {
+    "position": 11,
+    "file": "gasp-flubber2.html",
+    "penId": "xbGyrxL",
+    "slug": "gsap-advanced-morph-interaction",
+    "title": "flubber2",
+    "originalTitle": "GSAP 심화 인터랙션 데모",
+    "summary": "포인터 입력과 SVG 형태 변화를 결합한 GSAP 심화 인터랙션입니다.",
+    "difficulty": "advanced",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:pointer",
+      "motion:morph",
+      "technique:morph-svg",
+      "mood:dynamic",
+      "difficulty:advanced"
+    ]
+  },
+  {
+    "position": 12,
+    "file": "gasp-text1.html",
+    "penId": "pvJQvbr",
+    "slug": "gsap-text-reveal",
+    "title": "텍스트 나타내기 효과",
+    "originalTitle": "Untitled",
+    "summary": "문장을 단계적으로 드러내 시선을 유도하는 텍스트 리빌 예제입니다.",
+    "difficulty": "beginner",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:reveal",
+      "section:text",
+      "mood:minimal",
+      "difficulty:beginner"
+    ]
+  },
+  {
+    "position": 13,
+    "file": "gasp-text2.html",
+    "penId": "WbvYvyL",
+    "slug": "gsap-text-drawing",
+    "title": "텍스트 나타내기 및 그리기",
+    "originalTitle": "텍스트 나타내기 및 그리기",
+    "summary": "텍스트 등장과 SVG 선 그리기 동작을 함께 재생하는 예제입니다.",
+    "difficulty": "advanced",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:draw",
+      "section:text",
+      "technique:draw-svg",
+      "difficulty:advanced"
+    ]
+  },
+  {
+    "position": 14,
+    "file": "gasp-color1.html",
+    "penId": "bNdQVab",
+    "slug": "gsap-rainbow-background",
+    "title": "무지개 배경",
+    "originalTitle": "무지개 배경",
+    "summary": "배경색을 연속적으로 전환해 무지개 흐름을 만드는 색상 애니메이션입니다.",
+    "difficulty": "beginner",
+    "featured": false,
+    "tags": [
+      "technology:gsap",
+      "trigger:load",
+      "motion:color",
+      "section:background",
+      "mood:dynamic",
+      "difficulty:beginner"
+    ]
+  },
+  {
+    "position": 15,
+    "file": "gasp-scroll1.html",
+    "penId": "vEOQNmz",
+    "slug": "scroll-circle-reveal",
+    "title": "이미지가 아래부분만 원 안으로 들어가는 효과",
+    "originalTitle": "이미지가 아래부분만 원 안으로 들어가는 효과",
+    "summary": "스크롤에 맞춰 이미지가 원형 영역으로 들어가는 리빌 예제입니다.",
+    "difficulty": "advanced",
+    "featured": true,
+    "tags": [
+      "technology:gsap",
+      "trigger:scroll",
+      "motion:reveal",
+      "section:gallery",
+      "technique:scroll-trigger",
+      "mood:dynamic",
+      "difficulty:advanced"
+    ]
+  }
+]

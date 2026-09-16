@@ -14,12 +14,12 @@
 
 ## 2. 콘텐츠
 
-- [ ] `P1-CONTENT-01` 기존 GSAP 목록의 예제 15개가 새 데이터 구조로 이전된다.
-- [ ] `P1-CONTENT-02` 기존 예제의 제목, 태그와 원본 CodePen 정보가 정리된다.
+- [x] `P1-CONTENT-01` 기존 GSAP 목록의 예제 15개가 새 데이터 구조로 이전된다.
+- [x] `P1-CONTENT-02` 기존 예제의 제목, 태그와 원본 CodePen 정보가 정리된다.
 - [ ] `P1-CONTENT-03` WSSS 관련 카테고리에서 유효한 CodePen 후보를 수집할 수 있다.
-- [ ] `P1-CONTENT-04` 삭제되거나 실행되지 않는 Pen은 공개되지 않는다.
-- [ ] `P1-CONTENT-05` 중복 Pen은 canonical URL 기준으로 합쳐진다.
-- [ ] `P1-CONTENT-06` 관리자 승인 전 콘텐츠는 공개되지 않는다.
+- [x] `P1-CONTENT-04` 삭제되거나 실행되지 않는 Pen은 공개되지 않는다.
+- [x] `P1-CONTENT-05` 중복 Pen은 canonical URL 기준으로 합쳐진다.
+- [x] `P1-CONTENT-06` 관리자 승인 전 콘텐츠는 공개되지 않는다.
 
 ## 3. 탐색
 
@@ -61,7 +61,7 @@
 - [ ] `P1-ADMIN-06` 공개 콘텐츠를 중지할 수 있다.
 - [ ] `P1-ADMIN-07` 각 결정과 실패 이유가 기록된다.
 - [ ] `P1-ADMIN-08` 승인 불가 이유를 한 화면에서 확인할 수 있다.
-- [ ] `P1-ADMIN-09` CodePen Preview의 확인 시각과 viewport가 기록된다.
+- [x] `P1-ADMIN-09` CodePen Preview의 확인 시각과 viewport가 기록된다.
 - [ ] `P1-ADMIN-10` 일괄 승인이 개별 Preview 확인과 필수 조건을 우회하지 않는다.
 
 ## 7. 개인 기능

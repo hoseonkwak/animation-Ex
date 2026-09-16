@@ -6,7 +6,7 @@ INSERT OR IGNORE INTO sources (
   ('src-basic-1', 'codepen', 'https://codepen.io/hoseonkwak/pen/LEVeYQO', 'https://codepen.io/hoseonkwak/pen/LEVeYQO', 'hoseonkwak', 'MIT', 'https://blog.codepen.io/legal/terms-of-service/', '2026-09-16T00:00:00.000Z', 'available', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z'),
   ('src-card-1', 'codepen', 'https://codepen.io/hoseonkwak/pen/qEdyyJG', 'https://codepen.io/hoseonkwak/pen/qEdyyJG', 'hoseonkwak', 'MIT', 'https://blog.codepen.io/legal/terms-of-service/', '2026-09-16T00:00:00.000Z', 'available', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z'),
   ('src-scroll-1', 'codepen', 'https://codepen.io/hoseonkwak/pen/vEOQNmz', 'https://codepen.io/hoseonkwak/pen/vEOQNmz', 'hoseonkwak', 'MIT', 'https://blog.codepen.io/legal/terms-of-service/', '2026-09-16T00:00:00.000Z', 'available', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z'),
-  ('src-draft', 'codepen', 'https://codepen.io/hoseonkwak/pen/KwpZamO', 'https://codepen.io/hoseonkwak/pen/KwpZamO', 'hoseonkwak', 'MIT', 'https://blog.codepen.io/legal/terms-of-service/', '2026-09-16T00:00:00.000Z', 'available', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z');
+  ('src-draft', 'codepen', 'https://codepen.io/fixture/pen/draft-hidden', 'https://codepen.io/fixture/pen/draft-hidden', 'fixture', NULL, NULL, NULL, 'unknown', '2026-09-16T00:00:00.000Z', NULL, '2026-09-16T00:00:00.000Z', '2026-09-16T00:00:00.000Z');
 
 INSERT OR IGNORE INTO animation_entries (
   id, source_id, slug, title, original_title, summary, search_text,
@@ -25,7 +25,7 @@ INSERT OR IGNORE INTO codepen_refs (
   ('pen-basic-1', 'entry-basic-1', 'hoseonkwak/LEVeYQO', 'LEVeYQO', 'hoseonkwak', 'https://codepen.io/hoseonkwak/pen/LEVeYQO', 'https://codepen.io/hoseonkwak/embed/LEVeYQO?default-tab=result&theme-id=light', 'light', 'result', 1, '2026-09-16T00:00:00.000Z'),
   ('pen-card-1', 'entry-card-1', 'hoseonkwak/qEdyyJG', 'qEdyyJG', 'hoseonkwak', 'https://codepen.io/hoseonkwak/pen/qEdyyJG', 'https://codepen.io/hoseonkwak/embed/qEdyyJG?default-tab=result&theme-id=light', 'light', 'result', 1, '2026-09-16T00:00:00.000Z'),
   ('pen-scroll-1', 'entry-scroll-1', 'hoseonkwak/vEOQNmz', 'vEOQNmz', 'hoseonkwak', 'https://codepen.io/hoseonkwak/pen/vEOQNmz', 'https://codepen.io/hoseonkwak/embed/vEOQNmz?default-tab=result&theme-id=light', 'light', 'result', 1, '2026-09-16T00:00:00.000Z'),
-  ('pen-draft', 'entry-draft', 'hoseonkwak/KwpZamO', 'KwpZamO', 'hoseonkwak', 'https://codepen.io/hoseonkwak/pen/KwpZamO', 'https://codepen.io/hoseonkwak/embed/KwpZamO?default-tab=result&theme-id=light', 'light', 'result', 1, '2026-09-16T00:00:00.000Z');
+  ('pen-draft', 'entry-draft', 'fixture/draft-hidden', 'draft-hidden', 'fixture', 'https://codepen.io/fixture/pen/draft-hidden', 'https://codepen.io/fixture/embed/draft-hidden?default-tab=result&theme-id=light', 'light', 'result', 1, '2026-09-16T00:00:00.000Z');
 
 INSERT OR IGNORE INTO entry_tags (animation_entry_id, tag_id, source, confidence, confirmed) VALUES
   ('entry-basic-1', 'tag-technology-gsap', 'admin', 1, 1),

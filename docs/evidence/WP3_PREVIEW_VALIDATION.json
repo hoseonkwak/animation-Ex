@@ -1,0 +1,270 @@
+{
+  "validator": "admin-codepen-embed",
+  "validatorVersion": "1.0.0",
+  "method": "codex-in-app-browser-visible",
+  "checkedAt": "2026-09-16T04:32:14.1298173Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "total": 15,
+  "passed": 15,
+  "failed": 0,
+  "results": [
+    {
+      "position": 1,
+      "penId": "LEVeYQO",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/LEVeYQO",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/LEVeYQO?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 484,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 2,
+      "penId": "KwpZamO",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/KwpZamO",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/KwpZamO?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 1207,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 3,
+      "penId": "KwpZWwM",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/KwpZWwM",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/KwpZWwM?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 2213,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 4,
+      "penId": "myJXOBE",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/myJXOBE",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/myJXOBE?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 10039,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 5,
+      "penId": "gbpjpWq",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/gbpjpWq",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/gbpjpWq?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 994,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 6,
+      "penId": "MYwBwYa",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/MYwBwYa",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/MYwBwYa?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 2425,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 7,
+      "penId": "qEdyyJG",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/qEdyyJG",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/qEdyyJG?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 12471,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 8,
+      "penId": "QwbVorG",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/QwbVorG",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/QwbVorG?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 7550,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 9,
+      "penId": "yyNxwZz",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/yyNxwZz",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/yyNxwZz?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 1982,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 10,
+      "penId": "PwqdgOm",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/PwqdgOm",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/PwqdgOm?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 2074,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 11,
+      "penId": "xbGyrxL",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/xbGyrxL",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/xbGyrxL?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 4948,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 12,
+      "penId": "pvJQvbr",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/pvJQvbr",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/pvJQvbr?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 6158,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 13,
+      "penId": "WbvYvyL",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/WbvYvyL",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/WbvYvyL?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 42299,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 14,
+      "penId": "bNdQVab",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/bNdQVab",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/bNdQVab?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 3871,
+      "result": "pass",
+      "failureCode": null
+    },
+    {
+      "position": 15,
+      "penId": "vEOQNmz",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/vEOQNmz",
+      "embedUrl": "https://codepen.io/hoseonkwak/embed/vEOQNmz?default-tab=result&theme-id=light",
+      "viewport": "desktop",
+      "embedControls": [
+        "HTML",
+        "CSS",
+        "JS",
+        "Result",
+        "Rerun"
+      ],
+      "resultHtmlLength": 4294,
+      "result": "pass",
+      "failureCode": null
+    }
+  ]
+}
