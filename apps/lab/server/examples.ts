@@ -357,6 +357,13 @@ export class ExamplesRepository {
     }
   }
 
+  async statusBySlug(slug: string): Promise<string | null> {
+    const row = await this.db
+      .prepare('SELECT status FROM animation_entries WHERE slug = ?')
+      .bind(slug)
+      .first<{ status: string }>()
+    return row?.status ?? null
+  }
   private async hydrateTags(rows: EntryRow[]): Promise<ExampleCard[]> {
     if (rows.length === 0) return []
 

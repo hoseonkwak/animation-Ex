@@ -426,3 +426,275 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* WP4 owner review */
+.admin-view {
+  width: min(100% - 32px, 1800px);
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+.admin-header,
+.preview-heading,
+.queue-toolbar,
+.decision-actions,
+.preview-decision,
+.viewport-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.admin-header {
+  margin-bottom: 24px;
+}
+.admin-header h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.admin-header a,
+.preview-heading a {
+  color: var(--color-brand);
+  font-weight: 700;
+}
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.admin-stats button {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.admin-stats button.active {
+  border-color: var(--color-brand);
+  box-shadow: inset 0 0 0 1px var(--color-brand);
+}
+.admin-stats strong {
+  font-size: 1.4rem;
+}
+.admin-notice {
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+.admin-notice.success {
+  background: #e9f8ee;
+  color: #176a35;
+}
+.admin-notice.error {
+  background: #fff0f0;
+  color: #9f1d1d;
+}
+.review-workspace {
+  display: grid;
+  grid-template-columns: 280px minmax(460px, 1fr) 360px;
+  min-height: 720px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.candidate-queue,
+.live-review,
+.edit-panel {
+  min-width: 0;
+  padding: 18px;
+}
+.candidate-queue,
+.live-review {
+  border-right: 1px solid var(--color-border);
+}
+.queue-toolbar {
+  margin-bottom: 12px;
+}
+.candidate-item {
+  display: grid;
+  width: 100%;
+  gap: 7px;
+  padding: 14px 10px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  text-align: left;
+  cursor: pointer;
+}
+.candidate-item.selected {
+  background: #f0efff;
+  box-shadow: inset 3px 0 var(--color-brand);
+}
+.candidate-category,
+.candidate-warning,
+.candidate-item small {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+.candidate-warning {
+  color: #9a5b00;
+}
+.preview-heading h2 {
+  margin: 4px 0 0;
+}
+.viewport-controls {
+  justify-content: flex-start;
+  margin: 18px 0 10px;
+}
+.viewport-controls button,
+.preview-decision button,
+.decision-actions button,
+.save-button {
+  min-height: 38px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.viewport-controls button.active {
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+.admin-preview-stage {
+  display: flex;
+  justify-content: center;
+  height: 520px;
+  overflow: auto;
+  background: #e9e8e2;
+  border: 1px solid var(--color-border);
+}
+.admin-preview-stage iframe {
+  max-width: 100%;
+  height: 100%;
+  background: #fff;
+  border: 0;
+}
+.interaction-note {
+  color: var(--color-text-muted);
+}
+.preview-decision {
+  justify-content: flex-end;
+}
+.preview-decision .pass,
+.decision-actions .approve,
+.save-button {
+  color: #fff;
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+.edit-panel {
+  max-height: 820px;
+  overflow-y: auto;
+}
+.edit-panel h2 {
+  margin: 22px 0 12px;
+  font-size: 1.05rem;
+}
+.edit-panel h2:first-child {
+  margin-top: 0;
+}
+.edit-panel > label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.edit-panel input,
+.edit-panel textarea,
+.edit-panel select {
+  width: 100%;
+  padding: 9px;
+  color: var(--color-text);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+}
+.edit-panel .checkbox {
+  display: flex;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+.edit-panel .checkbox input,
+.admin-tags input {
+  width: auto;
+}
+.admin-tags {
+  display: grid;
+  gap: 7px;
+}
+.admin-tags label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+.admin-tags small {
+  margin-left: auto;
+  color: var(--color-text-muted);
+}
+.tag-source-inferred {
+  border-style: dashed !important;
+}
+.save-button {
+  width: 100%;
+  margin-top: 16px;
+}
+.decision-panel {
+  position: sticky;
+  bottom: -18px;
+  padding: 16px 0 18px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+.decision-panel select,
+.decision-panel textarea {
+  margin-bottom: 8px;
+}
+.decision-actions {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.approval-issues {
+  padding-left: 20px;
+  color: #9a5b00;
+  font-size: 0.8rem;
+}
+.empty-review {
+  display: grid;
+  grid-column: 2 / 4;
+  place-content: center;
+  color: var(--color-text-muted);
+}
+@media (max-width: 1199px) {
+  .review-workspace {
+    grid-template-columns: 250px 1fr;
+  }
+  .edit-panel {
+    grid-column: 2;
+    border-top: 1px solid var(--color-border);
+  }
+}
+@media (max-width: 767px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .review-workspace {
+    display: block;
+  }
+  .candidate-queue,
+  .live-review {
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .admin-preview-stage {
+    height: 360px;
+  }
+}

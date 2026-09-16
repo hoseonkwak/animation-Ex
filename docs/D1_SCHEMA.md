@@ -318,6 +318,7 @@ source_discoveries(discovery_source_id, external_id) UNIQUE
 ingestion_runs(discovery_source_id, started_at DESC)
 review_decisions(target_type, target_id, created_at DESC)
 validation_runs(target_type, target_id, checked_at DESC)
+admin_idempotency_keys(operation, target_id)
 ```
 
 검색은 초기에는 `search_text`의 제한된 LIKE 검색과 태그 인덱스를 사용한다. 콘텐츠 규모와 실제 쿼리 비용을 측정하기 전에는 별도 검색 엔진을 추가하지 않는다.
@@ -337,6 +338,16 @@ candidate version/status 확인
 
 영향받은 행 수가 예상과 다르거나 어느 UNIQUE 제약이 충돌하면 승인 전체를 실패시킨다. API는 원인을 `VERSION_CONFLICT`, `DUPLICATE_SOURCE`, `DUPLICATE_SLUG` 중 하나로 반환한다.
 
+### `admin_idempotency_keys`
+
+- `key` TEXT PK
+- `operation` TEXT
+- `target_id` TEXT
+- `result_id` TEXT
+- `created_at` TEXT
+
+관리자 승인 재시도에서 같은 작업 결과를 반환하고 Entry 중복 생성을 막는다.
+
 ## 11. Migration 계획
 
 ```text
@@ -348,6 +359,7 @@ candidate version/status 확인
 0006_submissions_and_metrics.sql
 0007_seed_tags.sql
 0008_seed_legacy_examples.sql
+0009_admin_idempotency.sql
 ```
 
 각 migration에는 다음 증거가 필요하다.

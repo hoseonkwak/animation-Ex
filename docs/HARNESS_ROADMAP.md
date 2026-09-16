@@ -31,6 +31,7 @@
 - `docs/evidence/WP2_REPORT.md`
 - `docs/evidence/WP3_REPORT.md`
 - `docs/evidence/WP3_PREVIEW_VALIDATION.json`
+- `docs/evidence/WP4_REPORT.md`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
@@ -39,6 +40,8 @@
 - `.agents/skills/example-validation/SKILL.md`
 - 기존 목록과 manifest, D1 row를 비교하는 legacy import 계약 검사
 - headed Chromium 기반 CodePen 실행 검수 명령
+- 관리자 인증·version 충돌·승인 원자성·멱등성·410 공개 중지 계약 검사
+- Candidate Inbox 실제 Preview Playwright 검사
 
 ### 다음 구현 단계에서 추가
 

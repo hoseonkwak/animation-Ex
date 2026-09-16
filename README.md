@@ -148,7 +148,7 @@ Discovery
 
 ## 현재 저장소
 
-기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0 기반은 `apps/lab`에 분리했습니다.
+기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP4 구현은 `apps/lab`에 분리했습니다. 공개 Explore, 기존 예제 15개와 owner 관리자 검수 흐름이 동작합니다.
 
 ```text
 animation-Ex/
@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 0001~0008 migration을 로컬 D1에 적용하고 draft 검증 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 0001~0009 migration을 로컬 D1에 적용하고 공개·검수 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 ### 3. 개발 서버 실행
 
@@ -205,8 +205,9 @@ npm run dev
 | Vue 애플리케이션 | `http://localhost:5173` |
 | Worker 상태 확인 | `http://localhost:5173/api/v1/health` |
 | 공개 예제 API | `http://localhost:5173/api/v1/examples` |
+| 관리자 검수 | `http://localhost:5173/admin/review` |
 
-Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
+Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의하며 production에서는 Cloudflare Access 신원과 `ADMIN_EMAIL`이 모두 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
 
 ### 4. Production build와 미리보기
 
@@ -261,6 +262,9 @@ E2E 하네스는 Cloudflare 개발 서버를 자동으로 시작하고 테스트
 
 - Vue 첫 화면 렌더링
 - Worker의 `/api/v1/health` 응답
+- 공개 Explore 검색·필터·Preview 회귀
+- owner Candidate Inbox와 실제 CodePen Preview 확인
+- 관리자 API의 인증 차단
 
 Windows에 설치된 Chrome을 직접 사용하려면 PowerShell에서 실행 경로를 지정할 수 있습니다.
 
@@ -305,6 +309,9 @@ npx playwright install chromium
 - [Phase 1 실행 계획](docs/PHASE1_EXECUTION_PLAN.md)
 - [WP0 구현 결과](docs/evidence/WP0_REPORT.md)
 - [WP1 구현 결과](docs/evidence/WP1_REPORT.md)
+- [WP2 구현 결과](docs/evidence/WP2_REPORT.md)
+- [WP3 구현 결과](docs/evidence/WP3_REPORT.md)
+- [WP4 구현 결과](docs/evidence/WP4_REPORT.md)
 - [품질 게이트](docs/QUALITY_GATES.md)
 - [Phase 1 완료 기준](docs/PHASE1_ACCEPTANCE.md)
 - [하네스 확장 로드맵](docs/HARNESS_ROADMAP.md)
