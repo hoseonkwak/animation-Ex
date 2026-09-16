@@ -48,7 +48,7 @@
 ## 현재 구현 상태
 
 - 저장소에는 정적 HTML, CSS와 JavaScript로 만든 GSAP 갤러리가 있다.
-- `apps/lab`에 Vue 3, Vue Router, TypeScript와 Cloudflare Worker 기반 WP0~WP5가 있다.
+- `apps/lab`에 Vue 3, Vue Router, TypeScript와 Cloudflare Worker 기반 WP0~WP6가 있다.
 - Node.js 24.12 이상을 사용한다. `.nvmrc`의 검증 버전은 24.19.0이다.
 - 의존성 설치는 저장소 루트에서 `npm ci`로 재현한다.
 - 로컬 실행은 `npm run dev`, production build는 `npm run build`다.

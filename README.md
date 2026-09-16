@@ -148,7 +148,7 @@ Discovery
 
 ## 현재 저장소
 
-기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP5 구현은 `apps/lab`에 분리했습니다. 공개 Explore, 기존 예제 15개, owner 관리자 검수와 WSSS 후보 수집 흐름이 동작합니다.
+기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP6 구현은 `apps/lab`에 분리했습니다. Home, Explore, 상세, Sections, Saved, URL 제보, 기존 예제 15개, owner 관리자 검수와 WSSS 후보 수집 흐름이 동작합니다.
 
 ```text
 animation-Ex/
@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 ### 3. 개발 서버 실행
 
@@ -202,10 +202,16 @@ npm run dev
 
 | 용도             | 주소                                    |
 | ---------------- | --------------------------------------- |
-| Vue 애플리케이션 | `http://localhost:5173`                 |
+| Home             | `http://localhost:5173`                 |
+| Explore          | `http://localhost:5173/explore`         |
+| Sections         | `http://localhost:5173/sections`        |
+| Saved            | `http://localhost:5173/saved`           |
+| URL 제보         | `http://localhost:5173/submit`          |
 | Worker 상태 확인 | `http://localhost:5173/api/v1/health`   |
 | 공개 예제 API    | `http://localhost:5173/api/v1/examples` |
 | 관리자 검수      | `http://localhost:5173/admin/review`    |
+
+URL 제보는 로컬에서 `local-test-token`으로 Turnstile을 모의합니다. production build에는 `VITE_TURNSTILE_SITE_KEY`, Worker secret에는 `TURNSTILE_SECRET_KEY`를 설정해야 제보 폼을 사용할 수 있습니다.
 
 Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의하며 production에서는 Cloudflare Access 신원과 `ADMIN_EMAIL`이 모두 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
 
@@ -290,6 +296,9 @@ E2E 하네스는 Cloudflare 개발 서버를 자동으로 시작하고 테스트
 - 공개 Explore 검색·필터·Preview 회귀
 - owner Candidate Inbox와 실제 CodePen Preview 확인
 - 관리자 API의 인증 차단
+- 상세 출처와 실제 CodePen 실행
+- Saved·나중에 연습의 브라우저 재시작 복원
+- Sections, URL 제보, 테마 복원과 404 noindex
 
 Windows에 설치된 Chrome을 직접 사용하려면 PowerShell에서 실행 경로를 지정할 수 있습니다.
 
@@ -338,6 +347,7 @@ npx playwright install chromium
 - [WP3 구현 결과](docs/evidence/WP3_REPORT.md)
 - [WP4 구현 결과](docs/evidence/WP4_REPORT.md)
 - [WP5 구현 결과](docs/evidence/WP5_REPORT.md)
+- [WP6 구현 결과](docs/evidence/WP6_REPORT.md)
 - [품질 게이트](docs/QUALITY_GATES.md)
 - [Phase 1 완료 기준](docs/PHASE1_ACCEPTANCE.md)
 - [하네스 확장 로드맵](docs/HARNESS_ROADMAP.md)

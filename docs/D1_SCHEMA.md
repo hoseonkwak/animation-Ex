@@ -372,6 +372,8 @@ candidate version/status 확인
 0008_seed_legacy_examples.sql
 0009_admin_idempotency.sql
 0010_ingestion_security.sql
+
+별도 seed인 `db/seeds/wp6.sql`은 공개 Pattern, Collection과 Entry 연결을 멱등하게 구성한다.
 ```
 
 각 migration에는 다음 증거가 필요하다.

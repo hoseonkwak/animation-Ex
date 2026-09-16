@@ -6,6 +6,7 @@ import {
   handleIngestionBatch,
   IngestionApiError,
 } from './ingestion'
+import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 
 interface Env {
   DB: D1Database
@@ -13,6 +14,7 @@ interface Env {
   LOCAL_ADMIN_SIMULATION?: string
   INGESTION_KEY_ID?: string
   INGESTION_HMAC_SECRET?: string
+  TURNSTILE_SECRET_KEY?: string
 }
 
 const jsonHeaders = {
@@ -35,6 +37,64 @@ export default {
 
     if (request.method === 'GET' && url.pathname === '/api/v1/health') {
       return json({ data: { service: 'kwak-motion-lab', status: 'ok' }, meta: { requestId } })
+    }
+
+    if (request.method === 'GET' && url.pathname === '/api/v1/discovery') {
+      const data = await new PublicRepository(env.DB).discovery()
+      return json(
+        { data, meta: { requestId } },
+        { headers: { 'cache-control': 'public, max-age=300' } },
+      )
+    }
+
+    if (request.method === 'POST' && url.pathname === '/api/v1/submissions') {
+      try {
+        await acceptSubmission(request, env.DB, {
+          ...(env.TURNSTILE_SECRET_KEY ? { secret: env.TURNSTILE_SECRET_KEY } : {}),
+          localSimulation:
+            env.LOCAL_ADMIN_SIMULATION === 'true' &&
+            (url.hostname === 'localhost' || url.hostname === '127.0.0.1'),
+        })
+        return json({ data: { received: true }, meta: { requestId } }, { status: 202 })
+      } catch (error) {
+        if (error instanceof SubmissionError) {
+          return json(
+            {
+              error: { code: error.code, message: error.message, fields: error.fields, requestId },
+            },
+            { status: error.status },
+          )
+        }
+        throw error
+      }
+    }
+
+    if (request.method === 'GET' && url.pathname === '/sitemap.xml') {
+      const slugs = await new PublicRepository(env.DB).sitemapSlugs()
+      const paths = [
+        '/',
+        '/explore',
+        '/sections',
+        '/about',
+        ...slugs.sections.map((slug) => `/sections/${slug}`),
+        ...slugs.examples.map((slug) => `/examples/${slug}`),
+      ]
+      const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((path) => `<url><loc>${url.origin}${path}</loc></url>`).join('')}</urlset>`
+      return new Response(body, {
+        headers: {
+          'content-type': 'application/xml; charset=utf-8',
+          'cache-control': 'public, max-age=3600',
+        },
+      })
+    }
+
+    if (request.method === 'GET' && url.pathname === '/robots.txt') {
+      return new Response(
+        `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${url.origin}/sitemap.xml\n`,
+        {
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        },
+      )
     }
 
     if (request.method === 'GET' && url.pathname === '/api/v1/examples') {

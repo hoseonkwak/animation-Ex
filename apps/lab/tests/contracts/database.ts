@@ -47,6 +47,7 @@ export function createMigratedDatabase(
     sqlite.exec(readFileSync(path.join(migrationsDirectory, filename), 'utf8'))
   }
   sqlite.exec(readFileSync(path.resolve('db/seeds/wp1.sql'), 'utf8'))
+  sqlite.exec(readFileSync(path.resolve('db/seeds/wp6.sql'), 'utf8'))
   if (options.includeAdminSeed) {
     sqlite.exec(readFileSync(path.resolve('db/seeds/wp4.sql'), 'utf8'))
   }

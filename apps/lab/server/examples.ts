@@ -345,9 +345,20 @@ export class ExamplesRepository {
     if (!row) return null
     const card = (await this.hydrateTags([row]))[0]
     if (!card) return null
+    const patterns = await this.db
+      .prepare(
+        `SELECT p.slug, p.title
+         FROM patterns p
+         JOIN pattern_entries pe ON pe.pattern_id = p.id
+         WHERE pe.animation_entry_id = ? AND p.active = 1
+         ORDER BY p.title`,
+      )
+      .bind(row.id)
+      .all<{ slug: string; title: string }>()
     return {
       ...card,
       originalTitle: row.original_title,
+      patterns: patterns.results,
       source: {
         creatorName: row.creator_name,
         canonicalUrl: row.canonical_url,

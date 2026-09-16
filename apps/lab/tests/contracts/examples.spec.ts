@@ -28,7 +28,7 @@ beforeAll(() => {
 afterAll(() => sqlite?.close())
 
 describe('D1 migrations', () => {
-  it('0001~0010과 WP1~WP5 seed를 빈 데이터베이스에 재구성한다', () => {
+  it('0001~0010과 WP1~WP6 seed를 빈 데이터베이스에 재구성한다', () => {
     const tables = sqlite
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
       .all()

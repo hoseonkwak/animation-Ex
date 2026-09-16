@@ -33,6 +33,7 @@ export interface ExampleCard {
 
 export interface ExampleDetail extends ExampleCard {
   originalTitle: string | null
+  patterns: Array<{ slug: string; title: string }>
   source: {
     creatorName: string
     canonicalUrl: string

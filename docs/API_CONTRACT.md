@@ -106,25 +106,17 @@ Cursor에는 정렬 기준 값과 ID만 넣고 버전을 포함한다. 서버는
 
 Phase 1 공개 데이터에는 `codepen`만 사용한다. 공개 CodePackage 원문은 Phase 2 API에서 별도로 설계한다.
 
-### `GET /tags`
+### `GET /discovery`
 
-활성 태그와 공개 콘텐츠 수를 축별로 반환한다. 응답은 캐시한다.
+Home과 Sections에 필요한 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개·실행 가능한 예제 수가 1개 이상인 경우만 포함한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 5분간 캐시한다.
 
-### `GET /collections`
+### `GET /sitemap.xml`
 
-공개 컬렉션의 slug, 제목, 설명과 대표 예제를 반환한다.
+Home, Explore, Sections, About, 공개 Section과 공개 Entry URL만 XML sitemap으로 반환한다. draft, unpublished, Saved, 제보와 관리자 경로는 포함하지 않는다.
 
-### `GET /collections/:slug/examples`
+### `GET /robots.txt`
 
-컬렉션 예제를 `GET /examples`와 같은 카드 형식으로 반환한다.
-
-### `GET /patterns`
-
-활성 Pattern의 제목, 요약, 대표 예제와 포함된 공개 예제 수를 반환한다.
-
-### `GET /patterns/:slug/examples`
-
-Pattern에 속한 공개 예제를 카드 형식으로 반환한다.
+공개 경로는 허용하고 `/admin/`은 차단하며 sitemap 위치를 알린다.
 
 ### `POST /submissions`
 

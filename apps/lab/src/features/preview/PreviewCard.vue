@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+import { useLibraryLists } from '@/features/library/useLibraryLists'
 import type { ExampleCard } from '@/shared/examples'
 
 const props = defineProps<{
   example: ExampleCard
   active: boolean
 }>()
+const library = useLibraryLists()
+const saved = computed(() => library.has('saved', props.example.slug))
+
 const emit = defineEmits<{
   request: [id: string, priority: boolean]
   release: [id: string]
@@ -109,8 +113,18 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         <span>{{ difficultyLabel(example.difficulty) }}</span>
         <span v-if="example.featured">추천</span>
       </div>
-      <h3>{{ example.title }}</h3>
+      <h3>
+        <a :href="`/examples/${example.slug}`">{{ example.title }}</a>
+      </h3>
       <p>{{ example.summary }}</p>
+      <button
+        class="save-button"
+        type="button"
+        :aria-pressed="saved"
+        @click="library.toggle('saved', example.slug)"
+      >
+        {{ saved ? '저장됨' : '저장' }}
+      </button>
       <ul class="tag-list" aria-label="예제 태그">
         <li v-for="tag in Object.values(example.tags).flat()" :key="tag">{{ tag }}</li>
       </ul>

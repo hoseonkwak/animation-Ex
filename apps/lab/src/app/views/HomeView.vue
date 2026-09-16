@@ -1,293 +1,177 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import PreviewCard from '@/features/preview/PreviewCard.vue'
 import { createPreviewScheduler } from '@/features/preview/previewScheduler'
-import type { ApiSuccess, ExampleCard, ExamplesPayload, TagAxis } from '@/shared/examples'
+import type { DiscoveryPayload } from '@/shared/discovery'
+import type { ApiSuccess, ExampleCard, ExamplesPayload } from '@/shared/examples'
+import { setPageMeta } from '@/app/pageMeta'
 
-const route = useRoute()
 const router = useRouter()
 const scheduler = createPreviewScheduler(2)
 const examples = ref<ExampleCard[]>([])
+const discovery = ref<DiscoveryPayload>({ sections: [], patterns: [], collections: [] })
+const search = ref('')
 const loading = ref(true)
-const loadingMore = ref(false)
-const errorMessage = ref('')
-const nextCursor = ref<string | null>(null)
-const searchInput = ref(queryValue('q'))
+const error = ref('')
 
-const filterGroups: Array<{
-  axis: TagAxis
-  label: string
-  options: Array<{ key: string; label: string }>
-}> = [
-  { axis: 'technology', label: '기술', options: [{ key: 'gsap', label: 'GSAP' }] },
-  {
-    axis: 'trigger',
-    label: '트리거',
-    options: [
-      { key: 'load', label: '로드' },
-      { key: 'hover', label: '호버' },
-      { key: 'pointer', label: '포인터' },
-      { key: 'drag', label: '드래그' },
-      { key: 'scroll', label: '스크롤' },
-    ],
-  },
-  {
-    axis: 'motion',
-    label: '모션',
-    options: [
-      { key: 'slide', label: '슬라이드' },
-      { key: 'scale', label: '스케일' },
-      { key: 'reveal', label: '리빌' },
-      { key: 'drag', label: '드래그 이동' },
-      { key: 'morph', label: '모핑' },
-      { key: 'draw', label: '그리기' },
-      { key: 'color', label: '색상 전환' },
-    ],
-  },
-  {
-    axis: 'section',
-    label: '영역',
-    options: [
-      { key: 'hero', label: '히어로' },
-      { key: 'card', label: '카드' },
-      { key: 'gallery', label: '갤러리' },
-      { key: 'text', label: '텍스트' },
-      { key: 'background', label: '배경' },
-    ],
-  },
-  {
-    axis: 'technique',
-    label: '기법',
-    options: [
-      { key: 'timeline', label: '타임라인' },
-      { key: 'stagger', label: '스태거' },
-      { key: 'scroll-trigger', label: 'ScrollTrigger' },
-      { key: 'scroll-smoother', label: 'ScrollSmoother' },
-      { key: 'draggable', label: 'Draggable' },
-      { key: 'morph-svg', label: 'MorphSVG' },
-      { key: 'draw-svg', label: 'DrawSVG' },
-    ],
-  },
-  {
-    axis: 'difficulty',
-    label: '난이도',
-    options: [
-      { key: 'beginner', label: '입문' },
-      { key: 'intermediate', label: '중급' },
-      { key: 'advanced', label: '고급' },
-    ],
-  },
-]
-
-const activeFilterCount = computed(() =>
-  filterGroups.reduce((count, group) => count + selectedValues(group.axis).length, 0),
-)
-
-watch(
-  () => route.fullPath,
-  async () => {
-    searchInput.value = queryValue('q')
-    scheduler.reset()
-    await loadExamples(false)
-  },
-  { immediate: true },
-)
-
-function queryValue(name: string): string {
-  const value = route.query[name]
-  return Array.isArray(value) ? (value[0] ?? '') : (value ?? '')
-}
-
-function selectedValues(axis: TagAxis): string[] {
-  return queryValue(axis)
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean)
-}
-
-function apiSearchParams(cursor?: string): URLSearchParams {
-  const params = new URLSearchParams()
-  for (const name of [
-    'q',
-    'technology',
-    'trigger',
-    'motion',
-    'section',
-    'technique',
-    'difficulty',
-    'sort',
-  ]) {
-    const value = queryValue(name)
-    if (value) params.set(name, value)
-  }
-  params.set('limit', '12')
-  if (cursor) params.set('cursor', cursor)
-  return params
-}
-
-async function loadExamples(append: boolean): Promise<void> {
-  if (append) loadingMore.value = true
-  else loading.value = true
-  errorMessage.value = ''
+onMounted(async () => {
+  setPageMeta(
+    'Kwak Motion Lab',
+    '웹 애니메이션을 기술과 적용 영역별로 찾고 실제 코드 실행 화면으로 확인하세요.',
+    '/',
+  )
   try {
-    const cursor = append ? (nextCursor.value ?? undefined) : undefined
-    const response = await fetch(`/api/v1/examples?${apiSearchParams(cursor)}`)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const body = (await response.json()) as ApiSuccess<ExamplesPayload>
-    examples.value = append ? [...examples.value, ...body.data.items] : body.data.items
-    nextCursor.value = body.data.nextCursor
+    const [exampleResponse, discoveryResponse] = await Promise.all([
+      fetch('/api/v1/examples?featured=true&sort=featured&limit=4'),
+      fetch('/api/v1/discovery'),
+    ])
+    if (!exampleResponse.ok || !discoveryResponse.ok) throw new Error('load failed')
+    examples.value = ((await exampleResponse.json()) as ApiSuccess<ExamplesPayload>).data.items
+    discovery.value = ((await discoveryResponse.json()) as ApiSuccess<DiscoveryPayload>).data
   } catch {
-    errorMessage.value = '예제를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+    error.value = '추천 콘텐츠를 불러오지 못했습니다.'
   } finally {
     loading.value = false
-    loadingMore.value = false
   }
-}
-
-function updateQuery(values: Record<string, string | undefined>): void {
-  const query = { ...route.query }
-  for (const [key, value] of Object.entries(values)) {
-    if (value) query[key] = value
-    else delete query[key]
-  }
-  void router.push({ query })
-}
+})
 
 function submitSearch(): void {
-  const value = searchInput.value.trim()
-  if (value.length === 1) {
-    errorMessage.value = '검색어는 두 글자 이상 입력해주세요.'
-    return
-  }
-  updateQuery({ q: value || undefined })
-}
-
-function applySuggestedSearch(value: string): void {
-  searchInput.value = value
-  submitSearch()
-}
-
-function toggleFilter(axis: TagAxis, key: string): void {
-  const selected = selectedValues(axis)
-  const next = selected.includes(key)
-    ? selected.filter((value) => value !== key)
-    : [...selected, key]
-  updateQuery({ [axis]: next.length ? next.join(',') : undefined })
-}
-
-function clearFilters(): void {
-  const values: Record<string, undefined> = {}
-  for (const group of filterGroups) values[group.axis] = undefined
-  updateQuery(values)
+  const value = search.value.trim()
+  void router.push(value ? { path: '/explore', query: { q: value } } : '/explore')
 }
 </script>
 
 <template>
-  <main id="main-content" class="home-view">
-    <section class="hero">
-      <p class="eyebrow">WEB MOTION REFERENCE</p>
-      <h1>좋은 움직임을 찾고,<br />바로 실행해보세요.</h1>
-      <p class="description">
-        웹 애니메이션을 기술과 적용 영역별로 찾고 실제 코드 실행 화면으로 확인하세요.
-      </p>
-      <form class="hero-search" role="search" @submit.prevent="submitSearch">
-        <label for="motion-search">애니메이션 검색</label>
-        <div class="search-control">
-          <input
-            id="motion-search"
-            v-model="searchInput"
-            type="search"
-            placeholder="스크롤할 때 이미지가 펼쳐지는 효과"
-          />
-          <button type="submit">검색</button>
+  <main id="main-content" class="page home-landing">
+    <section class="landing-hero">
+      <div>
+        <p class="eyebrow">WEB MOTION REFERENCE</p>
+        <h1>좋은 움직임을 찾고,<br />바로 실행해보세요.</h1>
+        <p class="description">
+          웹 애니메이션을 기술과 적용 영역별로 찾고 실제 코드 실행 화면으로 확인하세요.
+        </p>
+        <div class="hero-actions">
+          <RouterLink class="primary-action" to="/explore">애니메이션 둘러보기</RouterLink>
+          <RouterLink class="secondary-action" to="/submit">URL 제보</RouterLink>
         </div>
-        <div class="suggested-searches" aria-label="추천 검색어">
-          <button type="button" @click="applySuggestedSearch('GSAP')">GSAP</button>
-          <button type="button" @click="applySuggestedSearch('스크롤')">Scroll Reveal</button>
-          <button type="button" @click="applySuggestedSearch('카드')">Interactive Card</button>
-        </div>
-      </form>
+      </div>
+      <PreviewCard
+        v-if="examples[0]"
+        :example="examples[0]"
+        :active="scheduler.activeIds.value.includes(examples[0].id)"
+        @request="scheduler.request"
+        @release="scheduler.release"
+      />
     </section>
 
-    <section class="examples-section" aria-labelledby="examples-heading">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">EXPLORE</p>
-          <h2 id="examples-heading">실행 가능한 예제</h2>
-        </div>
-        <div class="result-tools">
-          <p aria-live="polite">{{ examples.length }}개의 결과</p>
-          <label for="result-sort">정렬</label>
-          <select
-            id="result-sort"
-            :value="queryValue('sort') || 'latest'"
-            @change="updateQuery({ sort: ($event.target as HTMLSelectElement).value })"
-          >
-            <option value="latest">최신순</option>
-            <option value="featured">추천순</option>
-            <option value="difficulty">난이도순</option>
-          </select>
-        </div>
+    <form class="main-search" role="search" @submit.prevent="submitSearch">
+      <label for="home-search">어떤 움직임을 찾고 있나요?</label>
+      <div class="search-control">
+        <input
+          id="home-search"
+          v-model="search"
+          type="search"
+          placeholder="GSAP Hero, Scroll Reveal"
+        />
+        <button type="submit">찾기</button>
       </div>
+    </form>
 
-      <div class="explore-layout">
-        <aside class="filter-panel" aria-label="예제 필터">
-          <div class="filter-header">
-            <strong
-              >필터<span v-if="activeFilterCount"> {{ activeFilterCount }}</span></strong
-            >
-            <button v-if="activeFilterCount" type="button" @click="clearFilters">초기화</button>
+    <p v-if="loading" class="status-message">콘텐츠를 불러오는 중입니다.</p>
+    <p v-else-if="error" class="status-message error">{{ error }}</p>
+    <template v-else>
+      <section class="content-block" aria-labelledby="collections-title">
+        <div class="block-heading">
+          <div>
+            <p class="eyebrow">CURATED</p>
+            <h2 id="collections-title">추천 컬렉션</h2>
           </div>
-          <fieldset v-for="group in filterGroups" :key="group.axis">
-            <legend>{{ group.label }}</legend>
-            <button
-              v-for="option in group.options"
-              :key="option.key"
-              type="button"
-              class="filter-chip"
-              :class="{ selected: selectedValues(group.axis).includes(option.key) }"
-              :aria-pressed="selectedValues(group.axis).includes(option.key)"
-              @click="toggleFilter(group.axis, option.key)"
-            >
-              {{ option.label }}
-            </button>
-          </fieldset>
-        </aside>
-
-        <div class="results-panel">
-          <p v-if="loading" class="status-message" role="status">예제를 불러오는 중입니다.</p>
-          <div v-else-if="errorMessage" class="status-message error" role="alert">
-            <p>{{ errorMessage }}</p>
-            <button type="button" @click="loadExamples(false)">다시 시도</button>
-          </div>
-          <div v-else-if="examples.length === 0" class="status-message empty-state">
-            <h3>조건에 맞는 예제가 없습니다.</h3>
-            <p>검색어를 바꾸거나 선택한 필터를 초기화해보세요.</p>
-            <button type="button" @click="clearFilters">필터 초기화</button>
-          </div>
-          <div v-else class="example-grid" data-testid="example-grid">
-            <PreviewCard
-              v-for="example in examples"
-              :key="example.id"
-              :example="example"
-              :active="scheduler.activeIds.value.includes(example.id)"
-              @request="scheduler.request"
-              @release="scheduler.release"
-            />
-          </div>
-          <button
-            v-if="nextCursor"
-            type="button"
-            class="load-more"
-            :disabled="loadingMore"
-            @click="loadExamples(true)"
-          >
-            {{ loadingMore ? '불러오는 중' : '다음 결과 불러오기' }}
-          </button>
         </div>
+        <div class="feature-grid">
+          <article
+            v-for="collection in discovery.collections"
+            :key="collection.slug"
+            class="feature-card"
+          >
+            <p>{{ collection.items.length }}개 예제</p>
+            <h3>{{ collection.title }}</h3>
+            <p>{{ collection.description }}</p>
+            <RouterLink
+              :to="`/explore?q=${encodeURIComponent(collection.title.split(' ')[0] ?? '')}`"
+              >살펴보기</RouterLink
+            >
+          </article>
+        </div>
+      </section>
+
+      <section class="content-block" aria-labelledby="recent-title">
+        <div class="block-heading">
+          <div>
+            <p class="eyebrow">LIVE PREVIEW</p>
+            <h2 id="recent-title">추천 실행 예제</h2>
+          </div>
+          <RouterLink to="/explore">전체 보기</RouterLink>
+        </div>
+        <div class="example-grid compact-grid">
+          <PreviewCard
+            v-for="example in examples.slice(1)"
+            :key="example.id"
+            :example="example"
+            :active="scheduler.activeIds.value.includes(example.id)"
+            @request="scheduler.request"
+            @release="scheduler.release"
+          />
+        </div>
+      </section>
+
+      <section class="content-block" aria-labelledby="sections-title">
+        <div class="block-heading">
+          <div>
+            <p class="eyebrow">BY SECTION</p>
+            <h2 id="sections-title">적용 영역으로 찾기</h2>
+          </div>
+          <RouterLink to="/sections">Sections</RouterLink>
+        </div>
+        <div class="section-card-grid">
+          <RouterLink
+            v-for="section in discovery.sections"
+            :key="section.key"
+            :to="`/sections/${section.key}`"
+            class="section-card"
+          >
+            <strong>{{ section.label }}</strong
+            ><span>{{ section.count }}개</span>
+            <p>{{ section.description }}</p>
+          </RouterLink>
+        </div>
+      </section>
+
+      <section class="content-block" aria-labelledby="patterns-title">
+        <div class="block-heading">
+          <div>
+            <p class="eyebrow">PATTERNS</p>
+            <h2 id="patterns-title">자주 쓰는 움직임</h2>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <article v-for="pattern in discovery.patterns" :key="pattern.slug" class="feature-card">
+            <p>{{ pattern.count }}개 예제</p>
+            <h3>{{ pattern.title }}</h3>
+            <p>{{ pattern.summary }}</p>
+          </article>
+        </div>
+      </section>
+    </template>
+
+    <section class="submission-cta">
+      <div>
+        <p class="eyebrow">COMMUNITY INPUT</p>
+        <h2>좋은 애니메이션을 발견했나요?</h2>
+        <p>주소를 알려주시면 실제 실행과 출처를 확인한 뒤 라이브러리에 정리합니다.</p>
       </div>
+      <RouterLink class="primary-action" to="/submit">URL 제보하기</RouterLink>
     </section>
   </main>
 </template>

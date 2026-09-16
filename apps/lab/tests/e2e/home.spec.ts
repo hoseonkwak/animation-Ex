@@ -4,19 +4,21 @@ test('P1-UX-01 Vue 애플리케이션이 로드된다', async ({ page }) => {
   await page.goto('/')
 
   await expect(page.getByRole('heading', { level: 1 })).toContainText('좋은 움직임을 찾고')
-  await expect(page.locator('.example-card')).toHaveCount(12)
-  await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
+  await expect(page.locator('.example-card')).toHaveCount(4)
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
   await expect(page.getByTestId('codepen-preview').first()).toHaveAttribute(
     'src',
     /https:\/\/codepen\.io\/hoseonkwak\/embed\//,
   )
 
-  await page.getByRole('button', { name: '다음 결과 불러오기', exact: true }).click()
-  await expect(page.locator('.example-card')).toHaveCount(15)
+  await expect(page.getByRole('link', { name: '애니메이션 둘러보기' })).toHaveAttribute(
+    'href',
+    '/explore',
+  )
 })
 
 test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/explore')
 
   await page.getByRole('heading', { name: '실행 가능한 예제' }).scrollIntoViewIfNeeded()
   await page.getByRole('button', { name: '스크롤', exact: true }).click()
@@ -37,7 +39,7 @@ test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다
 })
 
 test('사용자가 실행한 Preview를 우선하고 동시 실행 수를 2개로 유지한다', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/explore')
   await expect(page.locator('.example-card')).toHaveCount(12)
   await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
 
@@ -60,7 +62,7 @@ test('화면 너비에 따라 결과 그리드를 4·3·2·1열로 바꾼다', a
       .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)
 
   await page.setViewportSize({ width: 1440, height: 900 })
-  await page.goto('/')
+  await page.goto('/explore')
   await expect(page.locator('.example-card')).toHaveCount(12)
   expect(await columns()).toBe(4)
 

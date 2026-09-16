@@ -33,6 +33,7 @@
 - `docs/evidence/WP3_PREVIEW_VALIDATION.json`
 - `docs/evidence/WP4_REPORT.md`
 - `docs/evidence/WP5_REPORT.md`
+- `docs/evidence/WP6_REPORT.md`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
@@ -46,6 +47,8 @@
 - `.agents/skills/source-ingestion/SKILL.md`
 - WSSS 최소 HTML fixture, parser·정책·HMAC API 회귀 검사
 - 수동 WSSS GitHub Actions workflow와 읽기 전용 live preflight
+- 공개 상세·Saved·Sections·URL 제보·SEO 계약 검사
+- localStorage 재시작 복원과 Phase 1 메뉴 Playwright 검사
 
 ### 다음 구현 단계에서 추가
 
