@@ -10,6 +10,8 @@
   "vars": {
     "ADMIN_EMAIL": "owner@local.test",
     "LOCAL_ADMIN_SIMULATION": "true",
+    "INGESTION_KEY_ID": "local-ingestion",
+    "INGESTION_HMAC_SECRET": "local-development-secret",
   },
   "d1_databases": [
     {

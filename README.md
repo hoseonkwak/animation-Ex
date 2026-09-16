@@ -103,15 +103,15 @@ Discovery
 
 ## 콘텐츠 분류
 
-| 분류 | 예시 |
-|---|---|
-| Technology | GSAP, CSS, JavaScript, Three.js, WebGL |
-| Trigger | Load, Scroll, Hover, Click, Drag |
-| Motion | Slide, Fade, Scale, Rotate, Morph, Reveal |
-| Section | Hero, Gallery, Card, Navigation, Button |
-| Technique | Mask, Parallax, Pin, Scrub, Stagger |
-| Difficulty | Beginner, Intermediate, Advanced |
-| Mood | Minimal, Dynamic, Cinematic, Playful |
+| 분류       | 예시                                      |
+| ---------- | ----------------------------------------- |
+| Technology | GSAP, CSS, JavaScript, Three.js, WebGL    |
+| Trigger    | Load, Scroll, Hover, Click, Drag          |
+| Motion     | Slide, Fade, Scale, Rotate, Morph, Reveal |
+| Section    | Hero, Gallery, Card, Navigation, Button   |
+| Technique  | Mask, Parallax, Pin, Scrub, Stagger       |
+| Difficulty | Beginner, Intermediate, Advanced          |
+| Mood       | Minimal, Dynamic, Cinematic, Playful      |
 
 ## 출시 계획
 
@@ -148,7 +148,7 @@ Discovery
 
 ## 현재 저장소
 
-기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP4 구현은 `apps/lab`에 분리했습니다. 공개 Explore, 기존 예제 15개와 owner 관리자 검수 흐름이 동작합니다.
+기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP5 구현은 `apps/lab`에 분리했습니다. 공개 Explore, 기존 예제 15개, owner 관리자 검수와 WSSS 후보 수집 흐름이 동작합니다.
 
 ```text
 animation-Ex/
@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 0001~0009 migration을 로컬 D1에 적용하고 공개·검수 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 ### 3. 개발 서버 실행
 
@@ -200,12 +200,12 @@ npm run dev
 
 개발 서버가 준비되면 다음 주소를 사용합니다.
 
-| 용도 | 주소 |
-|---|---|
-| Vue 애플리케이션 | `http://localhost:5173` |
-| Worker 상태 확인 | `http://localhost:5173/api/v1/health` |
-| 공개 예제 API | `http://localhost:5173/api/v1/examples` |
-| 관리자 검수 | `http://localhost:5173/admin/review` |
+| 용도             | 주소                                    |
+| ---------------- | --------------------------------------- |
+| Vue 애플리케이션 | `http://localhost:5173`                 |
+| Worker 상태 확인 | `http://localhost:5173/api/v1/health`   |
+| 공개 예제 API    | `http://localhost:5173/api/v1/examples` |
+| 관리자 검수      | `http://localhost:5173/admin/review`    |
 
 Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의하며 production에서는 Cloudflare Access 신원과 `ADMIN_EMAIL`이 모두 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
 
@@ -220,19 +220,22 @@ npm run preview
 
 ### 5. 코드 품질 검사
 
-| 명령 | 검사 내용 |
-|---|---|
-| `npm run format:check` | Prettier 형식 검사 |
-| `npm run typecheck` | Vue와 Worker TypeScript 검사 |
-| `npm run lint` | ESLint 정적 검사 |
-| `npm run test` | Vitest 단위 테스트 |
-| `npm run test:contracts` | API 계약 테스트 |
-| `npm run test:ingestion` | 수집 파이프라인 테스트 |
-| `npm run test:e2e` | 실제 브라우저 E2E 테스트 |
-| `npm run build` | production build 검사 |
-| `npm run db:migrate:local` | 로컬 D1 migration 적용 |
-| `npm run db:seed:local` | 로컬 D1 예제 데이터 입력 |
-| `npm run db:setup:local` | migration과 seed 순차 실행 |
+| 명령                            | 검사 내용                            |
+| ------------------------------- | ------------------------------------ |
+| `npm run format:check`          | Prettier 형식 검사                   |
+| `npm run typecheck`             | Vue와 Worker TypeScript 검사         |
+| `npm run lint`                  | ESLint 정적 검사                     |
+| `npm run test`                  | Vitest 단위 테스트                   |
+| `npm run test:contracts`        | API 계약 테스트                      |
+| `npm run test:ingestion`        | 수집 파이프라인 테스트               |
+| `npm run ingest:wsss:fixture`   | 저장된 최소 HTML로 parser 실행       |
+| `npm run ingest:wsss:preflight` | 현재 WSSS 한 건을 읽기 전용으로 점검 |
+| `npm run ingest:wsss:live`      | 서명된 batch API로 후보 제출         |
+| `npm run test:e2e`              | 실제 브라우저 E2E 테스트             |
+| `npm run build`                 | production build 검사                |
+| `npm run db:migrate:local`      | 로컬 D1 migration 적용               |
+| `npm run db:seed:local`         | 로컬 D1 예제 데이터 입력             |
+| `npm run db:setup:local`        | migration과 seed 순차 실행           |
 
 일반적인 변경을 마친 뒤에는 다음 순서로 확인합니다.
 
@@ -244,7 +247,29 @@ npm run test
 npm run build
 ```
 
-### 6. Playwright E2E 실행
+### 6. WSSS 후보 수집
+
+실제 출처를 순회하기 전에 fixture와 읽기 전용 사전 점검을 실행합니다.
+
+```bash
+npm run test:ingestion
+npm run ingest:wsss:fixture
+npm run ingest:wsss:preflight
+```
+
+후보를 서버로 제출할 때는 `apps/lab`에서 다음 환경 변수를 설정한 뒤 live 명령을 실행합니다.
+
+- `INGESTION_API_URL`: 배포한 Worker 기준 URL
+- `INGESTION_KEY_ID`: Worker의 `INGESTION_KEY_ID`와 같은 키 식별자
+- `INGESTION_HMAC_SECRET`: Worker secret과 같은 HMAC 비밀값
+
+```bash
+npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
+```
+
+GitHub Actions의 `WSSS ingestion` workflow도 같은 세 비밀값을 사용하며 현재는 수동 실행만 허용합니다. 수동 실행의 구조 변화, 속도 제한과 checkpoint 복구가 안정화된 뒤 하루 1회 일정을 활성화합니다.
+
+### 7. Playwright E2E 실행
 
 처음 한 번 Playwright용 Chromium을 설치합니다.
 
@@ -273,7 +298,7 @@ $env:PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "C:\Program Files\Google\Chrome\Appli
 npm run test:e2e
 ```
 
-### 7. 자주 발생하는 실행 문제
+### 8. 자주 발생하는 실행 문제
 
 #### Node 버전 오류
 
@@ -312,6 +337,7 @@ npx playwright install chromium
 - [WP2 구현 결과](docs/evidence/WP2_REPORT.md)
 - [WP3 구현 결과](docs/evidence/WP3_REPORT.md)
 - [WP4 구현 결과](docs/evidence/WP4_REPORT.md)
+- [WP5 구현 결과](docs/evidence/WP5_REPORT.md)
 - [품질 게이트](docs/QUALITY_GATES.md)
 - [Phase 1 완료 기준](docs/PHASE1_ACCEPTANCE.md)
 - [하네스 확장 로드맵](docs/HARNESS_ROADMAP.md)

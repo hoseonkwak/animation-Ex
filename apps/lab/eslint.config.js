@@ -28,6 +28,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['ingestion/**/*.ts', 'tests/ingestion/**/*.ts'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     files: ['server/**/*.ts'],
     languageOptions: {
       globals: globals.worker,

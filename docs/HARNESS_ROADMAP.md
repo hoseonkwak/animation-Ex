@@ -32,6 +32,7 @@
 - `docs/evidence/WP3_REPORT.md`
 - `docs/evidence/WP3_PREVIEW_VALIDATION.json`
 - `docs/evidence/WP4_REPORT.md`
+- `docs/evidence/WP5_REPORT.md`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
@@ -42,6 +43,9 @@
 - headed Chromium 기반 CodePen 실행 검수 명령
 - 관리자 인증·version 충돌·승인 원자성·멱등성·410 공개 중지 계약 검사
 - Candidate Inbox 실제 Preview Playwright 검사
+- `.agents/skills/source-ingestion/SKILL.md`
+- WSSS 최소 HTML fixture, parser·정책·HMAC API 회귀 검사
+- 수동 WSSS GitHub Actions workflow와 읽기 전용 live preflight
 
 ### 다음 구현 단계에서 추가
 
@@ -65,7 +69,7 @@ Skill은 이름만 먼저 만들지 않는다. 다음 중 하나가 충족되면
 
 #### source-ingestion
 
-생성 시점: 첫 WSSS 또는 URL 수집기를 구현할 때
+상태: WP5에서 생성 완료
 
 포함할 내용:
 

@@ -2,18 +2,19 @@
 
 문서 상태: Active v0.2
 목적: 설계 문서를 작고 검토 가능한 구현 단위와 검증 증거로 변환한다.
-현재 단계: WP0~WP4 완료, WP5 착수 준비
+현재 단계: WP0~WP5 완료, WP6 착수 준비
 
 ## 진행 현황
 
-| 작업 패키지 | 상태 | 증거 |
-|---|---|---|
-| WP0 · 기준선과 하네스 | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md) |
+| 작업 패키지                  | 상태 | 증거                                               |
+| ---------------------------- | ---- | -------------------------------------------------- |
+| WP0 · 기준선과 하네스        | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md) |
 | WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md) |
 | WP2 · Explore와 Preview Card | 완료 | [`evidence/WP2_REPORT.md`](evidence/WP2_REPORT.md) |
-| WP3 · 기존 15개 이전 | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md) |
-| WP4 · 관리자 검수 | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md) |
-| WP5~WP8 | 대기 | 선행 작업 완료 후 진행 |
+| WP3 · 기존 15개 이전         | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md) |
+| WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md) |
+| WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md) |
+| WP6~WP8                      | 대기 | 선행 작업 완료 후 진행                             |
 
 ## 1. 완료 결과
 
@@ -71,19 +72,19 @@ Phase 1 완료 기준의 “기존 예제 15개”는 `list.html`에 연결된 �
 
 ## 3. 구현 기본값
 
-| 영역 | 기본값 |
-|---|---|
-| 패키지 관리 | 기존 npm 구성을 유지하고 workspace 추가 |
-| 언어 | TypeScript strict mode |
-| 화면 | Vue 3, Vue Router |
-| 전역 상태 | router query, feature composable과 브라우저 저장부터 사용 |
-| API | Cloudflare Worker의 명시적 route handler |
-| 입력 검증 | 공유 schema에서 요청과 응답 동시 검증 |
-| DB | D1 prepared statement와 repository 계층, ORM 미사용 |
-| 스타일 | CSS custom properties와 scoped component CSS |
-| 단위/계약 검사 | Vitest |
-| 브라우저 검사 | Playwright |
-| 배포 도구 | Wrangler |
+| 영역           | 기본값                                                    |
+| -------------- | --------------------------------------------------------- |
+| 패키지 관리    | 기존 npm 구성을 유지하고 workspace 추가                   |
+| 언어           | TypeScript strict mode                                    |
+| 화면           | Vue 3, Vue Router                                         |
+| 전역 상태      | router query, feature composable과 브라우저 저장부터 사용 |
+| API            | Cloudflare Worker의 명시적 route handler                  |
+| 입력 검증      | 공유 schema에서 요청과 응답 동시 검증                     |
+| DB             | D1 prepared statement와 repository 계층, ORM 미사용       |
+| 스타일         | CSS custom properties와 scoped component CSS              |
+| 단위/계약 검사 | Vitest                                                    |
+| 브라우저 검사  | Playwright                                                |
+| 배포 도구      | Wrangler                                                  |
 
 Pinia, UI component library, 외부 검색 엔진과 ORM은 실제 필요가 확인되기 전에는 추가하지 않는다. 의존성 버전은 구현을 시작하는 날 공식 지원 범위를 확인하고 lockfile로 고정한다.
 
@@ -377,17 +378,17 @@ artifacts/
 
 ### 수용 기준 연결표
 
-| 수용 기준 | 주 작업 | 기본 증거 |
-|---|---|---|
-| `P1-UX-01`~`06` | WP2, WP6, WP7 | 공개 경로 e2e, 테마 저장 검사 |
-| `P1-CONTENT-01`~`06` | WP3, WP4, WP5 | seed 결과, ValidationRun, 승인 계약 검사 |
-| `P1-DISCOVERY-01`~`07` | WP2, WP6 | API 계약, query 복원 e2e, viewport 검수 |
-| `P1-PREVIEW-01`~`07` | WP1, WP2 | iframe scheduler와 오류 격리 e2e |
-| `P1-DETAIL-01`~`05` | WP3, WP6 | 상세 경로 e2e, 출처 fixture |
-| `P1-ADMIN-01`~`10` | WP4 | 인증, version, 승인과 중복 계약 검사 |
-| `P1-LOCAL-01`~`04` | WP6 | 브라우저 저장 e2e |
-| `P1-SEO-01`~`04` | WP6, WP7 | route, metadata, sitemap 검사 |
-| `P1-OPS-01`~`12` | WP5, WP7, WP8 | ingestion fixture, 복구 기록, 사용량 guard 검사 |
+| 수용 기준              | 주 작업       | 기본 증거                                       |
+| ---------------------- | ------------- | ----------------------------------------------- |
+| `P1-UX-01`~`06`        | WP2, WP6, WP7 | 공개 경로 e2e, 테마 저장 검사                   |
+| `P1-CONTENT-01`~`06`   | WP3, WP4, WP5 | seed 결과, ValidationRun, 승인 계약 검사        |
+| `P1-DISCOVERY-01`~`07` | WP2, WP6      | API 계약, query 복원 e2e, viewport 검수         |
+| `P1-PREVIEW-01`~`07`   | WP1, WP2      | iframe scheduler와 오류 격리 e2e                |
+| `P1-DETAIL-01`~`05`    | WP3, WP6      | 상세 경로 e2e, 출처 fixture                     |
+| `P1-ADMIN-01`~`10`     | WP4           | 인증, version, 승인과 중복 계약 검사            |
+| `P1-LOCAL-01`~`04`     | WP6           | 브라우저 저장 e2e                               |
+| `P1-SEO-01`~`04`       | WP6, WP7      | route, metadata, sitemap 검사                   |
+| `P1-OPS-01`~`12`       | WP5, WP7, WP8 | ingestion fixture, 복구 기록, 사용량 guard 검사 |
 
 각 자동 검사 이름이나 수동 기록에는 해당 수용 기준 ID를 넣는다. 하나의 검사가 여러 기준을 입증할 수 있지만, 결과에서 각 ID를 찾을 수 있어야 한다.
 

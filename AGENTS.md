@@ -48,12 +48,13 @@
 ## 현재 구현 상태
 
 - 저장소에는 정적 HTML, CSS와 JavaScript로 만든 GSAP 갤러리가 있다.
-- `apps/lab`에 Vue 3, Vue Router, TypeScript와 Cloudflare Worker 기반 WP0가 있다.
+- `apps/lab`에 Vue 3, Vue Router, TypeScript와 Cloudflare Worker 기반 WP0~WP5가 있다.
 - Node.js 24.12 이상을 사용한다. `.nvmrc`의 검증 버전은 24.19.0이다.
 - 의존성 설치는 저장소 루트에서 `npm ci`로 재현한다.
 - 로컬 실행은 `npm run dev`, production build는 `npm run build`다.
 - 로컬 D1 초기화는 `npm run db:setup:local`로 migration과 seed를 순서대로 적용한다.
 - 기본 검증은 `npm run format:check`, `npm run typecheck`, `npm run lint`, `npm run test`다.
 - 브라우저 검증은 Playwright 브라우저 설치 후 `npm run test:e2e`로 실행한다.
-- 계약 및 수집 fixture가 생기면 `npm run test:contracts`, `npm run test:ingestion`을 필수 게이트로 올린다.
+- 계약과 WSSS 수집 fixture는 `npm run test:contracts`, `npm run test:ingestion`으로 반드시 검증한다.
+- 실제 출처를 확인할 때는 쓰기 없는 `npm run ingest:wsss:preflight`를 먼저 실행하고, fixture가 실패하면 실제 순회를 시작하지 않는다.
 - 기존 루트 정적 사이트는 전환 검증이 끝날 때까지 그대로 보존한다.

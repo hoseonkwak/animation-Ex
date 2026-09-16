@@ -1,0 +1,43 @@
+name: WSSS ingestion
+
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: WSSS category URL
+        required: true
+        default: https://wsss.tistory.com/category/Animation/GSAP
+      max_articles:
+        description: Maximum article details for this manual run
+        required: true
+        default: "50"
+      max_pages:
+        description: Maximum category pages for this manual run
+        required: true
+        default: "1"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate parser fixtures
+        run: npm run test:ingestion
+      - name: Collect and submit candidates
+        working-directory: apps/lab
+        env:
+          INGESTION_API_URL: ${{ secrets.INGESTION_API_URL }}
+          INGESTION_KEY_ID: ${{ secrets.INGESTION_KEY_ID }}
+          INGESTION_HMAC_SECRET: ${{ secrets.INGESTION_HMAC_SECRET }}
+        run: >-
+          node --experimental-transform-types ingestion/cli.ts --live
+          --category "${{ inputs.category }}"
+          --max-articles "${{ inputs.max_articles }}"
+          --max-pages "${{ inputs.max_pages }}"
+          --checkpoint "$RUNNER_TEMP/wsss-checkpoint.json"

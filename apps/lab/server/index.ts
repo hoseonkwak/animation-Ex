@@ -1,10 +1,18 @@
 import { actorEmailHash, AdminApiError, AdminRepository } from './admin'
 import { ApiInputError, ExamplesRepository, parseExampleFilters } from './examples'
+import {
+  authenticateIngestion,
+  completeIngestionRun,
+  handleIngestionBatch,
+  IngestionApiError,
+} from './ingestion'
 
 interface Env {
   DB: D1Database
   ADMIN_EMAIL?: string
   LOCAL_ADMIN_SIMULATION?: string
+  INGESTION_KEY_ID?: string
+  INGESTION_HMAC_SECRET?: string
 }
 
 const jsonHeaders = {
@@ -74,6 +82,29 @@ export default {
       }
     }
 
+    if (request.method === 'POST' && url.pathname.startsWith('/api/v1/ingestion/')) {
+      const rawBody = await request.text()
+      try {
+        const ingestionRequestId = await authenticateIngestion(request, rawBody, env)
+        if (url.pathname === '/api/v1/ingestion/batches') {
+          const data = await handleIngestionBatch(rawBody, ingestionRequestId, env)
+          return json({ data, meta: { requestId } })
+        }
+        const completeMatch = url.pathname.match(/^\/api\/v1\/ingestion\/runs\/([^/]+)\/complete$/)
+        if (completeMatch) {
+          await completeIngestionRun(rawBody, completeMatch[1]!, env)
+          return json({ data: { completed: true }, meta: { requestId } })
+        }
+      } catch (error) {
+        if (error instanceof IngestionApiError) {
+          return json(
+            { error: { code: error.code, message: error.message, requestId } },
+            { status: error.status },
+          )
+        }
+        throw error
+      }
+    }
     if (url.pathname.startsWith('/api/v1/admin/')) {
       try {
         const email = authenticateAdmin(request, env)
@@ -81,6 +112,9 @@ export default {
         const actorHash = await actorEmailHash(email)
         const repository = new AdminRepository(env.DB)
 
+        if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
+          return json({ data: await repository.ingestionRuns(), meta: { requestId } })
+        }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates') {
           return json({ data: await repository.list(url), meta: { requestId } })
         }

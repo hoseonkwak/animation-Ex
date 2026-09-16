@@ -35,47 +35,47 @@ submissions ─ sources
 
 실제 원본 또는 canonical 대상이다.
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `id` | TEXT | PK |
-| `type` | TEXT | `codepen`, `website`, `independent` |
-| `url` | TEXT | 최초 입력 URL |
-| `canonical_url` | TEXT | UNIQUE, nullable |
-| `creator_name` | TEXT | nullable |
-| `license_code` | TEXT | nullable |
-| `license_evidence_url` | TEXT | nullable |
-| `license_checked_at` | TEXT | nullable |
-| `availability` | TEXT | `unknown`, `available`, `unavailable` |
-| `first_seen_at` | TEXT | 필수 |
-| `last_checked_at` | TEXT | nullable |
-| `created_at` | TEXT | 필수 |
-| `updated_at` | TEXT | 필수 |
+| 열                     | 형식 | 규칙                                  |
+| ---------------------- | ---- | ------------------------------------- |
+| `id`                   | TEXT | PK                                    |
+| `type`                 | TEXT | `codepen`, `website`, `independent`   |
+| `url`                  | TEXT | 최초 입력 URL                         |
+| `canonical_url`        | TEXT | UNIQUE, nullable                      |
+| `creator_name`         | TEXT | nullable                              |
+| `license_code`         | TEXT | nullable                              |
+| `license_evidence_url` | TEXT | nullable                              |
+| `license_checked_at`   | TEXT | nullable                              |
+| `availability`         | TEXT | `unknown`, `available`, `unavailable` |
+| `first_seen_at`        | TEXT | 필수                                  |
+| `last_checked_at`      | TEXT | nullable                              |
+| `created_at`           | TEXT | 필수                                  |
+| `updated_at`           | TEXT | 필수                                  |
 
 ### `discovery_sources`
 
 WSSS 같은 디렉터리나 수집 진입점을 나타낸다.
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `id` | TEXT | PK |
-| `key` | TEXT | UNIQUE, 예: `wsss` |
-| `name` | TEXT | 필수 |
-| `base_url` | TEXT | 필수 |
-| `active` | INTEGER | 기본 1 |
-| `config_json` | TEXT | 공개 범위, checkpoint 규칙 |
+| 열            | 형식    | 규칙                       |
+| ------------- | ------- | -------------------------- |
+| `id`          | TEXT    | PK                         |
+| `key`         | TEXT    | UNIQUE, 예: `wsss`         |
+| `name`        | TEXT    | 필수                       |
+| `base_url`    | TEXT    | 필수                       |
+| `active`      | INTEGER | 기본 1                     |
+| `config_json` | TEXT    | 공개 범위, checkpoint 규칙 |
 
 ### `source_discoveries`
 
 하나의 원본이 여러 경로에서 발견된 사실을 보존한다.
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `source_id` | TEXT | FK → sources |
-| `discovery_source_id` | TEXT | FK → discovery_sources |
-| `discovered_url` | TEXT | 게시물 또는 목록 URL |
-| `external_id` | TEXT | 출처 내부의 안정 ID, nullable |
-| `first_seen_at` | TEXT | 필수 |
-| `last_seen_at` | TEXT | 필수 |
+| 열                    | 형식 | 규칙                          |
+| --------------------- | ---- | ----------------------------- |
+| `source_id`           | TEXT | FK → sources                  |
+| `discovery_source_id` | TEXT | FK → discovery_sources        |
+| `discovered_url`      | TEXT | 게시물 또는 목록 URL          |
+| `external_id`         | TEXT | 출처 내부의 안정 ID, nullable |
+| `first_seen_at`       | TEXT | 필수                          |
+| `last_seen_at`        | TEXT | 필수                          |
 
 PK는 `(source_id, discovery_source_id, discovered_url)`로 둔다. `(discovery_source_id, external_id)`에는 UNIQUE 인덱스를 둔다.
 
@@ -83,23 +83,23 @@ PK는 `(source_id, discovery_source_id, discovered_url)`로 둔다. `(discovery_
 
 ### `candidates`
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `id` | TEXT | PK |
-| `source_id` | TEXT | FK, UNIQUE |
-| `status` | TEXT | 아래 상태 집합 |
-| `source_title` | TEXT | nullable |
-| `source_category` | TEXT | nullable |
-| `metadata_json` | TEXT | 추출 메타데이터 |
-| `deduplication_key` | TEXT | UNIQUE |
-| `confidence` | REAL | 0~1 |
-| `priority_score` | REAL | 0~100 |
-| `failure_code` | TEXT | nullable |
-| `failure_detail` | TEXT | nullable, 관리자 전용 |
-| `retry_count` | INTEGER | 기본 0 |
-| `version` | INTEGER | 기본 1, 낙관적 잠금 |
-| `created_at` | TEXT | 필수 |
-| `updated_at` | TEXT | 필수 |
+| 열                  | 형식    | 규칙                  |
+| ------------------- | ------- | --------------------- |
+| `id`                | TEXT    | PK                    |
+| `source_id`         | TEXT    | FK, UNIQUE            |
+| `status`            | TEXT    | 아래 상태 집합        |
+| `source_title`      | TEXT    | nullable              |
+| `source_category`   | TEXT    | nullable              |
+| `metadata_json`     | TEXT    | 추출 메타데이터       |
+| `deduplication_key` | TEXT    | UNIQUE                |
+| `confidence`        | REAL    | 0~1                   |
+| `priority_score`    | REAL    | 0~100                 |
+| `failure_code`      | TEXT    | nullable              |
+| `failure_detail`    | TEXT    | nullable, 관리자 전용 |
+| `retry_count`       | INTEGER | 기본 0                |
+| `version`           | INTEGER | 기본 1, 낙관적 잠금   |
+| `created_at`        | TEXT    | 필수                  |
+| `updated_at`        | TEXT    | 필수                  |
 
 Phase 1 상태:
 
@@ -124,25 +124,25 @@ any active state → source-unavailable | validation-failed
 
 ### `animation_entries`
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `id` | TEXT | PK |
-| `candidate_id` | TEXT | FK, UNIQUE, nullable |
-| `source_id` | TEXT | FK, nullable |
-| `slug` | TEXT | UNIQUE |
-| `title` | TEXT | 필수 |
-| `original_title` | TEXT | nullable |
-| `summary` | TEXT | 필수 |
-| `search_text` | TEXT | 정규화한 한국어/영어 검색 문자열 |
-| `content_origin` | TEXT | `original-pen`, `lab-created` |
-| `preview_kind` | TEXT | `codepen`, `internal` |
-| `status` | TEXT | `draft`, `published`, `unpublished` |
-| `difficulty` | TEXT | `beginner`, `intermediate`, `advanced` |
-| `featured` | INTEGER | 기본 0 |
-| `active_code_package_version_id` | TEXT | Phase 2까지 nullable |
-| `published_at` | TEXT | nullable |
-| `created_at` | TEXT | 필수 |
-| `updated_at` | TEXT | 필수 |
+| 열                               | 형식    | 규칙                                   |
+| -------------------------------- | ------- | -------------------------------------- |
+| `id`                             | TEXT    | PK                                     |
+| `candidate_id`                   | TEXT    | FK, UNIQUE, nullable                   |
+| `source_id`                      | TEXT    | FK, nullable                           |
+| `slug`                           | TEXT    | UNIQUE                                 |
+| `title`                          | TEXT    | 필수                                   |
+| `original_title`                 | TEXT    | nullable                               |
+| `summary`                        | TEXT    | 필수                                   |
+| `search_text`                    | TEXT    | 정규화한 한국어/영어 검색 문자열       |
+| `content_origin`                 | TEXT    | `original-pen`, `lab-created`          |
+| `preview_kind`                   | TEXT    | `codepen`, `internal`                  |
+| `status`                         | TEXT    | `draft`, `published`, `unpublished`    |
+| `difficulty`                     | TEXT    | `beginner`, `intermediate`, `advanced` |
+| `featured`                       | INTEGER | 기본 0                                 |
+| `active_code_package_version_id` | TEXT    | Phase 2까지 nullable                   |
+| `published_at`                   | TEXT    | nullable                               |
+| `created_at`                     | TEXT    | 필수                                   |
+| `updated_at`                     | TEXT    | 필수                                   |
 
 공개 조건은 다음과 같다.
 
@@ -153,19 +153,19 @@ any active state → source-unavailable | validation-failed
 
 ### `codepen_refs`
 
-| 열 | 형식 | 규칙 |
-|---|---|---|
-| `id` | TEXT | PK |
-| `animation_entry_id` | TEXT | FK, UNIQUE |
-| `pen_key` | TEXT | `creator/pen-id`, UNIQUE |
-| `pen_id` | TEXT | 필수 |
-| `creator_slug` | TEXT | 필수 |
-| `canonical_url` | TEXT | UNIQUE |
-| `embed_url` | TEXT | 필수, 서버가 canonical 값으로 생성 |
-| `theme_id` | TEXT | 기본 `light` |
-| `default_tab` | TEXT | 기본 `result` |
-| `active` | INTEGER | 기본 1 |
-| `last_verified_at` | TEXT | 필수 |
+| 열                   | 형식    | 규칙                               |
+| -------------------- | ------- | ---------------------------------- |
+| `id`                 | TEXT    | PK                                 |
+| `animation_entry_id` | TEXT    | FK, UNIQUE                         |
+| `pen_key`            | TEXT    | `creator/pen-id`, UNIQUE           |
+| `pen_id`             | TEXT    | 필수                               |
+| `creator_slug`       | TEXT    | 필수                               |
+| `canonical_url`      | TEXT    | UNIQUE                             |
+| `embed_url`          | TEXT    | 필수, 서버가 canonical 값으로 생성 |
+| `theme_id`           | TEXT    | 기본 `light`                       |
+| `default_tab`        | TEXT    | 기본 `result`                      |
+| `active`             | INTEGER | 기본 1                             |
+| `last_verified_at`   | TEXT    | 필수                               |
 
 클라이언트가 보낸 임의 embed URL을 그대로 저장하지 않는다. 검증한 creator와 Pen ID로 서버가 생성한다.
 
@@ -276,6 +276,16 @@ curated 컬렉션만 이 테이블을 사용한다. dynamic 컬렉션은 `filter
 - UNIQUE `(ingestion_run_id, external_id)`
 - UNIQUE `request_id`
 
+### `ingestion_requests`
+
+- `request_id` TEXT PK
+- `key_id` TEXT
+- `request_timestamp` TEXT
+- `body_sha256` TEXT
+- `created_at` TEXT
+
+서명이 유효한 수집 요청 ID와 본문 해시를 보관해 같은 요청의 재전송을 거절한다. 수집 본문과 HMAC 비밀값은 저장하지 않는다.
+
 ## 8. 익명 제보와 집계
 
 ### `submissions`
@@ -316,6 +326,7 @@ pattern_entries(pattern_id, position, animation_entry_id)
 codepen_refs(pen_key) UNIQUE
 source_discoveries(discovery_source_id, external_id) UNIQUE
 ingestion_runs(discovery_source_id, started_at DESC)
+ingestion_requests(created_at)
 review_decisions(target_type, target_id, created_at DESC)
 validation_runs(target_type, target_id, checked_at DESC)
 admin_idempotency_keys(operation, target_id)
@@ -360,6 +371,7 @@ candidate version/status 확인
 0007_seed_tags.sql
 0008_seed_legacy_examples.sql
 0009_admin_idempotency.sql
+0010_ingestion_security.sql
 ```
 
 각 migration에는 다음 증거가 필요하다.

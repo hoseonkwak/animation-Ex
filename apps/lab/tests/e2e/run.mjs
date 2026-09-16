@@ -51,6 +51,24 @@ await runCommand(process.execPath, [
   '--file',
   'db/seeds/wp4.sql',
 ])
+await runCommand(process.execPath, [
+  wranglerCli,
+  'd1',
+  'execute',
+  'kwak-motion-lab-local',
+  '--local',
+  '--file',
+  'db/seeds/wp5.sql',
+])
+await runCommand(process.execPath, [
+  wranglerCli,
+  'd1',
+  'execute',
+  'kwak-motion-lab-local',
+  '--local',
+  '--file',
+  'tests/e2e/reset.sql',
+])
 
 const server = spawn(
   process.execPath,

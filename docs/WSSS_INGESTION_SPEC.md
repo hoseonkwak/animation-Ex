@@ -10,18 +10,18 @@ WSSS는 카테고리 목록, 페이지네이션과 개별 게시물로 구성된
 
 현재 화면에 표시된 대표 규모:
 
-| 분류 | 표시 개수 |
-|---|---:|
-| CSS Reference 전체 | 2,083 |
-| Animation | 349 |
-| GSAP | 15 |
-| Slider | 138 |
-| Mouse | 118 |
-| Parallax / Scroll | 107 |
-| Button | 305 |
-| Menu | 161 |
-| Text | 274 |
-| UI | 142 |
+| 분류               | 표시 개수 |
+| ------------------ | --------: |
+| CSS Reference 전체 |     2,083 |
+| Animation          |       349 |
+| GSAP               |        15 |
+| Slider             |       138 |
+| Mouse              |       118 |
+| Parallax / Scroll  |       107 |
+| Button             |       305 |
+| Menu               |       161 |
+| Text               |       274 |
+| UI                 |       142 |
 
 개수는 수집 범위를 가늠하는 참고값이며 실행할 때 다시 기록한다.
 
@@ -159,18 +159,18 @@ https://codepen.io/{creator}/pen/{penId}
 
 카테고리 기반의 결정 가능한 정보만 자동 확정한다.
 
-| WSSS 경로 | 내부 태그 | 처리 |
-|---|---|---|
-| `Animation/GSAP` | Technology: `gsap` | 확정 |
-| `Animation/CSS3` | Technology: `css` | 확정 |
-| `Animation/SVG` | Technology: `svg` | 확정 |
-| `Animation/Loading` | Section: `loading` | 확정 |
-| `Slider/Image Slider` | Section: `slider` | 확정 |
-| `Parallax/Scroll` | Trigger: `scroll` | 확정 |
-| `Button/*` | Section: `button` | 확정 |
-| `Menu/*` | Section: `navigation` | 확정 |
-| `Text/*` | Section: `text` | 확정 |
-| `UI/Card UI` | Section: `card` | 확정 |
+| WSSS 경로             | 내부 태그             | 처리 |
+| --------------------- | --------------------- | ---- |
+| `Animation/GSAP`      | Technology: `gsap`    | 확정 |
+| `Animation/CSS3`      | Technology: `css`     | 확정 |
+| `Animation/SVG`       | Technology: `svg`     | 확정 |
+| `Animation/Loading`   | Section: `loading`    | 확정 |
+| `Slider/Image Slider` | Section: `slider`     | 확정 |
+| `Parallax/Scroll`     | Trigger: `scroll`     | 확정 |
+| `Button/*`            | Section: `button`     | 확정 |
+| `Menu/*`              | Section: `navigation` | 확정 |
+| `Text/*`              | Section: `text`       | 확정 |
+| `UI/Card UI`          | Section: `card`       | 확정 |
 
 Mouse, Particles, Image와 일반 UI는 범위가 넓어 category 값을 그대로 확정하지 않고 제안으로만 둔다. 제목 키워드에서 찾은 `hover`, `drag`, `hero`, `reveal`, `marquee` 등도 관리자 확인 전에는 확정하지 않는다.
 
@@ -211,21 +211,21 @@ Mouse, Particles, Image와 일반 UI는 범위가 넓어 category 값을 그대�
 
 ## 8. 실패 코드
 
-| 코드 | 처리 |
-|---|---|
-| `ROBOTS_DISALLOWED` | 전체 실행 중지 |
-| `SOURCE_RATE_LIMITED` | 전체 실행 중지, 자동 즉시 재시도 금지 |
-| `CATEGORY_UNAVAILABLE` | 카테고리 실패, 다른 카테고리 계속 |
-| `LIST_STRUCTURE_CHANGED` | fixture 실패 후 전체 실행 중지 |
-| `ARTICLE_UNAVAILABLE` | 항목 실패, 다음 실행에서 재시도 |
+| 코드                        | 처리                                     |
+| --------------------------- | ---------------------------------------- |
+| `ROBOTS_DISALLOWED`         | 전체 실행 중지                           |
+| `SOURCE_RATE_LIMITED`       | 전체 실행 중지, 자동 즉시 재시도 금지    |
+| `CATEGORY_UNAVAILABLE`      | 카테고리 실패, 다른 카테고리 계속        |
+| `LIST_STRUCTURE_CHANGED`    | fixture 실패 후 전체 실행 중지           |
+| `ARTICLE_UNAVAILABLE`       | 항목 실패, 다음 실행에서 재시도          |
 | `ARTICLE_STRUCTURE_CHANGED` | 항목 실패 누적, 임계치 초과 시 전체 중지 |
-| `CODEPEN_LINK_MISSING` | 관리자 확인 큐 또는 제외 |
-| `CODEPEN_URL_INVALID` | 항목 실패 |
-| `CREATOR_MISSING` | `needs-edit` 후보 |
-| `DUPLICATE_EXACT` | 기존 Source에 발견 경로 추가 |
-| `DUPLICATE_POSSIBLE` | 관리자 중복 큐 |
-| `API_AUTH_FAILED` | 전체 실행 중지 |
-| `FREE_LIMIT_PAUSED` | checkpoint 저장 후 정상 중지 |
+| `CODEPEN_LINK_MISSING`      | 관리자 확인 큐 또는 제외                 |
+| `CODEPEN_URL_INVALID`       | 항목 실패                                |
+| `CREATOR_MISSING`           | `needs-edit` 후보                        |
+| `DUPLICATE_EXACT`           | 기존 Source에 발견 경로 추가             |
+| `DUPLICATE_POSSIBLE`        | 관리자 중복 큐                           |
+| `API_AUTH_FAILED`           | 전체 실행 중지                           |
+| `FREE_LIMIT_PAUSED`         | checkpoint 저장 후 정상 중지             |
 
 같은 parser 오류가 한 실행에서 5개 또는 처리 항목의 10%를 넘으면 구조 변경으로 판단하고 중지한다.
 
@@ -239,16 +239,27 @@ Mouse, Particles, Image와 일반 UI는 범위가 넓어 category 값을 그대�
 
 checkpoint는 API 저장이 확인된 항목까지만 전진한다.
 
+## 9.1 구현 및 운영 명령
+
+```bash
+npm run test:ingestion
+npm run ingest:wsss:fixture
+npm run ingest:wsss:preflight
+npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
+```
+
+`preflight`는 fixture 검사를 먼저 수행한 뒤 현재 WSSS HTML을 한 건 읽고 결과만 출력한다. 후보 등록이나 checkpoint 완료 API는 호출하지 않는다. live 실행과 수동 GitHub Actions workflow는 HMAC 환경 변수 세 개가 있을 때만 제출한다. 하루 1회 schedule은 수동 실행이 안정화된 뒤 별도 변경으로 활성화한다.
+
 ## 10. Fixture
 
 최소 fixture 세트를 저장한다.
 
-| 종류 | 대표 URL | 검증 항목 |
-|---|---|---|
-| 카테고리 목록 | `https://wsss.tistory.com/category/Animation/GSAP` | 게시물 링크, 제목, pagination |
-| 페이지 2 | `https://wsss.tistory.com/category/Slider/Image%20Slider?page=2` | page 이동과 중복 제거 |
-| 단일 Pen 게시물 | `https://wsss.tistory.com/1603` | Pen URL, 제목, creator, 카테고리 |
-| 최근 게시물 | `https://wsss.tistory.com/2112` | 최신 markup 호환성 |
+| 종류            | 대표 URL                                                         | 검증 항목                        |
+| --------------- | ---------------------------------------------------------------- | -------------------------------- |
+| 카테고리 목록   | `https://wsss.tistory.com/category/Animation/GSAP`               | 게시물 링크, 제목, pagination    |
+| 페이지 2        | `https://wsss.tistory.com/category/Slider/Image%20Slider?page=2` | page 이동과 중복 제거            |
+| 단일 Pen 게시물 | `https://wsss.tistory.com/1603`                                  | Pen URL, 제목, creator, 카테고리 |
+| 최근 게시물     | `https://wsss.tistory.com/2112`                                  | 최신 markup 호환성               |
 
 fixture HTML은 테스트에 필요한 최소 구조만 보관한다. 원문 전체와 이미지·첨부 파일은 저장하지 않는다.
 

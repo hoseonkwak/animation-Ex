@@ -43,20 +43,20 @@
 
 공개 예제 목록을 조회한다.
 
-| 매개변수 | 형식 | 기본값 |
-|---|---|---|
-| `q` | 2~80자 문자열 | 없음 |
-| `technology` | 쉼표로 구분한 tag key | 없음 |
-| `trigger` | 쉼표로 구분한 tag key | 없음 |
-| `motion` | 쉼표로 구분한 tag key | 없음 |
-| `section` | 쉼표로 구분한 tag key | 없음 |
-| `technique` | 쉼표로 구분한 tag key | 없음 |
-| `difficulty` | `beginner,intermediate,advanced` | 없음 |
-| `origin` | `original-pen,lab-created` | 없음 |
-| `featured` | `true,false` | 없음 |
-| `sort` | `latest,featured,difficulty` | `latest` |
-| `limit` | 1~24 | 24 |
-| `cursor` | 이전 응답의 opaque cursor | 없음 |
+| 매개변수     | 형식                             | 기본값   |
+| ------------ | -------------------------------- | -------- |
+| `q`          | 2~80자 문자열                    | 없음     |
+| `technology` | 쉼표로 구분한 tag key            | 없음     |
+| `trigger`    | 쉼표로 구분한 tag key            | 없음     |
+| `motion`     | 쉼표로 구분한 tag key            | 없음     |
+| `section`    | 쉼표로 구분한 tag key            | 없음     |
+| `technique`  | 쉼표로 구분한 tag key            | 없음     |
+| `difficulty` | `beginner,intermediate,advanced` | 없음     |
+| `origin`     | `original-pen,lab-created`       | 없음     |
+| `featured`   | `true,false`                     | 없음     |
+| `sort`       | `latest,featured,difficulty`     | `latest` |
+| `limit`      | 1~24                             | 24       |
+| `cursor`     | 이전 응답의 opaque cursor        | 없음     |
 
 같은 축의 값은 OR, 서로 다른 축은 AND로 결합한다. 예를 들어 `technology=gsap,css&trigger=scroll`은 GSAP 또는 CSS이면서 Scroll인 예제를 찾는다.
 
@@ -214,7 +214,9 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 - `X-Ingestion-Request-Id`
 - `X-Ingestion-Signature`
 
-서명 대상은 HTTP method, path, timestamp, request ID와 본문 해시다. Worker는 Web Crypto HMAC-SHA256으로 검증한다. 허용 시간 차이는 5분이며 request ID를 저장해 재전송 공격을 막는다.
+서명 대상은 `method`, `path`, `timestamp`, `request ID`, `SHA-256(body)`를 줄바꿈으로 연결한 문자열이다. Worker는 Web Crypto HMAC-SHA256으로 검증한다. 허용 시간 차이는 5분이며 request ID를 저장해 재전송 공격을 막는다. 본문은 최대 256 KiB, 한 batch는 1~50개다.
+
+요청 본문에는 `runId`, `trigger`, `checkpointBefore`, `items`를 전달한다. `items`는 정규화한 CodePen 원본, WSSS 발견 경로와 추천 태그만 포함한다.
 
 각 항목은 독립 결과를 받는다.
 
@@ -225,7 +227,11 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
     "duplicates": 15,
     "failed": 3,
     "items": [
-      { "externalId": "wsss:1234", "result": "accepted", "candidateId": "01K..." }
+      {
+        "externalId": "wsss:1234",
+        "result": "accepted",
+        "candidateId": "01K..."
+      }
     ]
   }
 }
@@ -239,21 +245,21 @@ checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 �
 
 ## 5. 상태 코드
 
-| HTTP | 사용 상황 |
-|---:|---|
-| 200 | 조회 및 동기 변경 성공 |
-| 201 | 관리자에 의한 새 리소스 생성 |
-| 202 | 익명 제보 접수 |
-| 400 | 요청 형식, 필터 또는 cursor 오류 |
-| 401 | 인증 정보 없음 또는 수집 서명 오류 |
-| 403 | 인증됐지만 관리자 허용 목록 불일치 |
-| 404 | 공개되지 않았거나 존재하지 않는 리소스 |
-| 409 | 버전, slug, idempotency 충돌 |
-| 410 | 공개 중지된 기존 공개 URL |
-| 413 | 본문 또는 batch 크기 초과 |
-| 429 | 속도 또는 무료 사용량 보호 제한 |
-| 500 | 예상하지 못한 서버 오류 |
-| 503 | 무료 한도 보호로 쓰기 기능 일시 중지 |
+| HTTP | 사용 상황                              |
+| ---: | -------------------------------------- |
+|  200 | 조회 및 동기 변경 성공                 |
+|  201 | 관리자에 의한 새 리소스 생성           |
+|  202 | 익명 제보 접수                         |
+|  400 | 요청 형식, 필터 또는 cursor 오류       |
+|  401 | 인증 정보 없음 또는 수집 서명 오류     |
+|  403 | 인증됐지만 관리자 허용 목록 불일치     |
+|  404 | 공개되지 않았거나 존재하지 않는 리소스 |
+|  409 | 버전, slug, idempotency 충돌           |
+|  410 | 공개 중지된 기존 공개 URL              |
+|  413 | 본문 또는 batch 크기 초과              |
+|  429 | 속도 또는 무료 사용량 보호 제한        |
+|  500 | 예상하지 못한 서버 오류                |
+|  503 | 무료 한도 보호로 쓰기 기능 일시 중지   |
 
 ## 6. 캐시와 개인정보
 
