@@ -28,10 +28,12 @@
 - `docs/evidence/PHASE1_BASELINE.md`
 - `docs/evidence/WP0_REPORT.md`
 - `docs/evidence/WP1_REPORT.md`
+- `docs/evidence/WP2_REPORT.md`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
 - Wrangler local D1 migration과 seed 명령
+- Preview scheduler 단위 검사와 검색·URL 복원·반응형 Playwright 검사
 
 ### 다음 구현 단계에서 추가
 

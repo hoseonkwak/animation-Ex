@@ -7,10 +7,10 @@
 
 - [ ] `P1-UX-01` Vue 기반 애플리케이션이 공개 URL에서 로드된다.
 - [ ] `P1-UX-02` 로그인 없이 Home, Explore, Sections와 상세 화면을 사용할 수 있다.
-- [ ] `P1-UX-03` Light가 최초 기본 테마다.
+- [x] `P1-UX-03` Light가 최초 기본 테마다.
 - [ ] `P1-UX-04` 사용자가 선택한 테마가 브라우저에 저장된다.
-- [ ] `P1-UX-05` 한국어 UI와 설명이 표시된다.
-- [ ] `P1-UX-06` Phase 1에 제공되지 않는 Practice와 Learn 메뉴가 노출되지 않는다.
+- [x] `P1-UX-05` 한국어 UI와 설명이 표시된다.
+- [x] `P1-UX-06` Phase 1에 제공되지 않는 Practice와 Learn 메뉴가 노출되지 않는다.
 
 ## 2. 콘텐츠
 
@@ -23,25 +23,25 @@
 
 ## 3. 탐색
 
-- [ ] `P1-DISCOVERY-01` 키워드 검색이 제목, 설명과 태그를 찾는다.
-- [ ] `P1-DISCOVERY-02` Technology, Trigger, Motion, Section, Technique, Difficulty 필터가 동작한다.
-- [ ] `P1-DISCOVERY-03` 여러 필터를 함께 적용할 수 있다.
-- [ ] `P1-DISCOVERY-04` 필터를 URL로 공유하거나 다시 열었을 때 복원할 수 있다.
-- [ ] `P1-DISCOVERY-05` 결과 없음 상태가 다음 탐색 방법을 제공한다.
+- [x] `P1-DISCOVERY-01` 키워드 검색이 제목, 설명과 태그를 찾는다.
+- [x] `P1-DISCOVERY-02` Technology, Trigger, Motion, Section, Technique, Difficulty 필터가 동작한다.
+- [x] `P1-DISCOVERY-03` 여러 필터를 함께 적용할 수 있다.
+- [x] `P1-DISCOVERY-04` 필터를 URL로 공유하거나 다시 열었을 때 복원할 수 있다.
+- [x] `P1-DISCOVERY-05` 결과 없음 상태가 다음 탐색 방법을 제공한다.
 - [ ] `P1-DISCOVERY-06` Hero Section 허브가 있다.
-- [ ] `P1-DISCOVERY-07` Wide 4열, Desktop 3열, Tablet 2열과 Mobile 1열로 카드가 배치된다.
+- [x] `P1-DISCOVERY-07` Wide 4열, Desktop 3열, Tablet 2열과 Mobile 1열로 카드가 배치된다.
 
 검색 입력에는 자연스러운 문장을 넣을 수 있지만 Phase 1은 이를 일반 키워드로 처리한다. AI 필터 해석은 별도 비용과 품질 검토 후 활성화한다.
 
 ## 4. 실행 Preview
 
-- [ ] `P1-PREVIEW-01` 모든 공개 카드는 실제 실행 코드 또는 원본 CodePen을 보여준다.
-- [ ] `P1-PREVIEW-02` 화면에 보이는 Preview만 로드한다.
-- [ ] `P1-PREVIEW-03` 동시에 실행되는 Preview 수를 제한한다.
+- [x] `P1-PREVIEW-01` 모든 공개 카드는 실제 실행 코드 또는 원본 CodePen을 보여준다.
+- [x] `P1-PREVIEW-02` 화면에 보이는 Preview만 로드한다.
+- [x] `P1-PREVIEW-03` 동시에 실행되는 Preview 수를 제한한다.
 - [ ] `P1-PREVIEW-04` 무거운 예제는 Run 이후 실행한다.
-- [ ] `P1-PREVIEW-05` 화면 밖 Preview는 중지하거나 제거한다.
-- [ ] `P1-PREVIEW-06` 실행 오류가 사용자 페이지 전체를 중단시키지 않는다.
-- [ ] `P1-PREVIEW-07` 영상, GIF 또는 녹화 화면을 실행 Preview로 사용하지 않는다.
+- [x] `P1-PREVIEW-05` 화면 밖 Preview는 중지하거나 제거한다.
+- [x] `P1-PREVIEW-06` 실행 오류가 사용자 페이지 전체를 중단시키지 않는다.
+- [x] `P1-PREVIEW-07` 영상, GIF 또는 녹화 화면을 실행 Preview로 사용하지 않는다.
 
 ## 5. 상세
 

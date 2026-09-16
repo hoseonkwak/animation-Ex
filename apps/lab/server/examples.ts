@@ -9,6 +9,15 @@ import { tagAxes } from '../src/shared/examples'
 
 type Sort = 'latest' | 'featured' | 'difficulty'
 
+interface Cursor {
+  v: 1
+  sort: Sort
+  id: string
+  publishedAt: string
+  featured?: number
+  difficultyRank?: number
+}
+
 export interface ExampleFilters {
   q?: string | undefined
   tags: Partial<Record<TagAxis, string[]>>
@@ -17,6 +26,7 @@ export interface ExampleFilters {
   featured?: boolean | undefined
   sort: Sort
   limit: number
+  cursor?: Cursor | undefined
 }
 
 interface EntryRow {
@@ -87,10 +97,6 @@ export function parseExampleFilters(url: URL): ExampleFilters {
     }
   }
 
-  if (url.searchParams.has('cursor')) {
-    throw new ApiInputError('INVALID_CURSOR', '유효하지 않은 cursor입니다.')
-  }
-
   const q = url.searchParams.get('q')?.trim()
   if (q && (q.length < 2 || q.length > 80)) {
     throw new ApiInputError('INVALID_FILTER', '검색어는 2자 이상 80자 이하여야 합니다.', {
@@ -126,6 +132,7 @@ export function parseExampleFilters(url: URL): ExampleFilters {
   if (limit < 1 || limit > 24) {
     throw new ApiInputError('INVALID_FILTER', 'limit은 1 이상 24 이하여야 합니다.')
   }
+  const cursor = parseCursor(url.searchParams.get('cursor'), sort)
 
   const tags: ExampleFilters['tags'] = {}
   for (const axis of tagAxes) {
@@ -142,7 +149,45 @@ export function parseExampleFilters(url: URL): ExampleFilters {
     featured: featuredValue === null ? undefined : featuredValue === 'true',
     sort,
     limit,
+    cursor,
   }
+}
+
+function parseCursor(raw: string | null, sort: Sort): Cursor | undefined {
+  if (!raw) return undefined
+  try {
+    const normalized = raw.replace(/-/g, '+').replace(/_/g, '/')
+    const value = JSON.parse(
+      atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')),
+    ) as Cursor
+    if (
+      value.v !== 1 ||
+      value.sort !== sort ||
+      typeof value.id !== 'string' ||
+      typeof value.publishedAt !== 'string'
+    ) {
+      throw new Error('invalid cursor')
+    }
+    return value
+  } catch {
+    throw new ApiInputError('INVALID_CURSOR', '유효하지 않은 cursor입니다.')
+  }
+}
+
+function encodeCursor(row: EntryRow, sort: Sort): string {
+  const value: Cursor = {
+    v: 1,
+    sort,
+    id: row.id,
+    publishedAt: row.published_at,
+    featured: row.featured,
+    difficultyRank: difficultyRank(row.difficulty),
+  }
+  return btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function difficultyRank(difficulty: Difficulty): number {
+  return { beginner: 1, intermediate: 2, advanced: 3 }[difficulty]
 }
 
 function placeholders(count: number): string {
@@ -181,13 +226,22 @@ function toCard(row: EntryRow, tags: ExampleCard['tags']): ExampleCard {
 export class ExamplesRepository {
   constructor(private readonly db: D1Database) {}
 
-  async list(filters: ExampleFilters): Promise<ExampleCard[]> {
+  async list(filters: ExampleFilters): Promise<{
+    items: ExampleCard[]
+    nextCursor: string | null
+  }> {
     const conditions = ["e.status = 'published'", "e.preview_kind = 'codepen'", 'p.active = 1']
     const bindings: unknown[] = []
 
     if (filters.q) {
-      conditions.push('e.search_text LIKE ?')
-      bindings.push(`%${filters.q.toLocaleLowerCase('ko-KR')}%`)
+      conditions.push(`(e.search_text LIKE ? OR EXISTS (
+        SELECT 1 FROM entry_tags search_et
+        JOIN tags search_t ON search_t.id = search_et.tag_id
+        WHERE search_et.animation_entry_id = e.id
+          AND (search_t.key LIKE ? OR search_t.label_ko LIKE ? OR search_t.label_en LIKE ?)
+      ))`)
+      const search = `%${filters.q.toLocaleLowerCase('ko-KR')}%`
+      bindings.push(search, search, search, search)
     }
     if (filters.difficulty?.length) {
       conditions.push(`e.difficulty IN (${placeholders(filters.difficulty.length)})`)
@@ -213,7 +267,39 @@ export class ExamplesRepository {
       bindings.push(axis, ...values)
     }
 
-    bindings.push(filters.limit)
+    if (filters.cursor) {
+      const cursor = filters.cursor
+      if (filters.sort === 'latest') {
+        conditions.push('(e.published_at < ? OR (e.published_at = ? AND e.id > ?))')
+        bindings.push(cursor.publishedAt, cursor.publishedAt, cursor.id)
+      } else if (filters.sort === 'featured' && cursor.featured !== undefined) {
+        conditions.push(`(e.featured < ? OR (e.featured = ? AND
+          (e.published_at < ? OR (e.published_at = ? AND e.id > ?))))`)
+        bindings.push(
+          cursor.featured,
+          cursor.featured,
+          cursor.publishedAt,
+          cursor.publishedAt,
+          cursor.id,
+        )
+      } else if (filters.sort === 'difficulty' && cursor.difficultyRank !== undefined) {
+        const rank =
+          "CASE e.difficulty WHEN 'beginner' THEN 1 WHEN 'intermediate' THEN 2 ELSE 3 END"
+        conditions.push(`(${rank} > ? OR (${rank} = ? AND
+          (e.published_at < ? OR (e.published_at = ? AND e.id > ?))))`)
+        bindings.push(
+          cursor.difficultyRank,
+          cursor.difficultyRank,
+          cursor.publishedAt,
+          cursor.publishedAt,
+          cursor.id,
+        )
+      } else {
+        throw new ApiInputError('INVALID_CURSOR', '정렬과 cursor가 일치하지 않습니다.')
+      }
+    }
+
+    bindings.push(filters.limit + 1)
     const query = `
       SELECT e.id, e.slug, e.title, e.original_title, e.summary,
         e.content_origin, e.difficulty, e.featured, e.published_at,
@@ -231,7 +317,14 @@ export class ExamplesRepository {
       .bind(...bindings)
       .all<EntryRow>()
 
-    return this.hydrateTags(results)
+    const hasNextPage = results.length > filters.limit
+    const pageRows = hasNextPage ? results.slice(0, filters.limit) : results
+    const items = await this.hydrateTags(pageRows)
+    const lastRow = pageRows.at(-1)
+    return {
+      items,
+      nextCursor: hasNextPage && lastRow ? encodeCursor(lastRow, filters.sort) : null,
+    }
   }
 
   async findPublishedBySlug(slug: string): Promise<ExampleDetail | null> {

@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { DatabaseSync } from 'node:sqlite'
 
@@ -85,6 +87,48 @@ describe('GET /api/v1/examples', () => {
     const body = (await response.json()) as { data: { items: ExampleCard[] } }
 
     expect(body.data.items.map((item) => item.slug)).toEqual(['scroll-circle-reveal'])
+  })
+
+  it('같은 태그 축의 여러 값은 OR로 결합한다', async () => {
+    const response = await request('/api/v1/examples?trigger=scroll,hover')
+    const body = (await response.json()) as { data: { items: ExampleCard[] } }
+
+    expect(body.data.items.map((item) => item.slug).sort()).toEqual([
+      'interactive-card-hover',
+      'scroll-circle-reveal',
+    ])
+  })
+
+  it('cursor로 다음 페이지를 중복 없이 이어서 반환한다', async () => {
+    const firstResponse = await request('/api/v1/examples?limit=2&sort=latest')
+    const firstBody = (await firstResponse.json()) as {
+      data: { items: ExampleCard[]; nextCursor: string }
+    }
+    const secondResponse = await request(
+      `/api/v1/examples?limit=2&sort=latest&cursor=${firstBody.data.nextCursor}`,
+    )
+    const secondBody = (await secondResponse.json()) as {
+      data: { items: ExampleCard[]; nextCursor: null }
+    }
+
+    expect(firstBody.data.items).toHaveLength(2)
+    expect(secondBody.data.items).toHaveLength(1)
+    expect(secondBody.data.nextCursor).toBeNull()
+    expect(
+      new Set([...firstBody.data.items, ...secondBody.data.items].map((item) => item.id)).size,
+    ).toBe(3)
+  })
+
+  it('제목, 설명과 태그 한글명으로 검색한다', async () => {
+    for (const query of ['%EA%B8%B0%EB%B3%B8', '%EC%9D%B4%EB%8F%99']) {
+      const response = await request(`/api/v1/examples?q=${query}`)
+      const body = (await response.json()) as { data: { items: ExampleCard[] } }
+      expect(body.data.items.map((item) => item.slug)).toContain('gsap-basic-tween')
+    }
+
+    const tagResponse = await request('/api/v1/examples?q=%EC%8A%A4%ED%81%AC%EB%A1%A4')
+    const tagBody = (await tagResponse.json()) as { data: { items: ExampleCard[] } }
+    expect(tagBody.data.items.map((item) => item.slug)).toEqual(['scroll-circle-reveal'])
   })
 
   it('알 수 없는 필터를 400으로 거절한다', async () => {

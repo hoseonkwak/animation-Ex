@@ -31,9 +31,9 @@ export default {
     if (request.method === 'GET' && url.pathname === '/api/v1/examples') {
       try {
         const filters = parseExampleFilters(url)
-        const items = await new ExamplesRepository(env.DB).list(filters)
+        const data = await new ExamplesRepository(env.DB).list(filters)
         return json(
-          { data: { items, nextCursor: null }, meta: { requestId } },
+          { data, meta: { requestId } },
           { headers: { 'cache-control': 'public, max-age=60' } },
         )
       } catch (error) {
