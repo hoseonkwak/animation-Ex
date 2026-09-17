@@ -16,6 +16,7 @@ const loadingMore = ref(false)
 const errorMessage = ref('')
 const nextCursor = ref<string | null>(null)
 const searchInput = ref(queryValue('q'))
+let requestVersion = 0
 
 onMounted(() =>
   setPageMeta(
@@ -137,6 +138,7 @@ function apiSearchParams(cursor?: string): URLSearchParams {
 }
 
 async function loadExamples(append: boolean): Promise<void> {
+  const version = ++requestVersion
   if (append) loadingMore.value = true
   else loading.value = true
   errorMessage.value = ''
@@ -145,13 +147,17 @@ async function loadExamples(append: boolean): Promise<void> {
     const response = await fetch(`/api/v1/examples?${apiSearchParams(cursor)}`)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const body = (await response.json()) as ApiSuccess<ExamplesPayload>
+    if (version !== requestVersion) return
     examples.value = append ? [...examples.value, ...body.data.items] : body.data.items
     nextCursor.value = body.data.nextCursor
   } catch {
+    if (version !== requestVersion) return
     errorMessage.value = '예제를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
   } finally {
-    loading.value = false
-    loadingMore.value = false
+    if (version === requestVersion) {
+      loading.value = false
+      loadingMore.value = false
+    }
   }
 }
 
@@ -195,12 +201,14 @@ function clearFilters(): void {
 
 <template>
   <main id="main-content" class="page explore-page">
-    <section class="hero">
-      <p class="eyebrow">EXPLORE</p>
-      <h1>실행 가능한 애니메이션을 찾아보세요.</h1>
-      <p class="description">
-        기술, 트리거, 움직임과 적용 영역을 조합해 원하는 예제를 찾을 수 있습니다.
-      </p>
+    <section class="hero explore-intro">
+      <div class="explore-copy">
+        <p class="eyebrow">THE MOTION INDEX / EXPLORE</p>
+        <h1>애니메이션을 찾고,<br />바로 실행하세요.</h1>
+        <p class="description">
+          기술과 적용 영역으로 원하는 예제를 찾고, 썸네일을 눌러 실행 화면을 확인하세요.
+        </p>
+      </div>
       <form class="hero-search" role="search" @submit.prevent="submitSearch">
         <label for="motion-search">애니메이션 검색</label>
         <div class="search-control">
@@ -223,7 +231,7 @@ function clearFilters(): void {
     <section class="examples-section" aria-labelledby="examples-heading">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">EXPLORE</p>
+          <p class="eyebrow">BROWSE THE ARCHIVE</p>
           <h2 id="examples-heading">실행 가능한 예제</h2>
         </div>
         <div class="result-tools">

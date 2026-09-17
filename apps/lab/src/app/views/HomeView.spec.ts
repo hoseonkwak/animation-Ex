@@ -31,8 +31,9 @@ describe('HomeView', () => {
     await router.isReady()
     const wrapper = mount(HomeView, { global: { plugins: [router] } })
 
-    expect(wrapper.get('h1').text()).toContain('좋은 움직임을 찾고')
-    expect(wrapper.text()).toContain('실제 코드 실행 화면')
+    expect(wrapper.get('h1').text()).toContain('웹 애니메이션 예제')
+    expect(wrapper.text()).toContain('이렇게 둘러보세요')
+    expect(wrapper.text()).toContain('실제 코드로 실행된 화면')
     expect(wrapper.find('a[href="/explore"]').exists()).toBe(true)
   })
 })

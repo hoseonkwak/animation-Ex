@@ -25,7 +25,10 @@ function toggleTheme(): void {
   <div class="site-shell">
     <header class="site-header">
       <div class="header-inner">
-        <RouterLink class="brand" to="/">Kwak Motion Lab</RouterLink>
+        <RouterLink class="brand" to="/" aria-label="Kwak Motion Lab 홈">
+          <span class="brand-mark" aria-hidden="true">K<span>✳</span></span>
+          <span>Kwak <strong>Motion Lab</strong></span>
+        </RouterLink>
         <button
           class="menu-toggle"
           type="button"
@@ -36,14 +39,14 @@ function toggleTheme(): void {
           메뉴
         </button>
         <nav id="primary-navigation" :class="{ open: menuOpen }" aria-label="주요 메뉴">
-          <RouterLink to="/explore" @click="menuOpen = false">Explore</RouterLink>
-          <RouterLink to="/sections" @click="menuOpen = false">Sections</RouterLink>
-          <RouterLink to="/about" @click="menuOpen = false">About</RouterLink>
+          <RouterLink to="/explore" @click="menuOpen = false">예제 탐색</RouterLink>
+          <RouterLink to="/sections" @click="menuOpen = false">영역별 보기</RouterLink>
+          <RouterLink to="/about" @click="menuOpen = false">소개</RouterLink>
           <RouterLink to="/saved" @click="menuOpen = false">
-            Saved<span v-if="library.savedCount.value"> {{ library.savedCount.value }}</span>
+            저장함<span v-if="library.savedCount.value"> {{ library.savedCount.value }}</span>
           </RouterLink>
-          <button type="button" @click="toggleTheme">
-            {{ theme === 'light' ? 'Dark' : 'Light' }}
+          <button class="theme-switch" type="button" @click="toggleTheme">
+            {{ theme === 'light' ? '다크' : '라이트' }}
           </button>
         </nav>
       </div>
@@ -59,8 +62,8 @@ function toggleTheme(): void {
         <p>웹 애니메이션을 실제 코드 실행 화면으로 탐색하는 라이브러리입니다.</p>
       </div>
       <nav aria-label="하단 메뉴">
-        <RouterLink to="/explore">Explore</RouterLink>
-        <RouterLink to="/sections">Sections</RouterLink>
+        <RouterLink to="/explore">예제 탐색</RouterLink>
+        <RouterLink to="/sections">영역별 보기</RouterLink>
         <RouterLink to="/submit">URL 제보</RouterLink>
         <RouterLink to="/about">출처 정책</RouterLink>
       </nav>

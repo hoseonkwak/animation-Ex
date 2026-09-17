@@ -23,6 +23,35 @@ const example: ExampleCard = {
 }
 
 describe('PreviewCard', () => {
+  it('썸네일을 보여주고 클릭할 때만 실제 Preview를 요청한다', async () => {
+    const wrapper = mount(PreviewCard, { props: { example, active: false } })
+
+    expect(wrapper.get('.preview-thumbnail img').attributes('src')).toBe(
+      'https://codepen.io/example/pen/abc/image/large.png',
+    )
+    expect(wrapper.find('iframe').exists()).toBe(false)
+    expect(wrapper.emitted('request')).toBeUndefined()
+
+    await wrapper.get('.preview-thumbnail').trigger('click')
+    expect(wrapper.emitted('request')?.[0]).toEqual(['example-one', true])
+
+    await wrapper.setProps({ active: true })
+    expect(wrapper.find('.preview-thumbnail').exists()).toBe(false)
+    expect(wrapper.get('iframe').attributes('src')).toBe(example.preview.embedUrl)
+
+    await wrapper.get('.preview-toolbar button').trigger('click')
+    await wrapper.setProps({ active: false })
+    expect(wrapper.get('.preview-thumbnail').exists()).toBe(true)
+  })
+
+  it('썸네일 로딩에 실패해도 실행 버튼을 유지한다', async () => {
+    const wrapper = mount(PreviewCard, { props: { example, active: false } })
+    await wrapper.get('.preview-thumbnail img').trigger('error')
+    expect(wrapper.get('.thumbnail-fallback').text()).toBe(example.title)
+    await wrapper.get('.preview-thumbnail').trigger('click')
+    expect(wrapper.emitted('request')?.[0]).toEqual(['example-one', true])
+  })
+
   it('한 카드의 iframe 오류를 해당 카드 안에서 처리한다', async () => {
     const failed = mount(PreviewCard, { props: { example, active: true } })
     const healthy = mount(PreviewCard, {

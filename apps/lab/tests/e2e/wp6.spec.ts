@@ -49,16 +49,16 @@ test('URL 제보는 중복 여부를 공개하지 않고 같은 성공 화면을
 
 test('선택한 Dark 테마를 새로고침 뒤 복원한다', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'Dark' }).click()
+  await page.getByRole('button', { name: '다크' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   await page.reload()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  await expect(page.getByRole('button', { name: 'Light' })).toBeVisible()
+  await expect(page.getByRole('button', { name: '라이트' })).toBeVisible()
 })
 test('Phase 1 Header에는 Practice와 Learn 진입점이 없다', async ({ page }) => {
   await page.goto('/about')
   const header = page.locator('.site-header')
-  await expect(header.getByRole('link', { name: 'Explore' })).toBeVisible()
+  await expect(header.getByRole('link', { name: '예제 탐색' })).toBeVisible()
   await expect(header.getByText('Practice', { exact: true })).toHaveCount(0)
   await expect(header.getByText('Learn', { exact: true })).toHaveCount(0)
 })

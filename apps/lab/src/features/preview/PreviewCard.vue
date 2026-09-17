@@ -18,37 +18,32 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement>()
 const frameState = ref<'idle' | 'loading' | 'running' | 'paused' | 'error'>('idle')
-const hasEntered = ref(false)
+const thumbnailFailed = ref(false)
 let observer: IntersectionObserver | undefined
 
 const codePenUrl = computed(
   () => props.example.preview.embedUrl.replace('/embed/', '/pen/').split('?')[0],
 )
+const thumbnailUrl = computed(() => `${codePenUrl.value}/image/large.png`)
 
 watch(
   () => props.active,
   (active) => {
-    frameState.value = active ? 'loading' : hasEntered.value ? 'paused' : 'idle'
+    frameState.value = active ? 'loading' : frameState.value === 'idle' ? 'idle' : 'paused'
   },
+  { immediate: true },
 )
 
 onMounted(() => {
-  if (!root.value || typeof IntersectionObserver === 'undefined') {
-    emit('request', props.example.id, false)
-    return
-  }
+  if (!root.value || typeof IntersectionObserver === 'undefined') return
   observer = new IntersectionObserver(
     ([entry]) => {
-      if (!entry) return
-      if (entry.isIntersecting) {
-        hasEntered.value = true
-        emit('request', props.example.id, false)
-      } else {
+      if (entry && !entry.isIntersecting && props.active) {
         emit('release', props.example.id)
         frameState.value = 'paused'
       }
     },
-    { rootMargin: '320px 0px', threshold: 0.05 },
+    { threshold: 0.05 },
   )
   observer.observe(root.value)
 })
@@ -90,11 +85,26 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         @load="frameState = 'running'"
         @error="frameState = 'error'"
       />
-      <div v-else class="preview-placeholder">
-        <p>
-          {{ frameState === 'paused' ? '화면 밖에서 실행을 멈췄습니다.' : '실행 대기 중입니다.' }}
-        </p>
-      </div>
+      <button
+        v-else
+        class="preview-thumbnail"
+        type="button"
+        :aria-label="`${example.title} 실행 화면 보기`"
+        @click="run"
+      >
+        <img
+          v-if="!thumbnailFailed"
+          :src="thumbnailUrl"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          @error="thumbnailFailed = true"
+        />
+        <span v-else class="thumbnail-fallback">{{ example.title }}</span>
+        <span class="thumbnail-label">예제 썸네일</span>
+        <span class="thumbnail-action"><span aria-hidden="true">▶</span> 실행 화면 보기</span>
+      </button>
+      <span v-if="active" class="preview-live-badge">● 실제 코드</span>
       <div v-if="active && frameState === 'loading'" class="preview-loading" role="status">
         Preview를 불러오는 중입니다.
       </div>
@@ -104,7 +114,6 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
       </div>
       <div class="preview-toolbar">
         <button v-if="active" type="button" @click="pause">일시정지</button>
-        <button v-else type="button" @click="run">실행</button>
         <a :href="codePenUrl" target="_blank" rel="noopener noreferrer">CodePen 열기</a>
       </div>
     </div>

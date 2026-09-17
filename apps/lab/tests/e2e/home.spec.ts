@@ -3,18 +3,45 @@ import { expect, test } from '@playwright/test'
 test('P1-UX-01 Vue 애플리케이션이 로드된다', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('좋은 움직임을 찾고')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('웹 애니메이션 예제')
+  await expect(page.getByRole('heading', { name: '이렇게 둘러보세요' })).toBeVisible()
   await expect(page.locator('.example-card')).toHaveCount(4)
-  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
-  await expect(page.getByTestId('codepen-preview').first()).toHaveAttribute(
-    'src',
-    /https:\/\/codepen\.io\/hoseonkwak\/embed\//,
-  )
+  await expect(page.locator('.preview-thumbnail')).toHaveCount(4)
+  await expect(page.locator('.preview-thumbnail img')).toHaveCount(4)
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
 
-  await expect(page.getByRole('link', { name: '애니메이션 둘러보기' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: /예제 둘러보기/ })).toHaveAttribute(
     'href',
     '/explore',
   )
+})
+
+test('홈 대표 썸네일을 눌렀을 때만 CodePen 실행 화면으로 바뀐다', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1200 })
+  await page.goto('/')
+
+  await page.locator('.hero-gallery .preview-thumbnail').click()
+  await expect(page.locator('.hero-gallery [data-testid="codepen-preview"]')).toHaveCount(1)
+  await expect(page.locator('.hero-gallery [data-testid="codepen-preview"]')).toHaveAttribute(
+    'src',
+    /https:\/\/codepen\.io\/hoseonkwak\/embed\//,
+  )
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
+  await expect(page.locator('.preview-thumbnail')).toHaveCount(3)
+})
+
+test('작은 화면에서 홈과 탐색 페이지가 가로로 넘치지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 780 })
+
+  for (const path of ['/', '/explore']) {
+    await page.goto(path)
+    await expect(page.locator('.example-card').first()).toBeVisible()
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth,
+    }))
+    expect(widths.content).toBeLessThanOrEqual(widths.viewport + 1)
+  }
 })
 
 test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다', async ({ page }) => {
@@ -38,20 +65,20 @@ test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(400)
 })
 
-test('사용자가 실행한 Preview를 우선하고 동시 실행 수를 2개로 유지한다', async ({ page }) => {
+test('썸네일을 클릭한 Preview만 실행하고 동시 실행 수를 2개로 유지한다', async ({ page }) => {
   await page.goto('/explore')
   await expect(page.locator('.example-card')).toHaveCount(12)
-  await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
+  await expect(page.locator('.preview-thumbnail img')).toHaveCount(12)
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
 
-  const inactiveCard = page
-    .locator('.example-card')
-    .filter({ has: page.getByRole('button', { name: '실행', exact: true }) })
-    .first()
-  const exampleId = await inactiveCard.getAttribute('data-example-id')
-  const selectedCard = page.locator(`[data-example-id="${exampleId}"]`)
-  await selectedCard.getByRole('button', { name: '실행', exact: true }).click()
+  const cards = page.locator('.example-card')
+  await cards.nth(0).locator('.preview-thumbnail').click()
+  await expect(cards.nth(0).getByTestId('codepen-preview')).toHaveCount(1)
+  await cards.nth(1).locator('.preview-thumbnail').click()
+  await cards.nth(2).locator('.preview-thumbnail').click()
 
-  await expect(selectedCard.getByTestId('codepen-preview')).toHaveCount(1)
+  await expect(cards.nth(0).locator('.preview-thumbnail')).toHaveCount(1)
+  await expect(cards.nth(2).getByTestId('codepen-preview')).toHaveCount(1)
   await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
 })
 
