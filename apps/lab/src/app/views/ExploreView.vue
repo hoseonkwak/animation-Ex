@@ -203,8 +203,8 @@ function clearFilters(): void {
   <main id="main-content" class="page explore-page">
     <section class="hero explore-intro">
       <div class="explore-copy">
-        <p class="eyebrow">THE MOTION INDEX / EXPLORE</p>
-        <h1>애니메이션을 찾고,<br />바로 실행하세요.</h1>
+        <p class="eyebrow">예제 탐색</p>
+        <h1>원하는 애니메이션을<br />찾아보세요.</h1>
         <p class="description">
           기술과 적용 영역으로 원하는 예제를 찾고, 썸네일을 눌러 실행 화면을 확인하세요.
         </p>
@@ -231,7 +231,7 @@ function clearFilters(): void {
     <section class="examples-section" aria-labelledby="examples-heading">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">BROWSE THE ARCHIVE</p>
+          <p class="eyebrow">전체 예제</p>
           <h2 id="examples-heading">실행 가능한 예제</h2>
         </div>
         <div class="result-tools">

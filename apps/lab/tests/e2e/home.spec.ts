@@ -3,31 +3,33 @@ import { expect, test } from '@playwright/test'
 test('P1-UX-01 Vue 애플리케이션이 로드된다', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('웹 애니메이션 예제')
-  await expect(page.getByRole('heading', { name: '이렇게 둘러보세요' })).toBeVisible()
-  await expect(page.locator('.example-card')).toHaveCount(4)
-  await expect(page.locator('.preview-thumbnail')).toHaveCount(4)
-  await expect(page.locator('.preview-thumbnail img')).toHaveCount(4)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('웹 애니메이션 예제')
+  await expect(page.getByRole('heading', { name: '카테고리' })).toBeVisible()
+  await expect(page.locator('.category-pill')).toHaveCount(6)
+  await expect(page.locator('.example-card')).toHaveCount(12)
+  await expect(page.locator('.preview-thumbnail')).toHaveCount(12)
+  await expect(page.locator('.preview-thumbnail img')).toHaveCount(12)
   await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
 
-  await expect(page.getByRole('link', { name: /예제 둘러보기/ })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: '모든 예제 보기' })).toHaveAttribute(
     'href',
     '/explore',
   )
 })
 
-test('홈 대표 썸네일을 눌렀을 때만 CodePen 실행 화면으로 바뀐다', async ({ page }) => {
+test('홈 썸네일을 눌렀을 때만 CodePen 실행 화면으로 바뀐다', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 })
   await page.goto('/')
 
-  await page.locator('.hero-gallery .preview-thumbnail').click()
-  await expect(page.locator('.hero-gallery [data-testid="codepen-preview"]')).toHaveCount(1)
-  await expect(page.locator('.hero-gallery [data-testid="codepen-preview"]')).toHaveAttribute(
+  const firstCard = page.getByTestId('home-example-grid').locator('.example-card').first()
+  await firstCard.locator('.preview-thumbnail').click()
+  await expect(firstCard.getByTestId('codepen-preview')).toHaveCount(1)
+  await expect(firstCard.getByTestId('codepen-preview')).toHaveAttribute(
     'src',
     /https:\/\/codepen\.io\/hoseonkwak\/embed\//,
   )
   await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
-  await expect(page.locator('.preview-thumbnail')).toHaveCount(3)
+  await expect(page.locator('.preview-thumbnail')).toHaveCount(11)
 })
 
 test('작은 화면에서 홈과 탐색 페이지가 가로로 넘치지 않는다', async ({ page }) => {

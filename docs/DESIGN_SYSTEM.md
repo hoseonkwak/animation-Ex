@@ -5,51 +5,51 @@
 
 ## 1. 디자인 방향
 
-Kwak Motion Lab의 화면은 애니메이션 작품을 돋보이게 하는 밝은 전시 공간처럼 보인다.
+Kwak Motion Lab의 화면은 필요한 애니메이션을 빠르게 찾는 Liquid 라이브러리처럼 보인다.
 
-- 정돈된 편집 디자인
-- 따뜻한 밝은 배경과 선명한 텍스트
-- Indigo 포인트
-- 넓은 여백과 얇은 경계
+- 타이틀 다음에 카테고리와 예제를 바로 배치하는 단순한 정보 구조
+- 반투명 표면, 부드러운 곡선과 은은한 색 번짐
+- 밝은 중성 배경과 Indigo 포인트
+- 재질 효과보다 콘텐츠를 우선하는 명확한 위계
 - UI 자체의 움직임은 짧고 절제
 - 각 Preview 안에서는 예제 고유의 색과 움직임을 허용
 
-핵심 인상은 `정확함`, `탐색`, `실험`이다.
+핵심 인상은 `직관성`, `유동성`, `탐색`이다.
 
 ## 2. 색상 토큰
 
 ### Light 기본 테마
 
-| 토큰 | 값 | 용도 |
-|---|---|---|
-| `color-bg` | `#F6F5F1` | 페이지 배경 |
-| `color-surface` | `#FFFFFF` | 카드, 패널 |
-| `color-surface-muted` | `#EFEEE9` | 보조 영역, skeleton |
-| `color-text` | `#181817` | 기본 텍스트 |
-| `color-text-muted` | `#666560` | 보조 텍스트 |
-| `color-border` | `#DAD8D1` | 기본 경계 |
-| `color-border-strong` | `#AAA79D` | 선택, 구분 강조 |
-| `color-brand` | `#4F46E5` | 주요 행동, 링크, focus |
-| `color-brand-hover` | `#4338CA` | hover, active |
-| `color-brand-soft` | `#ECEBFF` | 선택 chip 배경 |
-| `color-success` | `#18794E` | 성공 |
-| `color-warning` | `#9A5B00` | 경고 |
-| `color-danger` | `#B42318` | 오류, 공개 중지 |
+| 토큰                  | 값        | 용도                   |
+| --------------------- | --------- | ---------------------- |
+| `color-bg`            | `#F6F5F1` | 페이지 배경            |
+| `color-surface`       | `#FFFFFF` | 카드, 패널             |
+| `color-surface-muted` | `#EFEEE9` | 보조 영역, skeleton    |
+| `color-text`          | `#181817` | 기본 텍스트            |
+| `color-text-muted`    | `#666560` | 보조 텍스트            |
+| `color-border`        | `#DAD8D1` | 기본 경계              |
+| `color-border-strong` | `#AAA79D` | 선택, 구분 강조        |
+| `color-brand`         | `#4F46E5` | 주요 행동, 링크, focus |
+| `color-brand-hover`   | `#4338CA` | hover, active          |
+| `color-brand-soft`    | `#ECEBFF` | 선택 chip 배경         |
+| `color-success`       | `#18794E` | 성공                   |
+| `color-warning`       | `#9A5B00` | 경고                   |
+| `color-danger`        | `#B42318` | 오류, 공개 중지        |
 
 ### Dark 선택 테마
 
-| 토큰 | 값 |
-|---|---|
-| `color-bg` | `#11110F` |
-| `color-surface` | `#1B1B18` |
+| 토큰                  | 값        |
+| --------------------- | --------- |
+| `color-bg`            | `#11110F` |
+| `color-surface`       | `#1B1B18` |
 | `color-surface-muted` | `#252520` |
-| `color-text` | `#F4F3EF` |
-| `color-text-muted` | `#B7B5AD` |
-| `color-border` | `#3A3933` |
+| `color-text`          | `#F4F3EF` |
+| `color-text-muted`    | `#B7B5AD` |
+| `color-border`        | `#3A3933` |
 | `color-border-strong` | `#67655C` |
-| `color-brand` | `#8B83FF` |
-| `color-brand-hover` | `#A7A1FF` |
-| `color-brand-soft` | `#292650` |
+| `color-brand`         | `#8B83FF` |
+| `color-brand-hover`   | `#A7A1FF` |
+| `color-brand-soft`    | `#292650` |
 
 상태색은 배경색과 아이콘·텍스트를 함께 사용한다. 색만으로 성공, 경고와 실패를 구분하지 않는다.
 
@@ -68,17 +68,17 @@ Mono: JetBrains Mono, Consolas, monospace
 
 ### 크기
 
-| 토큰 | Desktop | Mobile | 굵기/행간 |
-|---|---:|---:|---|
-| `display-xl` | 72px | 42px | 700 / 1.05 |
-| `heading-1` | 48px | 34px | 700 / 1.12 |
-| `heading-2` | 34px | 28px | 700 / 1.2 |
-| `heading-3` | 24px | 21px | 650 / 1.3 |
-| `body-lg` | 18px | 17px | 400 / 1.65 |
-| `body` | 16px | 16px | 400 / 1.6 |
-| `body-sm` | 14px | 14px | 400 / 1.5 |
-| `label` | 13px | 13px | 600 / 1.4 |
-| `caption` | 12px | 12px | 500 / 1.4 |
+| 토큰         | Desktop | Mobile | 굵기/행간  |
+| ------------ | ------: | -----: | ---------- |
+| `display-xl` |    72px |   42px | 700 / 1.05 |
+| `heading-1`  |    48px |   34px | 700 / 1.12 |
+| `heading-2`  |    34px |   28px | 700 / 1.2  |
+| `heading-3`  |    24px |   21px | 650 / 1.3  |
+| `body-lg`    |    18px |   17px | 400 / 1.65 |
+| `body`       |    16px |   16px | 400 / 1.6  |
+| `body-sm`    |    14px |   14px | 400 / 1.5  |
+| `label`      |    13px |   13px | 600 / 1.4  |
+| `caption`    |    12px |   12px | 500 / 1.4  |
 
 Hero 제목은 한 줄 12~16자 정도로 끊는다. 본문 한 줄은 최대 68자로 제한한다.
 
@@ -110,13 +110,13 @@ space-24 96px
 
 ## 5. 그리드와 반응형
 
-| 이름 | 범위 | 열과 여백 |
-|---|---|---|
-| Mobile | 0~639px | 4열, 좌우 16px |
-| Large Mobile | 640~767px | 6열, 좌우 24px |
-| Tablet | 768~1023px | 8열, 좌우 32px |
-| Desktop | 1024~1439px | 12열, 좌우 40px |
-| Wide | 1440px 이상 | 최대 1440px, 좌우 48px |
+| 이름         | 범위        | 열과 여백              |
+| ------------ | ----------- | ---------------------- |
+| Mobile       | 0~639px     | 4열, 좌우 16px         |
+| Large Mobile | 640~767px   | 6열, 좌우 24px         |
+| Tablet       | 768~1023px  | 8열, 좌우 32px         |
+| Desktop      | 1024~1439px | 12열, 좌우 40px        |
+| Wide         | 1440px 이상 | 최대 1440px, 좌우 48px |
 
 Explore 카드 열:
 
@@ -141,10 +141,10 @@ Explore 카드 열:
 
 UI 모션은 Preview 작품과 경쟁하지 않아야 한다.
 
-| 토큰 | 시간 | 용도 |
-|---|---:|---|
-| `motion-fast` | 120ms | 버튼, chip |
-| `motion-base` | 200ms | 메뉴, hover |
+| 토큰          |  시간 | 용도                 |
+| ------------- | ----: | -------------------- |
+| `motion-fast` | 120ms | 버튼, chip           |
+| `motion-base` | 200ms | 메뉴, hover          |
 | `motion-slow` | 320ms | drawer, 화면 내 패널 |
 
 기본 easing:

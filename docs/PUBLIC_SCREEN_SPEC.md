@@ -5,16 +5,16 @@
 
 ## 1. Phase 1 경로
 
-| 경로 | 화면 |
-|---|---|
-| `/` | Home |
-| `/explore` | 전체 탐색 |
-| `/sections` | 적용 영역 허브 |
-| `/sections/:slug` | Hero 등 Section 상세 |
-| `/examples/:slug` | 예제 상세 |
-| `/saved` | 저장한 예제와 나중에 연습 |
-| `/submit` | URL 제보 |
-| `/about` | 서비스와 출처 정책 |
+| 경로              | 화면                      |
+| ----------------- | ------------------------- |
+| `/`               | Home                      |
+| `/explore`        | 전체 탐색                 |
+| `/sections`       | 적용 영역 허브            |
+| `/sections/:slug` | Hero 등 Section 상세      |
+| `/examples/:slug` | 예제 상세                 |
+| `/saved`          | 저장한 예제와 나중에 연습 |
+| `/submit`         | URL 제보                  |
+| `/about`          | 서비스와 출처 정책        |
 
 Phase 1 Header는 `HOME`, `EXPLORE`, `SECTIONS`, `ABOUT`과 검색, 저장, 테마 전환으로 구성한다. `PRACTICE`는 Phase 2, `LEARN`은 Phase 3에 실제 콘텐츠와 함께 추가한다.
 
@@ -56,43 +56,33 @@ Menu drawer에 Explore, Sections, Saved, About과 Theme을 둔다. 현재 위치
 
 ```text
 ┌ Header ───────────────────────────────────────────────┐
-│ WEB MOTION REFERENCE                                  │
-│ 좋은 움직임을 찾고,             Curated Live Preview │
-│ 바로 실행해보세요.              실제 CodePen 실행     │
-│ [애니메이션 둘러보기] [URL 제보]                      │
-├ Search: "스크롤할 때 이미지가 펼쳐지는 효과" ───────┤
-│ Featured Collections                                 │
-│ Recently Added                                       │
-│ Browse by Section                                    │
-│ Popular Patterns                                     │
-│ URL Submission CTA                                   │
+│ 필요한 움직임을 바로 찾아보세요.                     │
+│ 카테고리를 고르고 썸네일을 눌러 실행합니다.           │
+├ Category: 전체 · 갤러리 · 텍스트 · 카드 · 히어로 ────┤
+│ Example thumbnail grid                               │
+│ Example thumbnail grid                               │
 └ Footer ───────────────────────────────────────────────┘
 ```
 
 ### Hero
 
-- 텍스트와 Preview를 Desktop 5:7 비율로 배치한다.
-- 대표 예제도 처음에는 썸네일로 보이고 사용자가 누르면 실제 Preview를 실행한다.
-- 실패해도 제목, 검색과 CTA는 즉시 사용할 수 있다.
-- 모바일에서는 텍스트 다음에 Preview를 배치한다.
-- 추천 문구:
-  - Eyebrow: `WEB MOTION REFERENCE`
-  - 제목: `좋은 움직임을 찾고, 바로 실행해보세요.`
-  - 설명: `웹 애니메이션을 기술과 적용 영역별로 찾고 실제 코드 실행 화면으로 확인하세요.`
+- 제품 제목과 한 문장 설명만 표시한다.
+- 제목 바로 다음에 카테고리를 가로 목록으로 제공한다.
+- 예제 썸네일 그리드를 카테고리 다음에 배치한다.
+- 모바일에서는 카테고리를 가로 스크롤하고 예제는 단일 열로 표시한다.
 
-### 주요 검색
+### 검색
 
-- Hero 바로 아래 독립된 60px 검색 입력
-- 추천 검색어 chip: `GSAP Hero`, `Scroll Reveal`, `Text Motion`, `Image Slider`
+- Home에는 별도 검색 입력을 두지 않고 카테고리와 예제를 바로 보여준다.
+- 검색과 추천 검색어는 Explore에서 제공한다.
 - 자연어를 입력해도 Phase 1에서는 일반 키워드로 검색한다.
 - AI가 해석한 것처럼 표현하지 않는다.
 
 ### 콘텐츠 섹션
 
-- Featured Collections: 3개의 넓은 컬렉션 카드
-- Recently Added: 실행형 카드 4개, 더 보기
-- Browse by Section: Hero, Navigation, Gallery, Slider, Card, Button, Text, Loading, Background
-- Popular Patterns: 패턴 카드 4개
+- 카테고리: 공개 예제가 있는 Section과 결과 수
+- 예제: 추천순 썸네일 12개와 전체 탐색 링크
+- Collection, Pattern, URL 제보는 전용 화면과 문맥에서 제공한다.
 - Phase 1에는 Practice와 Tutorial 섹션을 표시하지 않는다.
 
 ## 4. Explore
