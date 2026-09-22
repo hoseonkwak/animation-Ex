@@ -52,9 +52,12 @@
 
 ### 다음 구현 단계에서 추가
 
-- Preview sandbox threat model
-- 운영 Runbook
-- 무료 한도 점검 및 수집 중지 자동화
+- `PREVIEW_SANDBOX_THREAT_MODEL.md`
+- `RUNBOOK.md`
+- local·preview·production binding 분리 계약 검사
+- 무료 한도 70% 경고 및 90% 수집 중지 검사
+- D1 export를 임시 local D1에 복구하는 자동 리허설
+- request ID 기반 Worker 구조화 오류 로그 검사
 
 구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.
 

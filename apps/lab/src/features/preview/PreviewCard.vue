@@ -80,8 +80,11 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         v-if="active"
         :title="`${example.title} CodePen 실행 화면`"
         :src="example.preview.embedUrl"
+        allow="fullscreen"
         allowfullscreen
         data-testid="codepen-preview"
+        referrerpolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         @load="frameState = 'running'"
         @error="frameState = 'error'"
       />

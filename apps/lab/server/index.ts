@@ -7,6 +7,7 @@ import {
   IngestionApiError,
 } from './ingestion'
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
+import { readUsageStatus, storeUsageSnapshot } from './operations'
 
 interface Env {
   DB: D1Database
@@ -15,6 +16,40 @@ interface Env {
   INGESTION_KEY_ID?: string
   INGESTION_HMAC_SECRET?: string
   TURNSTILE_SECRET_KEY?: string
+  APP_ENVIRONMENT?: 'local' | 'preview' | 'production'
+  INGESTION_PAUSED?: string
+}
+
+type RequestHandler = (request: Request, env: Env, requestId: string) => Promise<Response>
+
+function withErrorBoundary(handler: RequestHandler) {
+  return async (request: Request, env: Env): Promise<Response> => {
+    const requestId = crypto.randomUUID()
+    try {
+      return await handler(request, env, requestId)
+    } catch (error) {
+      const url = new URL(request.url)
+      console.error({
+        event: 'request_error',
+        requestId,
+        method: request.method,
+        path: url.pathname,
+        environment: env.APP_ENVIRONMENT ?? 'local',
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      })
+      return json(
+        {
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: '요청을 처리하지 못했습니다.',
+            requestId,
+          },
+        },
+        { status: 500 },
+      )
+    }
+  }
 }
 
 const jsonHeaders = {
@@ -31,9 +66,8 @@ function json(data: unknown, init: ResponseInit = {}): Response {
 }
 
 export default {
-  async fetch(request, env): Promise<Response> {
+  fetch: withErrorBoundary(async (request, env, requestId): Promise<Response> => {
     const url = new URL(request.url)
-    const requestId = crypto.randomUUID()
 
     if (request.method === 'GET' && url.pathname === '/api/v1/health') {
       return json({ data: { service: 'kwak-motion-lab', status: 'ok' }, meta: { requestId } })
@@ -89,10 +123,16 @@ export default {
     }
 
     if (request.method === 'GET' && url.pathname === '/robots.txt') {
+      const preview = env.APP_ENVIRONMENT === 'preview'
       return new Response(
-        `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${url.origin}/sitemap.xml\n`,
+        preview
+          ? 'User-agent: *\nDisallow: /\n'
+          : `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${url.origin}/sitemap.xml\n`,
         {
-          headers: { 'content-type': 'text/plain; charset=utf-8' },
+          headers: {
+            'content-type': 'text/plain; charset=utf-8',
+            ...(preview ? { 'x-robots-tag': 'noindex, nofollow' } : {}),
+          },
         },
       )
     }
@@ -146,9 +186,33 @@ export default {
       const rawBody = await request.text()
       try {
         const ingestionRequestId = await authenticateIngestion(request, rawBody, env)
+        if (url.pathname === '/api/v1/ingestion/usage') {
+          try {
+            return json({
+              data: await storeUsageSnapshot(env.DB, JSON.parse(rawBody)),
+              meta: { requestId },
+            })
+          } catch (error) {
+            if (error instanceof SyntaxError || error instanceof TypeError) {
+              throw new IngestionApiError(400, 'INVALID_USAGE_SNAPSHOT', error.message)
+            }
+            throw error
+          }
+        }
         if (url.pathname === '/api/v1/ingestion/batches') {
+          const usage = await readUsageStatus(env.DB)
+          if (env.INGESTION_PAUSED === 'true' || usage.level === 'paused') {
+            throw new IngestionApiError(
+              429,
+              'INGESTION_PAUSED_LIMIT',
+              '무료 사용량 보호를 위해 수집이 일시 중지되었습니다.',
+            )
+          }
           const data = await handleIngestionBatch(rawBody, ingestionRequestId, env)
-          return json({ data, meta: { requestId } })
+          return json(
+            { data, meta: { requestId } },
+            { headers: { 'x-ingestion-usage-level': usage.level } },
+          )
         }
         const completeMatch = url.pathname.match(/^\/api\/v1\/ingestion\/runs\/([^/]+)\/complete$/)
         if (completeMatch) {
@@ -174,6 +238,16 @@ export default {
 
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
           return json({ data: await repository.ingestionRuns(), meta: { requestId } })
+        }
+        if (request.method === 'GET' && url.pathname === '/api/v1/admin/operations') {
+          return json({
+            data: {
+              environment: env.APP_ENVIRONMENT ?? 'local',
+              ingestionPaused: env.INGESTION_PAUSED === 'true',
+              usage: await readUsageStatus(env.DB),
+            },
+            meta: { requestId },
+          })
         }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates') {
           return json({ data: await repository.list(url), meta: { requestId } })
@@ -258,7 +332,7 @@ export default {
       { error: { code: 'NOT_FOUND', message: '요청한 API를 찾을 수 없습니다.', requestId } },
       { status: 404 },
     )
-  },
+  }),
 } satisfies ExportedHandler<Env>
 
 function authenticateAdmin(request: Request, env: Env): string {

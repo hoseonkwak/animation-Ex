@@ -38,6 +38,12 @@ describe('PreviewCard', () => {
     await wrapper.setProps({ active: true })
     expect(wrapper.find('.preview-thumbnail').exists()).toBe(false)
     expect(wrapper.get('iframe').attributes('src')).toBe(example.preview.embedUrl)
+    expect(wrapper.get('iframe').attributes('sandbox')).toBe(
+      'allow-scripts allow-same-origin allow-forms allow-popups',
+    )
+    expect(wrapper.get('iframe').attributes('referrerpolicy')).toBe(
+      'strict-origin-when-cross-origin',
+    )
 
     await wrapper.get('.preview-toolbar button').trigger('click')
     await wrapper.setProps({ active: false })

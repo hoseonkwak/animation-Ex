@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DatabaseSync } from 'node:sqlite'
 import worker from '../../server/index'
 import { createMigratedDatabase } from './database'
@@ -36,7 +36,10 @@ beforeEach(() => {
   sqlite = migrated.sqlite
   database = migrated.d1
 })
-afterEach(() => sqlite.close())
+afterEach(() => {
+  vi.restoreAllMocks()
+  sqlite.close()
+})
 
 describe('P1-ADMIN 관리자 검수 계약', () => {
   it('인증 없음은 401, 허용되지 않은 이메일은 403이다', async () => {
@@ -158,13 +161,14 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
       WHEN NEW.decision = 'approve'
       BEGIN SELECT RAISE(ABORT, 'forced approval failure'); END`)
 
-    await expect(
-      request('/api/v1/admin/candidates/candidate-admin-tutorial/approve', {
-        method: 'POST',
-        headers: { 'Idempotency-Key': 'forced-failure' },
-        body: JSON.stringify({ version: 1 }),
-      }),
-    ).rejects.toThrow('forced approval failure')
+    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const response = await request('/api/v1/admin/candidates/candidate-admin-tutorial/approve', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'forced-failure' },
+      body: JSON.stringify({ version: 1 }),
+    })
+    expect(response.status).toBe(500)
+    expect(log).toHaveBeenCalledWith(expect.objectContaining({ event: 'request_error' }))
     expect(
       sqlite
         .prepare(

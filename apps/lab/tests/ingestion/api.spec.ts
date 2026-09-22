@@ -69,6 +69,99 @@ beforeEach(() => {
 afterEach(() => sqlite.close())
 
 describe('P1-CONTENT WSSS signed batch API', () => {
+  it('Cloudflare 사용량 snapshot을 날짜별 절대값으로 저장하고 관리자에게 표시한다', async () => {
+    const date = new Date().toISOString().slice(0, 10)
+    const first = await signedRequest('/api/v1/ingestion/usage', {
+      date,
+      workerRequests: 70_000,
+      d1RowsRead: 3_500_000,
+      d1RowsWritten: 70_000,
+    })
+    expect(first.status).toBe(200)
+    expect(((await first.json()) as { data: { level: string } }).data.level).toBe('warning')
+
+    const updated = await signedRequest('/api/v1/ingestion/usage', {
+      date,
+      workerRequests: 90_000,
+      d1RowsRead: 4_500_000,
+      d1RowsWritten: 90_000,
+    })
+    expect(updated.status).toBe(200)
+    expect(((await updated.json()) as { data: { level: string } }).data.level).toBe('paused')
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM daily_metrics WHERE metric_date = ? AND dimension_key = 'cloudflare'",
+        )
+        .get(date),
+    ).toEqual({ count: 3 })
+
+    const admin = await worker.fetch(
+      new Request('https://example.test/api/v1/admin/operations', {
+        headers: { 'Cf-Access-Authenticated-User-Email': 'owner@example.test' },
+      }),
+      env(),
+      context,
+    )
+    expect(((await admin.json()) as { data: { usage: { level: string } } }).data.usage.level).toBe(
+      'paused',
+    )
+  })
+
+  it('잘못된 사용량 snapshot을 저장하지 않는다', async () => {
+    const response = await signedRequest('/api/v1/ingestion/usage', {
+      date: 'not-a-date',
+      workerRequests: -1,
+      d1RowsRead: 0,
+      d1RowsWritten: 0,
+    })
+    expect(response.status).toBe(400)
+    expect(((await response.json()) as { error: { code: string } }).error.code).toBe(
+      'INVALID_USAGE_SNAPSHOT',
+    )
+  })
+
+  it('무료 한도 90%에서 새 수집 batch를 중지한다', async () => {
+    const date = new Date().toISOString().slice(0, 10)
+    sqlite
+      .prepare(
+        `INSERT INTO daily_metrics (metric_date, metric_key, dimension_key, count)
+         VALUES (?, 'worker_requests', 'cloudflare', 90000)`,
+      )
+      .run(date)
+    const response = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'paused-limit-run',
+      trigger: 'schedule',
+      checkpointBefore: null,
+      items: fixtureItems().slice(0, 1),
+    })
+    expect(response.status).toBe(429)
+    expect(((await response.json()) as { error: { code: string } }).error.code).toBe(
+      'INGESTION_PAUSED_LIMIT',
+    )
+    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM ingestion_runs').get()).toEqual({
+      count: 0,
+    })
+  })
+
+  it('무료 한도 70%에서는 경고를 표시하고 수집을 계속한다', async () => {
+    const date = new Date().toISOString().slice(0, 10)
+    sqlite
+      .prepare(
+        `INSERT INTO daily_metrics (metric_date, metric_key, dimension_key, count)
+         VALUES (?, 'd1_rows_written', 'cloudflare', 70000)`,
+      )
+      .run(date)
+    const response = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'warning-limit-run',
+      trigger: 'manual',
+      checkpointBefore: null,
+      items: fixtureItems().slice(0, 1),
+    })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('x-ingestion-usage-level')).toBe('warning')
+  })
+
   it('같은 fixture를 세 실행에 보내도 Candidate는 최초 세 개만 만든다', async () => {
     const items = fixtureItems()
     const results = []

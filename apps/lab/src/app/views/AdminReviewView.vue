@@ -11,6 +11,11 @@ const viewport = ref<'desktop' | 'tablet' | 'mobile'>('desktop')
 const busy = ref(false)
 const notice = ref('')
 const error = ref('')
+const operations = ref<{
+  environment: string
+  ingestionPaused: boolean
+  usage: { level: 'normal' | 'warning' | 'paused'; maximumRatio: number }
+} | null>(null)
 const reasonCode = ref('missing-metadata')
 const decisionNote = ref('')
 const form = reactive({
@@ -43,7 +48,10 @@ const approvalIssues = computed(() => {
   return issues
 })
 
-onMounted(loadQueue)
+onMounted(() => {
+  void loadQueue()
+  void loadOperations()
+})
 
 async function api<T>(path: string, init: Parameters<typeof fetch>[1] = {}): Promise<T> {
   const response = await fetch(path, {
@@ -66,6 +74,14 @@ function changeViewport(value: string): void {
 
 function showError(cause: unknown): void {
   error.value = cause instanceof Error ? cause.message : '요청을 처리하지 못했습니다.'
+}
+
+async function loadOperations(): Promise<void> {
+  try {
+    operations.value = await api('/api/v1/admin/operations')
+  } catch (cause) {
+    showError(cause)
+  }
 }
 
 async function loadQueue(): Promise<void> {
@@ -239,6 +255,20 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         ><strong>{{ queue.counts[item] ?? 0 }}</strong>
       </button>
     </section>
+    <section v-if="operations" class="operations-status" aria-label="운영 상태">
+      <span
+        >환경 <strong>{{ operations.environment }}</strong></span
+      >
+      <span
+        >무료 한도 <strong>{{ Math.round(operations.usage.maximumRatio * 100) }}%</strong></span
+      >
+      <span
+        >상태 <strong>{{ operations.usage.level }}</strong></span
+      >
+      <span
+        >수집 <strong>{{ operations.ingestionPaused ? '중지' : '허용' }}</strong></span
+      >
+    </section>
     <p v-if="notice" class="admin-notice success" role="status">{{ notice }}</p>
     <p v-if="error" class="admin-notice error" role="alert">{{ error }}</p>
 
@@ -298,6 +328,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             :src="selected.embedUrl"
             :style="{ width: frameWidth }"
             :title="`${selected.sourceTitle} by ${selected.creatorName} 실행 화면`"
+            referrerpolicy="strict-origin-when-cross-origin"
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           />
         </div>

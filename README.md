@@ -192,6 +192,8 @@ npm run db:setup:local
 
 `db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
+처음 한 번 `apps/lab/.dev.vars.example`을 `apps/lab/.dev.vars`로 복사합니다. `.dev.vars`는 Git에서 제외되며 로컬 관리자와 수집 서명 모의 값만 담습니다.
+
 ### 3. 개발 서버 실행
 
 ```bash
@@ -226,22 +228,28 @@ npm run preview
 
 ### 5. 코드 품질 검사
 
-| 명령                            | 검사 내용                            |
-| ------------------------------- | ------------------------------------ |
-| `npm run format:check`          | Prettier 형식 검사                   |
-| `npm run typecheck`             | Vue와 Worker TypeScript 검사         |
-| `npm run lint`                  | ESLint 정적 검사                     |
-| `npm run test`                  | Vitest 단위 테스트                   |
-| `npm run test:contracts`        | API 계약 테스트                      |
-| `npm run test:ingestion`        | 수집 파이프라인 테스트               |
-| `npm run ingest:wsss:fixture`   | 저장된 최소 HTML로 parser 실행       |
-| `npm run ingest:wsss:preflight` | 현재 WSSS 한 건을 읽기 전용으로 점검 |
-| `npm run ingest:wsss:live`      | 서명된 batch API로 후보 제출         |
-| `npm run test:e2e`              | 실제 브라우저 E2E 테스트             |
-| `npm run build`                 | production build 검사                |
-| `npm run db:migrate:local`      | 로컬 D1 migration 적용               |
-| `npm run db:seed:local`         | 로컬 D1 예제 데이터 입력             |
-| `npm run db:setup:local`        | migration과 seed 순차 실행           |
+| 명령                               | 검사 내용                            |
+| ---------------------------------- | ------------------------------------ |
+| `npm run format:check`             | Prettier 형식 검사                   |
+| `npm run typecheck`                | Vue와 Worker TypeScript 검사         |
+| `npm run lint`                     | ESLint 정적 검사                     |
+| `npm run test`                     | Vitest 단위 테스트                   |
+| `npm run test:contracts`           | API 계약 테스트                      |
+| `npm run test:ingestion`           | 수집 파이프라인 테스트               |
+| `npm run ingest:wsss:fixture`      | 저장된 최소 HTML로 parser 실행       |
+| `npm run ingest:wsss:preflight`    | 현재 WSSS 한 건을 읽기 전용으로 점검 |
+| `npm run ingest:wsss:live`         | 서명된 batch API로 후보 제출         |
+| `npm run sync:cloudflare-usage`    | Cloudflare 일일 사용량 동기화        |
+| `npm run test:e2e`                 | 실제 브라우저 E2E 테스트             |
+| `npm run build`                    | production build 검사                |
+| `npm run db:migrate:local`         | 로컬 D1 migration 적용               |
+| `npm run db:seed:local`            | 로컬 D1 예제 데이터 입력             |
+| `npm run db:setup:local`           | migration과 seed 순차 실행           |
+| `npm run db:rehearse:restore`      | D1 export를 임시 새 D1에 복구 검증   |
+| `npm run verify:deploy:preview`    | preview 환경과 D1 binding dry-run    |
+| `npm run verify:deploy:production` | production 환경과 D1 binding dry-run |
+
+환경별 빌드와 배포 절차, 무료 한도 중지와 복구는 [`docs/RUNBOOK.md`](docs/RUNBOOK.md)를 따릅니다.
 
 일반적인 변경을 마친 뒤에는 다음 순서로 확인합니다.
 
@@ -274,6 +282,8 @@ npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
 ```
 
 GitHub Actions의 `WSSS ingestion` workflow도 같은 세 비밀값을 사용하며 현재는 수동 실행만 허용합니다. 수동 실행의 구조 변화, 속도 제한과 checkpoint 복구가 안정화된 뒤 하루 1회 일정을 활성화합니다.
+
+Cloudflare 사용량은 `Cloudflare daily usage` workflow 또는 `npm run sync:cloudflare-usage`로 동기화합니다. Worker 요청 수와 D1 읽기·쓰기 행 수를 GraphQL Analytics에서 읽고 HMAC 인증 API를 통해 `daily_metrics`에 저장합니다. 필요한 변수와 비밀값은 [`docs/RUNBOOK.md`](docs/RUNBOOK.md)에 정리되어 있습니다.
 
 ### 7. Playwright E2E 실행
 

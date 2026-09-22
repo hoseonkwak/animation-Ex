@@ -21,11 +21,19 @@
     "test": "npm run test --workspace @kwak-motion/lab",
     "test:contracts": "npm run test:contracts --workspace @kwak-motion/lab",
     "test:ingestion": "npm run test:ingestion --workspace @kwak-motion/lab",
+    "sync:cloudflare-usage": "npm run sync:cloudflare-usage --workspace @kwak-motion/lab",
     "test:e2e": "npm run test:e2e --workspace @kwak-motion/lab",
     "test:legacy-previews": "npm run test:legacy-previews --workspace @kwak-motion/lab",
+    "build:preview": "npm run build:preview --workspace @kwak-motion/lab",
+    "build:production": "npm run build:production --workspace @kwak-motion/lab",
+    "verify:deploy:preview": "npm run verify:deploy:preview --workspace @kwak-motion/lab",
+    "verify:deploy:production": "npm run verify:deploy:production --workspace @kwak-motion/lab",
+    "deploy:preview": "npm run deploy:preview --workspace @kwak-motion/lab",
+    "deploy:production": "npm run deploy:production --workspace @kwak-motion/lab",
     "db:migrate:local": "npm run db:migrate:local --workspace @kwak-motion/lab",
     "db:seed:local": "npm run db:seed:local --workspace @kwak-motion/lab",
-    "db:setup:local": "npm run db:setup:local --workspace @kwak-motion/lab"
+    "db:setup:local": "npm run db:setup:local --workspace @kwak-motion/lab",
+    "db:rehearse:restore": "npm run db:rehearse:restore --workspace @kwak-motion/lab"
   },
   "devDependencies": {},
   "dependencies": {}

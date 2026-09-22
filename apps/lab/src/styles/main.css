@@ -567,6 +567,24 @@ select:focus-visible {
 .admin-stats strong {
   font-size: 1.4rem;
 }
+.operations-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.operations-status span {
+  padding: 8px 12px;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+.operations-status strong {
+  margin-left: 4px;
+  color: var(--color-text);
+}
 .admin-notice {
   padding: 12px 16px;
   border-radius: 8px;

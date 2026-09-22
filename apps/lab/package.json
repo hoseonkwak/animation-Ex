@@ -19,13 +19,20 @@
     "ingest:wsss:fixture": "node --experimental-transform-types ingestion/cli.ts",
     "ingest:wsss:preflight": "node --experimental-transform-types ingestion/cli.ts --preflight-live --max-articles 1 --max-pages 1",
     "ingest:wsss:live": "node --experimental-transform-types ingestion/cli.ts --live",
+    "sync:cloudflare-usage": "node --experimental-transform-types scripts/sync-cloudflare-usage.ts",
     "test:e2e": "node tests/e2e/run.mjs",
     "test:legacy-previews": "node scripts/verify-legacy-previews.mjs",
     "db:migrate:local": "wrangler d1 migrations apply kwak-motion-lab-local --local",
     "db:seed:local": "wrangler d1 execute kwak-motion-lab-local --local --file db/seeds/wp1.sql && wrangler d1 execute kwak-motion-lab-local --local --file db/seeds/wp4.sql && wrangler d1 execute kwak-motion-lab-local --local --file db/seeds/wp5.sql && wrangler d1 execute kwak-motion-lab-local --local --file db/seeds/wp6.sql",
     "db:setup:local": "npm run db:migrate:local && npm run db:seed:local",
+    "db:rehearse:restore": "node scripts/rehearse-d1-restore.mjs",
     "preview": "vite preview",
-    "deploy": "wrangler deploy"
+    "build:preview": "node scripts/environment.mjs build preview",
+    "build:production": "node scripts/environment.mjs build production",
+    "verify:deploy:preview": "node scripts/environment.mjs dry-run preview",
+    "verify:deploy:production": "node scripts/environment.mjs dry-run production",
+    "deploy:preview": "node scripts/environment.mjs deploy preview",
+    "deploy:production": "node scripts/environment.mjs deploy production"
   },
   "dependencies": {
     "vue": "3.5.42",

@@ -231,6 +231,21 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 
 일부 항목이 실패해도 성공 항목을 다시 보낼 필요가 없게 결과를 분리한다. `externalId`와 canonical URL은 멱등 키로 사용한다.
 
+### `POST /ingestion/usage`
+
+Cloudflare GraphQL Analytics에서 조회한 UTC 날짜별 사용량을 저장한다. ingestion HMAC 인증을 그대로 사용한다.
+
+```json
+{
+  "date": "2026-09-22",
+  "workerRequests": 70000,
+  "d1RowsRead": 3500000,
+  "d1RowsWritten": 70000
+}
+```
+
+같은 날짜를 다시 제출하면 누적하지 않고 해당 날짜의 절대값 세 개를 교체한다. 응답은 저장된 수치와 `normal`, `warning`, `paused` 판정을 반환한다.
+
 ### `POST /ingestion/runs/:id/complete`
 
 checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 상태는 `partial`, 전체 실패는 `failed`로 저장한다.

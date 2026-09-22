@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test'
 
 test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', async ({ page }) => {
   await page.goto('/admin/review')
+  await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('환경 local')
+  await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('무료 한도 0%')
 
   await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
   await expect(page.getByRole('button', { name: /GSAP ScrollTrigger Tutorial/ })).toBeVisible()

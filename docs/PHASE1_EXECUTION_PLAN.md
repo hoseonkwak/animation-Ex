@@ -2,20 +2,21 @@
 
 문서 상태: Active v0.2
 목적: 설계 문서를 작고 검토 가능한 구현 단위와 검증 증거로 변환한다.
-현재 단계: WP0~WP6 완료, WP7 착수 준비
+현재 단계: WP0~WP6 완료, WP7 진행 중
 
 ## 진행 현황
 
-| 작업 패키지                  | 상태 | 증거                                               |
-| ---------------------------- | ---- | -------------------------------------------------- |
-| WP0 · 기준선과 하네스        | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md) |
-| WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md) |
-| WP2 · Explore와 Preview Card | 완료 | [`evidence/WP2_REPORT.md`](evidence/WP2_REPORT.md) |
-| WP3 · 기존 15개 이전         | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md) |
-| WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md) |
-| WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md) |
-| WP6 · 나머지 공개 화면       | 완료 | [`evidence/WP6_REPORT.md`](evidence/WP6_REPORT.md) |
-| WP7~WP8                      | 대기 | 선행 작업 완료 후 진행                             |
+| 작업 패키지                  | 상태 | 증거                                                   |
+| ---------------------------- | ---- | ------------------------------------------------------ |
+| WP0 · 기준선과 하네스        | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md)     |
+| WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md)     |
+| WP2 · Explore와 Preview Card | 완료 | [`evidence/WP2_REPORT.md`](evidence/WP2_REPORT.md)     |
+| WP3 · 기존 15개 이전         | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md)     |
+| WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md)     |
+| WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md)     |
+| WP6 · 나머지 공개 화면       | 완료 | [`evidence/WP6_REPORT.md`](evidence/WP6_REPORT.md)     |
+| WP7                          | 진행 | [`evidence/WP7_PROGRESS.md`](evidence/WP7_PROGRESS.md) |
+| WP8                          | 대기 | WP7 완료 후 진행                                       |
 
 ## 1. 완료 결과
 

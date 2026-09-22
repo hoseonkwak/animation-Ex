@@ -128,7 +128,10 @@ function openFullscreen(): void {
             ref="frame"
             :title="`${item.title} CodePen 실행 화면`"
             :src="item.preview.embedUrl"
+            allow="fullscreen"
             allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           />
         </div>
       </section>

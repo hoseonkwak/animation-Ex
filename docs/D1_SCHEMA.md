@@ -310,6 +310,8 @@ IP, Turnstile 토큰과 브라우저 fingerprint는 저장하지 않는다.
 
 개별 행동 행을 장기간 저장하지 않고 필요한 집계를 같은 UTC 날짜 버킷에 누적한다.
 
+Cloudflare 운영 사용량은 `dimension_key = 'cloudflare'`로 저장하고 `worker_requests`, `d1_rows_read`, `d1_rows_written`을 `metric_key`로 사용한다. 동기화 값은 조회 시점의 절대값이므로 같은 날짜의 행을 upsert해 교체한다.
+
 ## 9. 필수 인덱스
 
 ```text

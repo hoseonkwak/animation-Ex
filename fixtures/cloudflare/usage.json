@@ -1,0 +1,19 @@
+{
+  "data": {
+    "viewer": {
+      "accounts": [
+        {
+          "workersInvocationsAdaptive": [
+            { "sum": { "requests": 42000 } },
+            { "sum": { "requests": 28000 } }
+          ],
+          "d1AnalyticsAdaptiveGroups": [
+            { "sum": { "rowsRead": 1500000, "rowsWritten": 25000 } },
+            { "sum": { "rowsRead": 2000000, "rowsWritten": 45000 } }
+          ]
+        }
+      ]
+    }
+  },
+  "errors": null
+}

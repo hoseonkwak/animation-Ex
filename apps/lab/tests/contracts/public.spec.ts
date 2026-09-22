@@ -97,4 +97,14 @@ describe('WP6 public API', () => {
     expect(xml).not.toContain('hidden-draft-example')
     sqlite.close()
   })
+
+  it('preview 환경은 robots와 응답 헤더로 검색 색인을 막는다', async () => {
+    const response = await worker.fetch(
+      new Request('https://preview.example.test/robots.txt'),
+      { DB: {} as D1Database, APP_ENVIRONMENT: 'preview' },
+      context,
+    )
+    expect(await response.text()).toBe('User-agent: *\nDisallow: /\n')
+    expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow')
+  })
 })
