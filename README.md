@@ -213,7 +213,7 @@ npm run dev
 | 공개 예제 API    | `http://localhost:5173/api/v1/examples` |
 | 관리자 검수      | `http://localhost:5173/admin/review`    |
 
-URL 제보는 로컬에서 `local-test-token`으로 Turnstile을 모의합니다. production build에는 `VITE_TURNSTILE_SITE_KEY`, Worker secret에는 `TURNSTILE_SECRET_KEY`를 설정해야 제보 폼을 사용할 수 있습니다.
+URL 제보는 로컬에서 `local-test-token`으로 Turnstile을 모의합니다. 원격 환경은 공개 site key를 `apps/lab/.env.<환경>`의 `VITE_TURNSTILE_SITE_KEY`에 두고, 비밀 키는 Cloudflare Worker의 `TURNSTILE_SECRET_KEY` secret으로 등록해야 합니다. 환경별 배포 명령은 해당 모드의 env 파일을 읽어 빌드합니다.
 
 Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의하며 production에서는 Cloudflare Access 신원과 `ADMIN_EMAIL`이 모두 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
 
@@ -240,16 +240,22 @@ npm run preview
 | `npm run ingest:wsss:preflight`    | 현재 WSSS 한 건을 읽기 전용으로 점검 |
 | `npm run ingest:wsss:live`         | 서명된 batch API로 후보 제출         |
 | `npm run sync:cloudflare-usage`    | Cloudflare 일일 사용량 동기화        |
+| `npm run smoke:preview`            | 배포한 Preview의 핵심 경로 점검      |
+| `npm run smoke:production`         | 배포한 Production의 핵심 경로 점검   |
 | `npm run test:e2e`                 | 실제 브라우저 E2E 테스트             |
 | `npm run build`                    | production build 검사                |
 | `npm run db:migrate:local`         | 로컬 D1 migration 적용               |
 | `npm run db:seed:local`            | 로컬 D1 예제 데이터 입력             |
 | `npm run db:setup:local`           | migration과 seed 순차 실행           |
+| `npm run db:setup:preview`         | 원격 Preview D1 migration과 seed     |
+| `npm run db:setup:production`      | 원격 Production D1 migration과 seed  |
 | `npm run db:rehearse:restore`      | D1 export를 임시 새 D1에 복구 검증   |
 | `npm run verify:deploy:preview`    | preview 환경과 D1 binding dry-run    |
 | `npm run verify:deploy:production` | production 환경과 D1 binding dry-run |
 
 환경별 빌드와 배포 절차, 무료 한도 중지와 복구는 [`docs/RUNBOOK.md`](docs/RUNBOOK.md)를 따릅니다.
+
+현재 공개 Production URL은 `https://kwak-motion-lab-production.kwak-motion-lab.workers.dev`입니다.
 
 일반적인 변경을 마친 뒤에는 다음 순서로 확인합니다.
 

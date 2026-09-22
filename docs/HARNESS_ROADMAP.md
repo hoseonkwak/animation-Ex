@@ -49,15 +49,24 @@
 - 수동 WSSS GitHub Actions workflow와 읽기 전용 live preflight
 - 공개 상세·Saved·Sections·URL 제보·SEO 계약 검사
 - localStorage 재시작 복원과 Phase 1 메뉴 Playwright 검사
+- `PREVIEW_SANDBOX_THREAT_MODEL.md`와 `RUNBOOK.md`
+- local·preview·production binding 분리 계약 검사
+- 무료 한도 70% 경고 및 90% 수집 중지 검사
+- Cloudflare 사용량 GraphQL fixture와 HMAC 동기화 계약
+- D1 export를 임시 local D1에 복구하는 자동 리허설
+- request ID 기반 Worker 구조화 오류 로그 검사
+- 원격 Preview의 공개 조회·noindex·관리자 차단 smoke 검사
+- 환경별 Vite mode와 Turnstile site key 분리
+- Preview Turnstile 위젯 렌더링과 Worker secret 등록 증거
+- Preview 이전 버전 롤백, smoke와 최신 버전 복원 리허설
+- Production D1 격리, 배포와 공개 색인·관리자 차단 smoke
+- Production 홈과 Turnstile 브라우저 검증
+- Production 실제 Cloudflare 사용량 최초 동기화
 
 ### 다음 구현 단계에서 추가
 
-- `PREVIEW_SANDBOX_THREAT_MODEL.md`
-- `RUNBOOK.md`
-- local·preview·production binding 분리 계약 검사
-- 무료 한도 70% 경고 및 90% 수집 중지 검사
-- D1 export를 임시 local D1에 복구하는 자동 리허설
-- request ID 기반 Worker 구조화 오류 로그 검사
+- 실제 Cloudflare Access owner 정책 확인 기록
+- Analytics 읽기 전용 API token과 일일 workflow 활성화 기록
 
 구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.
 

@@ -178,3 +178,20 @@
 - 결정: local, preview와 production은 서로 다른 Worker 이름과 D1 binding을 사용한다. Cloudflare Vite 빌드 전에 `CLOUDFLARE_ENV`를 고정하고 생성된 배포 설정을 dry-run으로 확인한다.
 - 운영 기준: Worker 요청, D1 읽기와 쓰기 중 가장 높은 사용률이 무료 한도의 70% 이상이면 경고하고 90% 이상이면 신규 수집 batch를 중지한다. 공개 조회와 진행 중인 수집의 완료 기록은 유지한다.
 - Preview: 전체 검색 색인을 차단하고 예약 수집을 기본 중지한다. 로컬 관리자 모의 인증은 preview와 production에서 비활성화한다.
+
+### D-033 Preview Access 결제 등록 보류
+
+- 상태: 확정
+- 확인일: 2026-09-22
+- 결정: Cloudflare Zero Trust 무료 플랜 활성화 과정에서 결제 카드와 무료 한도 초과분 자동 청구 동의를 요구하므로 Access 활성화를 보류한다.
+- 이유: Phase 1의 월 고정비 0원과 무료 한도를 자동으로 넘기는 유료 기능 비활성 원칙을 유지한다.
+- 현재 보호: Worker는 `ADMIN_EMAIL`과 Cloudflare Access 이메일 헤더가 모두 일치하지 않으면 관리자 API를 401로 차단한다. Access가 연결되기 전에는 원격 관리자 기능을 사용하지 않는다.
+- 재검토: 카드 등록 없는 무료 활성화 방법을 확인하거나 사용자가 초과 과금 가능성을 명시적으로 승인할 때 별도 결정한다.
+
+### D-034 Production 최초 공개
+
+- 상태: 확정
+- 확인일: 2026-09-23
+- 결정: Phase 1 Production을 `kwak-motion-lab-production.kwak-motion-lab.workers.dev`에 우선 공개한다. 전용 도메인은 실제 이용과 브랜드 운영 기준이 정해질 때 연결한다.
+- 격리: Production은 Preview와 다른 Worker, D1, Turnstile 위젯과 ingestion 인증값을 사용한다.
+- 관리자: Cloudflare Access가 보류된 동안 Production 관리자 API는 모든 원격 요청을 401로 차단한다. 공개 탐색과 URL 제보 기능은 비로그인으로 제공한다.

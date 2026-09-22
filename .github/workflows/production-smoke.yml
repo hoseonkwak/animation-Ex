@@ -1,0 +1,25 @@
+name: Production smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Deployed Production origin (HTTPS)
+        required: true
+        type: string
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Verify public Production and admin boundary
+        env:
+          PRODUCTION_BASE_URL: ${{ inputs.base_url }}
+        run: npm run smoke:production

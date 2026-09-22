@@ -16,6 +16,7 @@ export default defineConfig({
       'server/**/*.spec.ts',
       'tests/contracts/**/*.spec.ts',
       'tests/ingestion/**/*.spec.ts',
+      'tests/operations/**/*.spec.ts',
     ],
   },
 })

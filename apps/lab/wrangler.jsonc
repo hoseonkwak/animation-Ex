@@ -22,6 +22,8 @@
   "env": {
     "preview": {
       "name": "kwak-motion-lab-preview",
+      "workers_dev": true,
+      "preview_urls": false,
       "vars": {
         "APP_ENVIRONMENT": "preview",
         "LOCAL_ADMIN_SIMULATION": "false",
@@ -31,12 +33,15 @@
         {
           "binding": "DB",
           "database_name": "kwak-motion-lab-preview",
+          "database_id": "706e6824-6c81-4da6-ab83-aa429cda742a",
           "migrations_dir": "db/migrations",
         },
       ],
     },
     "production": {
       "name": "kwak-motion-lab-production",
+      "workers_dev": true,
+      "preview_urls": false,
       "vars": {
         "APP_ENVIRONMENT": "production",
         "LOCAL_ADMIN_SIMULATION": "false",
@@ -46,6 +51,7 @@
         {
           "binding": "DB",
           "database_name": "kwak-motion-lab-production",
+          "database_id": "95baa464-a2d3-47ae-a5a7-15c5e06bb4c7",
           "migrations_dir": "db/migrations",
         },
       ],

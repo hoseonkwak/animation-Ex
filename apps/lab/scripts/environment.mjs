@@ -29,7 +29,7 @@ function run(modulePath, args) {
 run('node_modules/vue-tsc/bin/vue-tsc.js', ['--noEmit', '-p', 'tsconfig.app.json'])
 run('node_modules/typescript/bin/tsc', ['--noEmit', '-p', 'tsconfig.node.json'])
 run('node_modules/typescript/bin/tsc', ['--noEmit', '-p', 'tsconfig.worker.json'])
-run('node_modules/vite/bin/vite.js', ['build'])
+run('node_modules/vite/bin/vite.js', ['build', '--mode', environment])
 
 if (command === 'dry-run') {
   run('node_modules/wrangler/bin/wrangler.js', ['deploy', '--dry-run'])
