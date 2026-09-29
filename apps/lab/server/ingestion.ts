@@ -163,7 +163,9 @@ function validCandidate(item: unknown): item is IngestionCandidate {
     typeof value.discoveredVia.category === 'string' &&
     value.source?.type === 'codepen' &&
     typeof value.source.canonicalUrl === 'string' &&
-    /^https:\/\/codepen\.io\/[^/]+\/pen\/[A-Za-z0-9]+$/.test(value.source.canonicalUrl) &&
+    /^https:\/\/codepen\.io\/(?:team\/)?[^/]+\/pen\/[A-Za-z0-9]+$/.test(
+      value.source.canonicalUrl,
+    ) &&
     typeof value.source.creatorSlug === 'string' &&
     typeof value.source.title === 'string' &&
     Array.isArray(value.tags),

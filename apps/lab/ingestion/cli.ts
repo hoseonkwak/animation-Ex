@@ -4,8 +4,13 @@ import { fileURLToPath } from 'node:url'
 
 import { sendSignedJson, submitCandidateBatches } from './client.ts'
 import { parsePaginationPages, parseWsssList } from './parser.ts'
-import { advanceCheckpoint, buildCandidates, type IngestionCheckpoint } from './pipeline.ts'
-import type { DiscoveredPost } from './types.ts'
+import {
+  advanceCheckpoint,
+  buildCandidates,
+  completeProcessedPosts,
+  selectPostsForRun,
+  type IngestionCheckpoint,
+} from './pipeline.ts'
 import { fetchWsss, robotsAllows } from './policy.ts'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -43,6 +48,7 @@ async function liveRun(submit: boolean): Promise<void> {
   const categoryUrl = value('--category', 'https://wsss.tistory.com/category/Animation/GSAP')!
   const maxArticles = Math.min(Number(value('--max-articles', '200')), 200)
   const maxPages = Math.max(1, Number(value('--max-pages', '1')))
+  const backfill = args.includes('--backfill')
   const checkpointPath = value('--checkpoint')
   let checkpoint: IngestionCheckpoint | undefined
   if (checkpointPath) {
@@ -63,18 +69,7 @@ async function liveRun(submit: boolean): Promise<void> {
     for (const post of parseWsssList(html, categoryUrl, page)) postsById.set(post.id, post)
   }
 
-  const processedPostIds = new Set(
-    checkpoint?.processedExternalIds
-      .map((externalId) => externalId.split(':')[1])
-      .filter(Boolean) ?? [],
-  )
-  const posts: DiscoveredPost[] = []
-  let consecutiveKnown = 0
-  for (const post of postsById.values()) {
-    consecutiveKnown = processedPostIds.has(post.id) ? consecutiveKnown + 1 : 0
-    if (consecutiveKnown >= 30 || posts.length >= maxArticles) break
-    posts.push(post)
-  }
+  const posts = selectPostsForRun([...postsById.values()], checkpoint, maxArticles, backfill)
   const documents = new Map<string, string>()
   for (const post of posts) {
     if (!robotsAllows(robots, new URL(post.url).pathname)) throw new Error('ROBOTS_DISALLOWED')
@@ -108,7 +103,11 @@ async function liveRun(submit: boolean): Promise<void> {
   const savedIds = batch.items
     .filter((item) => item.result !== 'failed')
     .map((item) => item.externalId)
-  const nextCheckpoint = advanceCheckpoint(result.checkpoint, savedIds)
+  const nextCheckpoint = completeProcessedPosts(
+    advanceCheckpoint(result.checkpoint, savedIds),
+    posts,
+    documents,
+  )
   await sendSignedJson(
     apiBase,
     `/api/v1/ingestion/runs/${runId}/complete`,
@@ -118,7 +117,7 @@ async function liveRun(submit: boolean): Promise<void> {
   if (checkpointPath)
     await writeFile(checkpointPath, `${JSON.stringify(nextCheckpoint, null, 2)}\n`, 'utf8')
   process.stdout.write(
-    `${JSON.stringify({ runId, ...batch, checkpoint: nextCheckpoint }, null, 2)}\n`,
+    `${JSON.stringify({ runId, ...batch, failures: result.failures, checkpoint: nextCheckpoint }, null, 2)}\n`,
   )
 }
 

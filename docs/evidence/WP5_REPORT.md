@@ -35,7 +35,7 @@ preflight에서 게시물 `1603`의 WSSS 제목, `Animation/GSAP` 카테고리, 
 
 ## 운영 상태
 
-`WSSS ingestion` workflow는 수동 실행만 제공한다. production API 주소와 HMAC 비밀값이 아직 설정되지 않아 실제 후보 제출은 실행하지 않았다. 하루 1회 schedule은 수동 실행에서 구조 변경, 속도 제한과 checkpoint 복구를 확인한 뒤 활성화한다.
+`WSSS ingestion` workflow는 수동 실행만 제공한다. 최초 작성 당시 production API 주소와 HMAC 비밀값이 없어 실제 후보 제출은 미실행 상태였다. 2026-09-23에 GSAP 카테고리의 실제 후보 15개를 Production에 제출했다. 상세 증거는 [`WP8_INGESTION_START.md`](WP8_INGESTION_START.md)에 기록했다. 하루 1회 schedule은 수동 실행에서 구조 변경, 속도 제한과 checkpoint 복구를 확인한 뒤 활성화한다.
 
 ## 다음 단계
 

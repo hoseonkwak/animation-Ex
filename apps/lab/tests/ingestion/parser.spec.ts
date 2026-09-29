@@ -5,7 +5,12 @@ import { describe, expect, it } from 'vitest'
 
 import { normalizeCodePenUrl, IngestionParseError } from '../../ingestion/normalize.ts'
 import { parsePaginationPages, parseWsssArticle, parseWsssList } from '../../ingestion/parser.ts'
-import { advanceCheckpoint, buildCandidates } from '../../ingestion/pipeline.ts'
+import {
+  advanceCheckpoint,
+  buildCandidates,
+  completeProcessedPosts,
+  selectPostsForRun,
+} from '../../ingestion/pipeline.ts'
 import { fetchWsss, CollectionStoppedError, robotsAllows } from '../../ingestion/policy.ts'
 import { suggestTags } from '../../ingestion/tags.ts'
 
@@ -32,6 +37,11 @@ describe('WSSS parser fixture', () => {
       },
     ])
     expect(parsePaginationPages(html, categoryUrl)).toEqual([1, 2])
+  })
+
+  it('페이지네이션에서 중간 링크가 생략되어도 모든 페이지를 방문한다', () => {
+    const html = '<a href="?page=2">2</a><a href="?page=4">4</a><a href="?page=6">6</a>'
+    expect(parsePaginationPages(html, categoryUrl)).toEqual([1, 2, 3, 4, 5, 6])
   })
 
   it('한 게시물의 여러 Pen을 순서대로 보존한다', () => {
@@ -67,6 +77,20 @@ describe('CodePen canonicalization과 태그', () => {
     ).toBe('https://codepen.io/Creator/pen/AbC123')
   })
 
+  it('팀 Pen URL도 원래 제작자 경로로 정규화한다', () => {
+    expect(normalizeCodePenUrl('https://codepen.io/team/keyframers/pen/ZMRMEw/')).toEqual({
+      canonicalUrl: 'https://codepen.io/team/keyframers/pen/ZMRMEw',
+      penKey: 'team/keyframers/ZMRMEw',
+      creatorSlug: 'team/keyframers',
+      penId: 'ZMRMEw',
+    })
+    const article = parseWsssArticle(
+      '<meta property="og:title" content="팀 Pen"><a href="/category/Parallax/Scroll">Scroll</a><a href="https://codepen.io/team/keyframers/pen/ZMRMEw/">Apple Watch Scroll</a>',
+      'https://wsss.tistory.com/1052',
+    )
+    expect(article.pens[0]?.canonicalUrl).toBe('https://codepen.io/team/keyframers/pen/ZMRMEw')
+  })
+
   it('CodePen 외 host를 거절하고 GSAP category만 확정 태그로 만든다', () => {
     expect(() => normalizeCodePenUrl('https://example.com/user/pen/abc')).toThrow(
       IngestionParseError,
@@ -90,6 +114,64 @@ describe('CodePen canonicalization과 태그', () => {
 })
 
 describe('checkpoint와 요청 안전 정책', () => {
+  it('backfill은 이전에 완료한 글을 건너뛰고 새 글 수만 제한한다', () => {
+    const posts = Array.from({ length: 35 }, (_, index) => ({
+      id: String(index),
+      url: `https://wsss.tistory.com/${index}`,
+      title: `Post ${index}`,
+      category: 'Parallax/Scroll',
+      page: 1,
+    }))
+    const checkpoint = {
+      category: 'Parallax/Scroll',
+      page: 1,
+      lastPostId: '29',
+      processedExternalIds: posts.slice(0, 30).map((post) => `wsss:${post.id}:0`),
+      completedPostIds: posts.slice(0, 30).map((post) => post.id),
+    }
+    expect(selectPostsForRun(posts, checkpoint, 3, true).map((post) => post.id)).toEqual([
+      '30',
+      '31',
+      '32',
+    ])
+    expect(selectPostsForRun(posts, checkpoint, 3, false)).toEqual([])
+  })
+
+  it('한 글의 모든 Pen이 저장된 뒤에만 상세 페이지를 완료 처리한다', () => {
+    const post = parseWsssList(fixture('category-gsap.html'), categoryUrl)[1]!
+    const documents = new Map([[post.url, fixture('article-1604-multi.html')]])
+    const base = buildCandidates([post], documents).checkpoint
+    const partial = completeProcessedPosts(
+      advanceCheckpoint(base, ['wsss:1604:0']),
+      [post],
+      documents,
+    )
+    expect(partial.completedPostIds).toEqual([])
+    const full = completeProcessedPosts(
+      advanceCheckpoint(partial, ['wsss:1604:1']),
+      [post],
+      documents,
+    )
+    expect(full.completedPostIds).toEqual(['1604'])
+  })
+
+  it('다음 배치를 만들 때 기존 완료 게시물 목록을 유지한다', () => {
+    const post = parseWsssList(fixture('category-gsap.html'), categoryUrl)[0]!
+    const checkpoint = {
+      category: post.category,
+      page: post.page,
+      lastPostId: '999',
+      processedExternalIds: ['wsss:999:0'],
+      completedPostIds: ['999'],
+    }
+    const result = buildCandidates(
+      [post],
+      new Map([[post.url, fixture('article-1603.html')]]),
+      checkpoint,
+    )
+    expect(result.checkpoint.completedPostIds).toEqual(['999'])
+  })
+
   it('같은 fixture를 세 번 처리해도 저장 완료된 후보가 다시 나오지 않는다', () => {
     const posts = parseWsssList(fixture('category-gsap.html'), categoryUrl)
     const documents = new Map([

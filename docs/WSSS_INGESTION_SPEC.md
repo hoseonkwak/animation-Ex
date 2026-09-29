@@ -62,6 +62,7 @@ CodePen 공식 문서 기준 공개 Pen은 MIT 라이선스다. 승인 시 Pen�
 ### 최초 Backfill
 
 - 카테고리별 1페이지부터 마지막 페이지까지 순회한다.
+- 페이지네이션에 중간 번호 링크가 생략되어도 마지막 표시 페이지까지 연속해서 방문한다.
 - 목록에서 WSSS 게시물 ID와 URL을 먼저 확보한다.
 - 아직 처리하지 않은 게시물 상세만 요청한다.
 - 실행당 최대 상세 페이지는 200개다.
@@ -136,12 +137,13 @@ fixture가 실패하면 실제 수집을 시작하지 않는다.
 
 ```text
 https://codepen.io/{creator}/pen/{penId}
+https://codepen.io/team/{team}/pen/{penId}
 ```
 
 - scheme과 host를 소문자로 처리한다.
 - query, fragment와 embed 표시 옵션을 제거한다.
 - creator slug와 Pen ID의 원래 대소문자는 보존한다.
-- `pen_key={creator}/{penId}`를 중복 키로 사용한다.
+- `pen_key={creator}/{penId}`를 중복 키로 사용한다. 팀 Pen은 `creator=team/{team}`으로 보존한다.
 - 허용하지 않은 host가 섞이면 실패 처리한다.
 
 ### 중복 검사
@@ -246,9 +248,12 @@ npm run test:ingestion
 npm run ingest:wsss:fixture
 npm run ingest:wsss:preflight
 npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
+npm run ingest:wsss:live -- --backfill --category 'https://wsss.tistory.com/category/Parallax/Scroll' --max-articles 50 --max-pages 4 --checkpoint '.wrangler/wsss-production-scroll-checkpoint.json'
 ```
 
 `preflight`는 fixture 검사를 먼저 수행한 뒤 현재 WSSS HTML을 한 건 읽고 결과만 출력한다. 후보 등록이나 checkpoint 완료 API는 호출하지 않는다. live 실행과 수동 GitHub Actions workflow는 HMAC 환경 변수 세 개가 있을 때만 제출한다. 하루 1회 schedule은 수동 실행이 안정화된 뒤 별도 변경으로 활성화한다.
+
+전체 카테고리를 채울 때는 `--backfill`을 사용한다. 저장이 끝난 게시물은 checkpoint의 `completedPostIds`로 건너뛰고, 실패하거나 일부 Pen만 저장된 게시물은 다음 배치에서 재시도한다. 일반 증분 실행에서는 기존의 연속 30건 중복 중지선을 유지한다. checkpoint 파일은 카테고리마다 별도로 둔다.
 
 ## 10. Fixture
 

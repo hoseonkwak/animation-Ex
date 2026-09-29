@@ -196,6 +196,36 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     ).toEqual({ count: 3 })
   })
 
+  it('팀 계정 CodePen Pen도 후보로 저장한다', async () => {
+    const item = fixtureItems()[0]!
+    const response = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'team-pen-run',
+      trigger: 'manual',
+      checkpointBefore: null,
+      items: [
+        {
+          ...item,
+          externalId: 'wsss:1052:0',
+          discoveredVia: {
+            key: 'wsss',
+            url: 'https://wsss.tistory.com/1052',
+            category: 'Parallax/Scroll',
+          },
+          source: {
+            ...item.source,
+            url: 'https://codepen.io/team/keyframers/pen/ZMRMEw',
+            canonicalUrl: 'https://codepen.io/team/keyframers/pen/ZMRMEw',
+            creatorSlug: 'team/keyframers',
+          },
+        },
+      ],
+    })
+    expect(response.status).toBe(200)
+    expect((await response.json()) as { data: { accepted: number; failed: number } }).toMatchObject(
+      { data: { accepted: 1, failed: 0 } },
+    )
+  })
+
   it('정상 HMAC만 받고 만료 timestamp와 request ID 재사용을 거절한다', async () => {
     const body = {
       runId: 'auth-run',

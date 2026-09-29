@@ -50,7 +50,8 @@ export function parsePaginationPages(html: string, categoryUrl: string): number[
     const page = Number(url.searchParams.get('page'))
     if (Number.isInteger(page) && page > 0) pages.add(page)
   }
-  return [...pages].sort((left, right) => left - right)
+  const lastPage = Math.max(...pages)
+  return Array.from({ length: lastPage }, (_, index) => index + 1)
 }
 export function parseWsssArticle(html: string, articleUrl: string): ExtractedArticle {
   const postId = new URL(articleUrl).pathname.match(/^\/(\d+)\/?$/)?.[1]

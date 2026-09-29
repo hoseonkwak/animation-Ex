@@ -19,7 +19,7 @@ export function normalizeCodePenUrl(raw: string): NormalizedPen {
   if (!['http:', 'https:'].includes(url.protocol) || url.hostname.toLowerCase() !== 'codepen.io') {
     throw new IngestionParseError('CODEPEN_URL_INVALID', 'codepen.io URL만 허용합니다.')
   }
-  const match = url.pathname.match(/^\/([^/]+)\/(?:pen|embed)\/([A-Za-z0-9]+)\/?$/)
+  const match = url.pathname.match(/^\/((?:team\/)?[^/]+)\/(?:pen|embed)\/([A-Za-z0-9]+)\/?$/)
   if (!match?.[1] || !match[2]) {
     throw new IngestionParseError('CODEPEN_URL_INVALID', 'Pen 또는 embed URL이 아닙니다.')
   }

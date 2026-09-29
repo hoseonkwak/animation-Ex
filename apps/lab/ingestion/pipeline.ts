@@ -8,6 +8,7 @@ export interface IngestionCheckpoint {
   page: number
   lastPostId: string | null
   processedExternalIds: string[]
+  completedPostIds?: string[]
 }
 
 export interface PipelineFailure {
@@ -86,7 +87,13 @@ export function buildCandidates(
   return {
     items,
     failures,
-    checkpoint: { category, page, lastPostId, processedExternalIds: [...processed] },
+    checkpoint: {
+      category,
+      page,
+      lastPostId,
+      processedExternalIds: [...processed],
+      completedPostIds: checkpoint?.completedPostIds ?? [],
+    },
   }
 }
 
@@ -102,4 +109,49 @@ export function advanceCheckpoint(
       ...new Set([...checkpoint.processedExternalIds, ...acceptedExternalIds]),
     ],
   }
+}
+
+export function selectPostsForRun(
+  posts: readonly DiscoveredPost[],
+  checkpoint: IngestionCheckpoint | undefined,
+  maxArticles: number,
+  backfill: boolean,
+): DiscoveredPost[] {
+  const completed = new Set(checkpoint?.completedPostIds ?? [])
+  const known = new Set(
+    checkpoint?.processedExternalIds.map((externalId) => externalId.split(':')[1]) ?? [],
+  )
+  const selected: DiscoveredPost[] = []
+  let consecutiveKnown = 0
+  for (const post of posts) {
+    consecutiveKnown = known.has(post.id) ? consecutiveKnown + 1 : 0
+    if (!backfill && consecutiveKnown >= 30) break
+    if (completed.has(post.id)) continue
+    if (selected.length >= maxArticles) break
+    selected.push(post)
+  }
+  return selected
+}
+
+export function completeProcessedPosts(
+  checkpoint: IngestionCheckpoint,
+  posts: readonly DiscoveredPost[],
+  articleHtmlByUrl: ReadonlyMap<string, string>,
+): IngestionCheckpoint {
+  const processed = new Set(checkpoint.processedExternalIds)
+  const completed = new Set(checkpoint.completedPostIds ?? [])
+  for (const post of posts) {
+    const html = articleHtmlByUrl.get(post.url)
+    if (!html) continue
+    try {
+      const article = parseWsssArticle(html, post.url)
+      const externalIds = article.pens.map((_, index) => `wsss:${article.postId}:${index}`)
+      if (externalIds.length > 0 && externalIds.every((id) => processed.has(id))) {
+        completed.add(post.id)
+      }
+    } catch {
+      // A failed article must remain eligible for the next run.
+    }
+  }
+  return { ...checkpoint, completedPostIds: [...completed] }
 }

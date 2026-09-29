@@ -6,17 +6,17 @@
 
 ## 진행 현황
 
-| 작업 패키지                  | 상태 | 증거                                                   |
-| ---------------------------- | ---- | ------------------------------------------------------ |
-| WP0 · 기준선과 하네스        | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md)     |
-| WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md)     |
-| WP2 · Explore와 Preview Card | 완료 | [`evidence/WP2_REPORT.md`](evidence/WP2_REPORT.md)     |
-| WP3 · 기존 15개 이전         | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md)     |
-| WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md)     |
-| WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md)     |
-| WP6 · 나머지 공개 화면       | 완료 | [`evidence/WP6_REPORT.md`](evidence/WP6_REPORT.md)     |
-| WP7                          | 진행 | [`evidence/WP7_PROGRESS.md`](evidence/WP7_PROGRESS.md) |
-| WP8                          | 대기 | WP7 완료 후 진행                                       |
+| 작업 패키지                  | 상태 | 증거                                                                 |
+| ---------------------------- | ---- | -------------------------------------------------------------------- |
+| WP0 · 기준선과 하네스        | 완료 | [`evidence/WP0_REPORT.md`](evidence/WP0_REPORT.md)                   |
+| WP1 · 데이터와 API 수직 절편 | 완료 | [`evidence/WP1_REPORT.md`](evidence/WP1_REPORT.md)                   |
+| WP2 · Explore와 Preview Card | 완료 | [`evidence/WP2_REPORT.md`](evidence/WP2_REPORT.md)                   |
+| WP3 · 기존 15개 이전         | 완료 | [`evidence/WP3_REPORT.md`](evidence/WP3_REPORT.md)                   |
+| WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md)                   |
+| WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md)                   |
+| WP6 · 나머지 공개 화면       | 완료 | [`evidence/WP6_REPORT.md`](evidence/WP6_REPORT.md)                   |
+| WP7                          | 진행 | [`evidence/WP7_PROGRESS.md`](evidence/WP7_PROGRESS.md)               |
+| WP8                          | 진행 | [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md) |
 
 ## 1. 완료 결과
 
@@ -298,15 +298,19 @@ Pinia, UI component library, 외부 검색 엔진과 ORM은 실제 필요가 확
 
 목표: 기능이 아니라 실제 콘텐츠가 있는 공개 버전을 만든다.
 
+WSSS 후보 수집은 관리자 Access 연결 전에도 시작할 수 있다. 수집 결과는 `review` 상태로 저장하고, 실제 Preview 확인·승인·공개는 owner 접근이 가능해진 뒤 진행한다.
+
 작업:
 
 1. 기존 15개 최종 재검수
-2. WSSS GSAP 후보 최초 수집
+2. WSSS GSAP 후보 수집 후 Scroll·Slider 등 핵심 카테고리 순차 backfill
 3. 관리자 승인 표본 확보
 4. Hero 20개 목표의 부족분 확인
 5. 접근성, 반응형과 성능 회귀 검사
 6. Phase 1 완료 기준에 증거 연결
 7. 공개 후 되돌리기 절차 확인
+
+GSAP·Scroll·Slider·Mouse·Animation·Loading·Image·Button 후보 수집과 재실행 검증 결과는 [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md)에 기록한다.
 
 완료 증거:
 

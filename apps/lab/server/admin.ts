@@ -126,7 +126,9 @@ function parseMetadata(raw: string): CandidateMetadata {
 }
 
 function penParts(canonicalUrl: string | null): { creator: string; penId: string } | null {
-  const match = canonicalUrl?.match(/^https:\/\/codepen\.io\/([^/]+)\/pen\/([A-Za-z0-9]+)\/?$/)
+  const match = canonicalUrl?.match(
+    /^https:\/\/codepen\.io\/((?:team\/)?[^/]+)\/pen\/([A-Za-z0-9]+)\/?$/,
+  )
   return match?.[1] && match[2] ? { creator: match[1], penId: match[2] } : null
 }
 

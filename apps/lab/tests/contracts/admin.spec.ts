@@ -58,6 +58,20 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(detailBody.data.tags.length).toBeGreaterThan(0)
   })
 
+  it('팀 계정 CodePen 후보에도 관리자 Preview URL을 만든다', async () => {
+    sqlite
+      .prepare(
+        `UPDATE sources SET canonical_url = ?
+         WHERE id = (SELECT source_id FROM candidates WHERE id = 'candidate-admin-tutorial')`,
+      )
+      .run('https://codepen.io/team/keyframers/pen/ZMRMEw')
+    const response = await request('/api/v1/admin/candidates/candidate-admin-tutorial')
+    const body = (await response.json()) as { data: { embedUrl: string; penKey: string } }
+    expect(response.status).toBe(200)
+    expect(body.data.embedUrl).toContain('codepen.io/team/keyframers/embed/ZMRMEw')
+    expect(body.data.penKey).toBe('team/keyframers/ZMRMEw')
+  })
+
   it('P1-ADMIN-05 오래된 version 수정을 409로 거절한다', async () => {
     const payload = {
       version: 1,
