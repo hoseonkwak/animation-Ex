@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-15T05:00:57.544Z",
+  "method": "playwright-headless-codepen-embed-read-only",
+  "meaning": "loaded는 iframe 내용 로드만 의미하며 실제 모션·품질·안전을 보증하지 않음",
+  "environment": "probe-blocked",
+  "positiveControl": {
+    "id": "positive-control",
+    "canonicalUrl": "https://codepen.io/hoseonkwak/pen/LEVeYQO",
+    "result": "inconclusive",
+    "httpStatus": 403,
+    "frameLoaded": false,
+    "bodyLength": null,
+    "pageErrors": 0,
+    "reason": null
+  },
+  "results": [
+    {
+      "id": "legacy-gsap-basic-2",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/KwpZamO",
+      "result": "inconclusive",
+      "reason": "POSITIVE_CONTROL_NOT_LOADED",
+      "skipped": true
+    },
+    {
+      "id": "legacy-gsap-basic-3",
+      "canonicalUrl": "https://codepen.io/hoseonkwak/pen/KwpZWwM",
+      "result": "inconclusive",
+      "reason": "POSITIVE_CONTROL_NOT_LOADED",
+      "skipped": true
+    }
+  ]
+}

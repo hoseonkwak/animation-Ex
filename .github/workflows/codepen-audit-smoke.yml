@@ -32,6 +32,7 @@ jobs:
           --input fixtures/codepen-audit-smoke.json
           --output ../../codepen-audit-smoke-result.json
           --limit 2
+          --control-url https://codepen.io/hoseonkwak/pen/LEVeYQO
       - uses: actions/upload-artifact@v4
         with:
           name: codepen-audit-smoke

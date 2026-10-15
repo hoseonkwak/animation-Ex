@@ -26,6 +26,22 @@ export function classifyProbe({ httpStatus, frameLoaded, bodyLength, pageErrors 
   return 'loaded'
 }
 
+export function classifyEnvironment(controlResult) {
+  if (controlResult === 'loaded') return 'probe-available'
+  if (controlResult === 'failed') return 'control-failed'
+  return 'probe-blocked'
+}
+
+export function blockedCandidate(item) {
+  return {
+    id: item.id,
+    canonicalUrl: item.canonicalUrl,
+    result: 'inconclusive',
+    reason: 'POSITIVE_CONTROL_NOT_LOADED',
+    skipped: true,
+  }
+}
+
 async function probe(page, item) {
   const embedUrl = codePenEmbedUrl(item.canonicalUrl)
   if (!embedUrl) {
@@ -75,15 +91,36 @@ async function main() {
   const input = argument('--input')
   const output = argument('--output')
   const limit = Number(argument('--limit') ?? '20')
+  const controlUrl = argument('--control-url')
   if (!input || !output || !Number.isInteger(limit) || limit < 1 || limit > 50) {
-    throw new Error('사용법: --input 후보.json --output 결과.json [--limit 1..50]')
+    throw new Error(
+      '사용법: --input 후보.json --output 결과.json [--limit 1..50] [--control-url 공개 Pen URL]',
+    )
+  }
+  if (controlUrl && !codePenEmbedUrl(controlUrl)) {
+    throw new Error('양성 대조군은 공개 CodePen canonical URL이어야 합니다.')
   }
   const candidates = JSON.parse(await readFile(input, 'utf8'))
   if (!Array.isArray(candidates)) throw new Error('입력은 후보 배열이어야 합니다.')
   const browser = await chromium.launch({ headless: !args.includes('--headed') })
   const results = []
+  let control = null
   try {
-    for (const item of candidates.slice(0, limit)) {
+    if (controlUrl) {
+      const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+      try {
+        control = await probe(page, { id: 'positive-control', canonicalUrl: controlUrl })
+      } finally {
+        await page.close()
+      }
+      console.log(`양성 대조군: ${control.result}`)
+    }
+    const selected = candidates.slice(0, limit)
+    const blocked = control && classifyEnvironment(control.result) !== 'probe-available'
+    if (blocked) {
+      results.push(...selected.map(blockedCandidate))
+    }
+    for (const item of blocked ? [] : selected) {
       const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
       try {
         results.push(await probe(page, item))
@@ -104,6 +141,8 @@ async function main() {
       ? 'playwright-headed-codepen-embed-read-only'
       : 'playwright-headless-codepen-embed-read-only',
     meaning: 'loaded는 iframe 내용 로드만 의미하며 실제 모션·품질·안전을 보증하지 않음',
+    environment: control ? classifyEnvironment(control.result) : 'not-checked',
+    positiveControl: control,
     results,
   }
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, 'utf8')

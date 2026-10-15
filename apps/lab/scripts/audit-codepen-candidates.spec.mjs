@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { classifyProbe, codePenEmbedUrl } from './audit-codepen-candidates.mjs'
+import {
+  blockedCandidate,
+  classifyEnvironment,
+  classifyProbe,
+  codePenEmbedUrl,
+} from './audit-codepen-candidates.mjs'
 
 test('CodePen 이외의 주소를 검사 대상에 넣지 않는다', () => {
   assert.equal(codePenEmbedUrl('https://example.com/pen/abc'), null)
@@ -31,5 +36,21 @@ test('로드 성공도 실제 모션 검증 결과와 구분한다', () => {
   assert.equal(
     classifyProbe({ httpStatus: 404, frameLoaded: false, bodyLength: null, pageErrors: 0 }),
     'failed',
+  )
+})
+
+test('양성 대조군이 막히면 후보를 검사하지 않고 판정 불가로 남긴다', () => {
+  assert.equal(classifyEnvironment('inconclusive'), 'probe-blocked')
+  assert.equal(classifyEnvironment('failed'), 'control-failed')
+  assert.equal(classifyEnvironment('loaded'), 'probe-available')
+  assert.deepEqual(
+    blockedCandidate({ id: 'candidate-a', canonicalUrl: 'https://codepen.io/a/pen/abc' }),
+    {
+      id: 'candidate-a',
+      canonicalUrl: 'https://codepen.io/a/pen/abc',
+      result: 'inconclusive',
+      reason: 'POSITIVE_CONTROL_NOT_LOADED',
+      skipped: true,
+    },
   )
 })
