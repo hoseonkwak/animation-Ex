@@ -13,7 +13,7 @@
 - 대부분의 수집 후보는 `sources.availability = unknown`이다. 수집 시 저장된 `MIT`는 CodePen 공개 Pen의 일반 라이선스 정책을 가리키며, 개별 Pen의 현재 공개·실행 상태 확인을 대신하지 않는다.
 - 무작위 공개 CodePen URL 12개를 Playwright의 headless Chromium으로 검사했을 때 12개 모두 embed 요청에서 HTTP 403이었다. 실패한 Pen 12개라는 뜻이 아니다. 이 실행 환경에서 CodePen이 자동 요청을 허용하지 않았으므로 판정은 모두 `inconclusive`다.
 - 같은 로컬 환경에서 headed 브라우저 재검사를 시도했지만 브라우저 프로세스를 시작하지 못했다. 이 결과로 headed 환경의 접근 가능 여부를 판단하지 않는다.
-- `.github/workflows/codepen-audit-smoke.yml`은 GitHub Actions의 별도 실행 환경에서 이미 공개된 Pen 2개를 읽기 전용으로 검사한다. 결과 artifact를 확인해 환경별 차단 여부를 구분한다. 이 workflow는 후보를 승인하거나 공개하지 않는다.
+- [GitHub Actions 실행 #1](https://github.com/hoseonkwak/animation-Ex/actions/runs/38676615600)에서도 이미 공개된 Pen 2개 모두 HTTP 403, `inconclusive`였다. 로컬과 GitHub-hosted runner 양쪽에서 자동 embed 검사가 차단된다. 이 workflow는 후보를 승인하거나 공개하지 않는다.
 - 이 결과로는 자동 공개의 실행 성공률이나 오류율을 계산할 수 없다. 자동 공개는 계속 꺼둔다.
 
 ## 검사 결과의 의미
@@ -42,4 +42,4 @@ node --test scripts/audit-codepen-candidates.spec.mjs
 4. URL·중복·작성자·라이선스·제목·요약·태그·실행 검사를 모두 통과한 묶음만 작은 상한으로 공개한다. 판단 불가와 검사 실패는 자동 공개하지 않는다.
 5. 자동 공개 수, 표본 불일치율, 중지 조건과 공개 취소 결과를 운영 화면에서 확인할 수 있게 한다. 문제가 생기면 자동 공개를 즉시 중지하고 해당 공개분을 되돌린다.
 
-현재 1단계에서 403 차단을 확인했다. 다른 실행 경로가 검증되기 전에는 2~5단계를 활성화하지 않는다.
+현재 1단계에서 로컬 12건과 GitHub-hosted runner 2건의 403 차단을 확인했다. 403을 우회하거나 성공으로 간주하지 않는다. 다른 정상적인 실행 검사 경로가 검증되기 전에는 2~5단계를 활성화하지 않는다. 내부 CodePackage를 직접 실행하고 검사하는 방식은 별도 제품 단계·비용·안전 경계를 검토한 뒤 후보가 될 수 있다.
