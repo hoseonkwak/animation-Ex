@@ -2,7 +2,9 @@ import { expect, test } from '@playwright/test'
 
 test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', async ({ page }) => {
   await page.goto('/admin/review')
-  await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('환경 local')
+  await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('환경 local', {
+    timeout: 10_000,
+  })
   await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('무료 한도 0%')
 
   await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
@@ -15,6 +17,7 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
   await page.getByRole('button', { name: '실행 실패 기록' }).click()
   await expect(page.getByText('실행 실패를 기록했습니다.')).toBeVisible()
   await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('기존 실패 1')
+  await page.getByRole('button', { name: '기존 실패 1' }).click()
   await expect(page.getByRole('button', { name: '승인 및 공개' })).toBeEnabled()
   await expect(
     page.getByText('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.'),

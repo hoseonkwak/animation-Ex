@@ -83,6 +83,13 @@ describe('AdminReviewView', () => {
     const wrapper = mount(AdminReviewView)
     await flushPromises()
 
+    expect(wrapper.text()).toContain('추천 검수 0')
+    await wrapper
+      .findAll('.triage-filters button')
+      .find((button) => button.text().includes('정보 보완'))!
+      .trigger('click')
+    await flushPromises()
+
     expect(wrapper.text()).toContain('승인 전 필요한 작업')
     await wrapper.get('button.approve').trigger('click')
 
@@ -142,7 +149,22 @@ describe('AdminReviewView', () => {
         }
       else if (url.endsWith('/admin/candidates/triage'))
         data = {
-          items: published ? [] : [{ id: 'candidate-2', bucket: 'preview-needed' }],
+          items: published
+            ? []
+            : [
+                {
+                  id: 'candidate-2',
+                  sourceTitle: 'Scroll Demo',
+                  sourceCategory: 'Animation/GSAP',
+                  creatorName: 'Author',
+                  priorityScore: 50,
+                  createdAt: '2026-10-15T00:00:00.000Z',
+                  previewChecked: false,
+                  heroSignal: false,
+                  bucket: 'preview-needed',
+                  reasons: ['실제 Preview 확인 필요'],
+                },
+              ],
           counts: { review: published ? 0 : 1 },
           bucketCounts: {},
         }

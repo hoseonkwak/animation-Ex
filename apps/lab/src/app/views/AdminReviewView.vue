@@ -9,10 +9,14 @@ import type {
 } from '@/shared/admin'
 import type { ApiSuccess } from '@/shared/examples'
 import { isReviewTagAxis } from '@/shared/reviewTags'
+import { pickReviewShortlist } from '@/shared/reviewShortlist'
+
+type ReviewFilter = TriageBucket | 'all' | 'hero' | 'shortlist'
 
 const queue = ref<CandidateListPayload>({ items: [], counts: {} })
 const triage = ref<CandidateTriagePayload | null>(null)
-const triageFilter = ref<TriageBucket | 'all' | 'hero'>('all')
+const triageFilter = ref<ReviewFilter>('shortlist')
+const skippedIds = ref<Set<string>>(new Set())
 const queuePage = ref(0)
 const pageSize = 50
 const selected = ref<CandidateDetail | null>(null)
@@ -49,8 +53,15 @@ const authMessage = new URLSearchParams(window.location.search).get('auth')
 const frameWidth = computed(
   () => ({ desktop: '100%', tablet: '768px', mobile: '390px' })[viewport.value],
 )
-const reviewItems = computed(() =>
-  (triage.value?.items ?? []).filter((item) => {
+const shortlist = computed(() => pickReviewShortlist(triage.value?.items ?? [], skippedIds.value))
+const reviewItems = computed(() => {
+  const items = (triage.value?.items ?? []).filter((item) => {
+    if (previewFilter.value === 'checked' && !item.previewChecked) return false
+    if (previewFilter.value === 'unchecked' && item.previewChecked) return false
+    return true
+  })
+  if (triageFilter.value === 'shortlist') return pickReviewShortlist(items, skippedIds.value)
+  return items.filter((item) => {
     if (triageFilter.value === 'hero' && !item.heroSignal) return false
     if (
       triageFilter.value !== 'all' &&
@@ -58,11 +69,9 @@ const reviewItems = computed(() =>
       item.bucket !== triageFilter.value
     )
       return false
-    if (previewFilter.value === 'checked' && !item.previewChecked) return false
-    if (previewFilter.value === 'unchecked' && item.previewChecked) return false
     return true
-  }),
-)
+  })
+})
 const visibleItems = computed(() =>
   status.value === 'review'
     ? reviewItems.value.slice(queuePage.value * pageSize, (queuePage.value + 1) * pageSize)
@@ -86,8 +95,7 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await loadQueue()
-    await loadOperations()
+    await Promise.all([loadQueue(), loadOperations()])
   }
 })
 
@@ -131,8 +139,21 @@ function changeStatus(value: string): void {
   void loadQueue()
 }
 
-function changeTriageFilter(value: TriageBucket | 'all' | 'hero'): void {
+function changeTriageFilter(value: ReviewFilter): void {
   triageFilter.value = value
+  queuePage.value = 0
+  void selectFirstVisible()
+}
+
+function skipSelected(): void {
+  if (!selected.value) return
+  skippedIds.value = new Set([...skippedIds.value, selected.value.id])
+  queuePage.value = 0
+  void selectFirstVisible()
+}
+
+function resetSkipped(): void {
+  skippedIds.value = new Set()
   queuePage.value = 0
   void selectFirstVisible()
 }
@@ -385,7 +406,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       >
         <span>{{
           {
-            review: '승인 대기',
+            review: '수집 후보',
             'needs-edit': '수정 필요',
             duplicate: '중복',
             'validation-failed': 'Preview 실패',
@@ -400,15 +421,19 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       aria-label="자동 사전 분류"
     >
       <div>
-        <h2>검수 우선순위</h2>
+        <h2>이번 검수에서 볼 예제</h2>
         <p>
-          주소·중복·필수 정보·기존 실행 기록으로 분류했습니다. 실제 동작과 원본 접근 여부는 직접
-          확인해야 합니다.
+          바로 확인할 만한 후보를 카테고리별로 최대 12개 골랐습니다. 모두 처리할 필요는 없습니다.
+          실제 동작은 공개 전에 직접 확인해야 합니다.
         </p>
+        <button v-if="skippedIds.size" type="button" class="reset-skipped" @click="resetSkipped">
+          이번에 건너뛴 {{ skippedIds.size }}건 다시 보기
+        </button>
       </div>
       <div class="triage-filters">
         <button
           v-for="filter in [
+            { key: 'shortlist', label: '추천 검수', count: shortlist.length },
             { key: 'all', label: '전체', count: triage.items.length },
             { key: 'hero', label: 'Hero 후보', count: triage.bucketCounts.hero },
             { key: 'ready', label: '최종 확인', count: triage.bucketCounts.ready },
@@ -429,7 +454,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           :key="filter.key"
           type="button"
           :class="{ active: triageFilter === filter.key }"
-          @click="changeTriageFilter(filter.key as TriageBucket | 'all' | 'hero')"
+          @click="changeTriageFilter(filter.key as ReviewFilter)"
         >
           {{ filter.label }} <strong>{{ filter.count }}</strong>
         </button>
@@ -570,6 +595,14 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           실행 화면을 확인했다면 승인 버튼 한 번으로 확인 기록과 공개를 진행합니다.
         </p>
         <div class="preview-decision">
+          <button
+            v-if="status === 'review' && triageFilter === 'shortlist'"
+            type="button"
+            :disabled="busy"
+            @click="skipSelected"
+          >
+            이번 검수에서 건너뛰기
+          </button>
           <button
             v-if="selected.previewCheck?.result === 'fail'"
             type="button"
