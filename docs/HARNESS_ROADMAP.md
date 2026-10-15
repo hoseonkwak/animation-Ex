@@ -65,7 +65,7 @@
 
 ### 다음 구현 단계에서 추가
 
-- 실제 Cloudflare Access owner 정책 확인 기록
+- 실제 GitHub OAuth owner 숫자 ID와 callback 정책 확인 기록
 - Analytics 읽기 전용 API token과 일일 workflow 활성화 기록
 
 구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.

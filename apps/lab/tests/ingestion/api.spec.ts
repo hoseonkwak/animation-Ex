@@ -18,8 +18,7 @@ const env = () => ({
   DB: database,
   INGESTION_KEY_ID: 'contract-key',
   INGESTION_HMAC_SECRET: secret,
-  ADMIN_EMAIL: 'owner@example.test',
-  LOCAL_ADMIN_SIMULATION: 'false',
+  LOCAL_ADMIN_SIMULATION: 'true',
 })
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 
@@ -97,8 +96,8 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     ).toEqual({ count: 3 })
 
     const admin = await worker.fetch(
-      new Request('https://example.test/api/v1/admin/operations', {
-        headers: { 'Cf-Access-Authenticated-User-Email': 'owner@example.test' },
+      new Request('http://localhost/api/v1/admin/operations', {
+        headers: { 'X-Local-Access-Email': 'owner@local.test' },
       }),
       env(),
       context,
@@ -277,8 +276,8 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       checkpoint_after: '{"page":1,"lastPostId":"1603"}',
     })
     const adminResponse = await worker.fetch(
-      new Request('https://example.test/api/v1/admin/ingestion-runs', {
-        headers: { 'Cf-Access-Authenticated-User-Email': 'owner@example.test' },
+      new Request('http://localhost/api/v1/admin/ingestion-runs', {
+        headers: { 'X-Local-Access-Email': 'owner@local.test' },
       }),
       env(),
       context,

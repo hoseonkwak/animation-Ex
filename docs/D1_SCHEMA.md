@@ -247,10 +247,10 @@ curated 컬렉션만 이 테이블을 사용한다. dynamic 컬렉션은 `filter
 - `target_id` TEXT
 - `decision`: `approve`, `reject`, `needs-edit`, `merge`, `unpublish`
 - `reason_code`, `note`, `changes_json` TEXT
-- `actor_email_hash` TEXT, nullable
+- `actor_email_hash` TEXT, nullable. 기존 열 이름을 유지하며 GitHub OAuth 전환 후에는 `github:<numeric-id>` 신원의 환경별 HMAC-SHA-256을 저장한다.
 - `created_at` TEXT
 
-관리자가 한 명이어도 결정 이력은 남긴다. 이메일 원문 대신 고정 salt로 만든 hash를 저장한다.
+관리자가 한 명이어도 결정 이력은 남긴다. GitHub access token이나 숫자 사용자 ID 원문을 저장하지 않고 인증 주체 문자열의 hash만 저장한다.
 
 ### `ingestion_runs`
 

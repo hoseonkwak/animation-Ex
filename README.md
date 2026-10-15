@@ -192,7 +192,7 @@ npm run db:setup:local
 
 `db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
-처음 한 번 `apps/lab/.dev.vars.example`을 `apps/lab/.dev.vars`로 복사합니다. `.dev.vars`는 Git에서 제외되며 로컬 관리자와 수집 서명 모의 값만 담습니다.
+처음 한 번 `apps/lab/.dev.vars.example`을 `apps/lab/.dev.vars`로 복사합니다. `.dev.vars`는 Git에서 제외되며 로컬 관리자, GitHub OAuth와 수집 서명 모의 값만 담습니다. 로컬 관리자 화면은 `LOCAL_ADMIN_SIMULATION=true` 설정을 사용하므로 실제 GitHub OAuth App이 없어도 실행됩니다.
 
 ### 3. 개발 서버 실행
 
@@ -215,7 +215,18 @@ npm run dev
 
 URL 제보는 로컬에서 `local-test-token`으로 Turnstile을 모의합니다. 원격 환경은 공개 site key를 `apps/lab/.env.<환경>`의 `VITE_TURNSTILE_SITE_KEY`에 두고, 비밀 키는 Cloudflare Worker의 `TURNSTILE_SECRET_KEY` secret으로 등록해야 합니다. 환경별 배포 명령은 해당 모드의 env 파일을 읽어 빌드합니다.
 
-Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의하며 production에서는 Cloudflare Access 신원과 `ADMIN_EMAIL`이 모두 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
+Vue 파일과 Worker 코드를 수정하면 개발 서버가 변경 사항을 자동으로 반영합니다. 로컬 관리자 화면은 `owner@local.test` 신원을 모의합니다. Preview와 Production에서는 GitHub OAuth로 확인한 숫자 사용자 ID가 `ADMIN_GITHUB_USER_ID`와 일치해야 합니다. 서버를 종료할 때는 실행 중인 터미널에서 `Ctrl+C`를 누릅니다.
+
+원격 관리자 인증에는 환경별 GitHub OAuth App과 다음 Worker secret이 필요합니다.
+
+```text
+GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
+ADMIN_GITHUB_USER_ID
+ADMIN_SESSION_SECRET
+```
+
+Production OAuth callback URL은 `https://kwak-motion-lab-production.kwak-motion-lab.workers.dev/api/v1/auth/github/callback`이다. Preview는 Preview Worker URL을 사용하고 별도 OAuth App과 secret을 등록한다. `ADMIN_SESSION_SECRET`은 최소 32자 이상의 환경별 난수를 사용한다. GitHub 권한 scope는 요청하지 않으며, access token은 숫자 사용자 ID 확인 후 저장하지 않는다.
 
 ### 4. Production build와 미리보기
 
@@ -343,6 +354,7 @@ npx playwright install chromium
 
 ## 설계 문서
 
+- [Motion Lab 소개](docs/MOTION_LAB.md)
 - [리뉴얼 제품 설계서](docs/RENEWAL_PRODUCT_SPEC.md)
 - [결정 기록](docs/DECISIONS.md)
 - [개념 아키텍처](docs/ARCHITECTURE.md)

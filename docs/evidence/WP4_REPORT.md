@@ -18,11 +18,11 @@ owner 한 명이 실제 CodePen 실행 화면을 확인하고 후보를 편집�
 
 ## 관리자 경계
 
-- Cloudflare Access의 `Cf-Access-Authenticated-User-Email`과 `ADMIN_EMAIL`을 함께 확인한다.
+- 최초 구현은 Cloudflare Access의 `Cf-Access-Authenticated-User-Email`과 `ADMIN_EMAIL`을 함께 확인했다. 2026-10-15 D-035 이후 GitHub OAuth 숫자 owner ID와 서명 세션 방식으로 대체됐다.
 - 로컬 호스트에서는 `LOCAL_ADMIN_SIMULATION=true`일 때만 `X-Local-Access-Email`을 받는다.
-- 인증 정보가 없으면 401, 허용 이메일이 다르면 403을 반환한다.
+- 인증 정보가 없으면 401, GitHub 숫자 사용자 ID가 허용된 owner와 다르면 403을 반환한다.
 - 관리자 변경 요청은 같은 origin만 허용한다.
-- 검수자 이메일 원문 대신 SHA-256 hash만 결정·검증 증거에 저장한다.
+- 검수자 식별자 원문 대신 환경별 세션 비밀값으로 만든 HMAC-SHA-256 hash만 결정·검증 증거에 저장한다.
 
 ## 데이터
 
@@ -32,15 +32,15 @@ owner 한 명이 실제 CodePen 실행 화면을 확인하고 후보를 편집�
 
 ## 검증 증거
 
-| 검사 | 결과 |
-|---|---|
-| TypeScript typecheck | 통과 |
-| ESLint | 통과 |
-| Vitest 단위·계약 | 7 files, 26 tests 통과 |
-| 승인 강제 중간 실패 rollback | Entry 0, Candidate `review` 유지 |
-| 같은 승인 멱등 키 재호출 | Entry와 approve decision 각각 1개 |
-| Playwright | 8 tests 통과 |
-| Production build | Node 24, client·Worker bundle 성공 |
+| 검사                         | 결과                               |
+| ---------------------------- | ---------------------------------- |
+| TypeScript typecheck         | 통과                               |
+| ESLint                       | 통과                               |
+| Vitest 단위·계약             | 7 files, 26 tests 통과             |
+| 승인 강제 중간 실패 rollback | Entry 0, Candidate `review` 유지   |
+| 같은 승인 멱등 키 재호출     | Entry와 approve decision 각각 1개  |
+| Playwright                   | 8 tests 통과                       |
+| Production build             | Node 24, client·Worker bundle 성공 |
 
 Playwright는 공개 Explore 회귀와 Candidate Inbox 렌더링, 실제 CodePen embed URL, Preview 확인 전 승인 차단, 실행 확인 저장 후 승인 활성화, 인증 없는 API의 401을 검증했다.
 

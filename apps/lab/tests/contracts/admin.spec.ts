@@ -2,24 +2,37 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DatabaseSync } from 'node:sqlite'
 import worker from '../../server/index'
+import { createAdminSessionToken } from '../../server/auth'
 import { createMigratedDatabase } from './database'
 
 let sqlite: DatabaseSync
 let database: D1Database
 const context = { waitUntil() {}, passThroughOnException() {} } as ExecutionContext
+const ownerId = '12345678'
+const sessionSecret = 'admin-session-contract-secret-at-least-32-bytes'
 const env = () => ({
   DB: database,
-  ADMIN_EMAIL: 'owner@example.test',
+  ADMIN_GITHUB_USER_ID: ownerId,
+  ADMIN_SESSION_SECRET: sessionSecret,
   LOCAL_ADMIN_SIMULATION: 'false',
 })
 
-function request(
+async function request(
   path: string,
   init: RequestInit = {},
-  email = 'owner@example.test',
+  githubUserId = ownerId,
 ): Promise<Response> {
   const headers = new Headers(init.headers)
-  if (email) headers.set('Cf-Access-Authenticated-User-Email', email)
+  if (githubUserId) {
+    headers.set(
+      'Cookie',
+      `kwak_admin_session=${await createAdminSessionToken(
+        githubUserId,
+        sessionSecret,
+        'https://example.test',
+      )}`,
+    )
+  }
   if (init.method && init.method !== 'GET') {
     headers.set('Origin', 'https://example.test')
     headers.set('content-type', 'application/json')
@@ -42,9 +55,9 @@ afterEach(() => {
 })
 
 describe('P1-ADMIN 관리자 검수 계약', () => {
-  it('인증 없음은 401, 허용되지 않은 이메일은 403이다', async () => {
+  it('인증 없음은 401, 허용되지 않은 GitHub 사용자는 403이다', async () => {
     expect((await request('/api/v1/admin/candidates', {}, '')).status).toBe(401)
-    expect((await request('/api/v1/admin/candidates', {}, 'other@example.test')).status).toBe(403)
+    expect((await request('/api/v1/admin/candidates', {}, '99999999')).status).toBe(403)
   })
 
   it('P1-ADMIN-01 실제 CodePen 후보와 태그를 반환한다', async () => {

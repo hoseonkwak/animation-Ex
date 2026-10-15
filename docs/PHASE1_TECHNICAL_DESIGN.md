@@ -8,17 +8,17 @@
 
 Phase 1은 다음 구성으로 시작한다.
 
-| 영역 | 선택 | 역할 |
-|---|---|---|
-| 사용자 및 관리자 웹 | Vue 3 + TypeScript + Vite | 공개 탐색 화면과 관리자 검수 화면 |
-| 배포 및 API | Cloudflare Workers + Static Assets | Vue 파일 배포, 공개 조회 API, 관리자 쓰기 API |
-| 데이터베이스 | Cloudflare D1 | 콘텐츠, 태그, 출처, 승인 및 수집 이력 |
-| 예약 수집 | GitHub Actions | WSSS 목록 순회, 정규화, 중복 검사와 후보 등록 |
-| 원본 실행 | CodePen Embed | Phase 1 공개 Preview |
-| 개인 데이터 | IndexedDB, localStorage | 북마크, 나중에 연습, 테마 |
-| 관리자 인증 | Cloudflare Access + 이메일 허용 목록 | 소유자 한 명의 관리자 경로와 API 보호 |
-| 익명 제보 보호 | Cloudflare Turnstile | URL 제보 자동화 남용 방지 |
-| 오류 및 운영 지표 | 구조화 로그 + 관리자 집계 화면 | 유료 관측 도구 없이 초기 운영 상태 확인 |
+| 영역                | 선택                                    | 역할                                                |
+| ------------------- | --------------------------------------- | --------------------------------------------------- |
+| 사용자 및 관리자 웹 | Vue 3 + TypeScript + Vite               | 공개 탐색 화면과 관리자 검수 화면                   |
+| 배포 및 API         | Cloudflare Workers + Static Assets      | Vue 파일 배포, 공개 조회 API, 관리자 쓰기 API       |
+| 데이터베이스        | Cloudflare D1                           | 콘텐츠, 태그, 출처, 승인 및 수집 이력               |
+| 예약 수집           | GitHub Actions                          | WSSS 목록 순회, 정규화, 중복 검사와 후보 등록       |
+| 원본 실행           | CodePen Embed                           | Phase 1 공개 Preview                                |
+| 개인 데이터         | IndexedDB, localStorage                 | 북마크, 나중에 연습, 테마                           |
+| 관리자 인증         | GitHub OAuth + 숫자 사용자 ID 허용 목록 | 무료 범위에서 소유자 한 명의 관리자 경로와 API 보호 |
+| 익명 제보 보호      | Cloudflare Turnstile                    | URL 제보 자동화 남용 방지                           |
+| 오류 및 운영 지표   | 구조화 로그 + 관리자 집계 화면          | 유료 관측 도구 없이 초기 운영 상태 확인             |
 
 사용자 계정, AI API, 별도 검색 서비스, 객체 스토리지와 작업 큐는 Phase 1에 도입하지 않는다.
 
@@ -70,7 +70,7 @@ Phase 1의 공개 콘텐츠는 원본 CodePen Embed로 실행한다. 목록에�
 - `/admin/sources`: 수집 출처와 실행 이력
 - `/admin/failures`: 실패 원인과 재시도 대상
 
-Cloudflare Access에서 소유자 이메일만 허용한다. Worker는 Access를 통과했다는 사실만 믿지 않고 전달된 신원과 환경 변수의 관리자 이메일을 다시 비교한다. 모든 쓰기 API는 같은 검사를 사용한다.
+관리자 화면은 GitHub OAuth 웹 흐름으로 소유자를 인증한다. Worker는 GitHub API가 반환한 숫자 사용자 ID를 `ADMIN_GITHUB_USER_ID`와 비교하고, 일치할 때만 환경별 비밀값으로 서명한 8시간 HttpOnly 세션을 발급한다. GitHub access token은 사용자 ID 확인 후 저장하지 않는다. OAuth `state`, 세션의 origin audience와 모든 쓰기 API의 same-origin 검사를 함께 적용한다.
 
 ### 수집 경로
 
@@ -146,13 +146,13 @@ Cloudflare의 2026-09-15 문서 기준으로 Workers Free는 하루 100,000 요�
 
 ## 8. 배포 환경
 
-| 환경 | 목적 | 데이터 |
-|---|---|---|
-| local | 개발과 fixture 검증 | 로컬 D1 |
-| preview | 변경 검수 | 별도 preview D1 또는 읽기 전용 fixture |
-| production | 공개 서비스 | production D1 |
+| 환경       | 목적                | 데이터                                 |
+| ---------- | ------------------- | -------------------------------------- |
+| local      | 개발과 fixture 검증 | 로컬 D1                                |
+| preview    | 변경 검수           | 별도 preview D1 또는 읽기 전용 fixture |
+| production | 공개 서비스         | production D1                          |
 
-Preview 배포는 검색엔진 색인을 막고 Access로 보호한다. Preview가 production D1에 쓰지 못하도록 binding을 분리한다.
+Preview 배포는 검색엔진 색인을 막고 별도 GitHub OAuth App으로 관리자 경로를 보호한다. Preview가 production D1에 쓰지 못하도록 binding과 OAuth 비밀값을 분리한다.
 
 초기 공개 주소는 무료 `workers.dev` 주소를 사용할 수 있다. 브랜드 도메인은 도메인 구매비가 생기므로 서비스 방향을 확인한 뒤 연결한다.
 
@@ -185,7 +185,7 @@ Preview 배포는 검색엔진 색인을 막고 Access로 보호한다. Preview�
 3. 공개 조회 API와 Explore 화면
 4. 기존 15개 예제 migration
 5. CodePen Preview 지연 로딩
-6. Access 기반 관리자 검수 화면과 쓰기 API
+6. GitHub OAuth 기반 관리자 검수 화면과 쓰기 API
 7. WSSS 수집 adapter와 GitHub Actions
 8. 익명 URL 제보
 9. 무료 한도 집계, 백업과 복구 검증
@@ -203,7 +203,7 @@ Preview 배포는 검색엔진 색인을 막고 Access로 보호한다. Preview�
 - [Cloudflare Workers 한도](https://developers.cloudflare.com/workers/platform/limits/)
 - [Cloudflare Workers 요금](https://developers.cloudflare.com/workers/platform/pricing/)
 - [Cloudflare D1 한도](https://developers.cloudflare.com/d1/platform/limits/)
-- [Cloudflare Access와 Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [GitHub OAuth 웹 애플리케이션 흐름](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps)
 - [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)
 - [GitHub Actions 사용량과 과금](https://docs.github.com/en/actions/concepts/billing-and-usage)
 - [GitHub Actions 예약 실행](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)

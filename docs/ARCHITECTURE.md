@@ -116,7 +116,7 @@ Published code package
 - Cloudflare Workers Static Assets와 API
 - Cloudflare D1 기반 콘텐츠 및 검수 데이터
 - GitHub Actions 기반 CodePen 수집
-- Cloudflare Access 기반 단일 관리자 인증
+- GitHub OAuth와 숫자 사용자 ID 허용 목록 기반 단일 관리자 인증
 - CodePen 지연 실행 Preview와 기본 실행 가능성 검사
 
 구체적인 무료 한도, 배포 경계와 구현 순서는 `PHASE1_TECHNICAL_DESIGN.md`를 따른다.

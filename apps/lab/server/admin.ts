@@ -687,8 +687,20 @@ export class AdminRepository {
   }
 }
 
-export async function actorEmailHash(email: string): Promise<string> {
-  const bytes = new TextEncoder().encode(email.trim().toLocaleLowerCase('en-US'))
-  const hash = await crypto.subtle.digest('SHA-256', bytes)
+export async function actorIdentityHash(identity: string, secret?: string): Promise<string> {
+  const bytes = new TextEncoder().encode(identity.trim().toLocaleLowerCase('en-US'))
+  const hash = secret
+    ? await crypto.subtle.sign(
+        'HMAC',
+        await crypto.subtle.importKey(
+          'raw',
+          new TextEncoder().encode(secret),
+          { name: 'HMAC', hash: 'SHA-256' },
+          false,
+          ['sign'],
+        ),
+        bytes,
+      )
+    : await crypto.subtle.digest('SHA-256', bytes)
   return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }

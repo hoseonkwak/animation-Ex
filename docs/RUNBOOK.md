@@ -21,12 +21,24 @@ Wrangler binding은 상속되지 않으므로 `wrangler.jsonc`에서 각 환경�
 
 필수 값:
 
-- `ADMIN_EMAIL`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `ADMIN_GITHUB_USER_ID`
+- `ADMIN_SESSION_SECRET`
 - `INGESTION_KEY_ID`
 - `INGESTION_HMAC_SECRET`
 - `TURNSTILE_SECRET_KEY`
 
-Cloudflare Access는 `/admin/*`와 `/api/v1/admin/*`에 소유자 이메일 하나만 허용한다. Worker도 Access 이메일과 `ADMIN_EMAIL`을 다시 비교한다.
+GitHub OAuth App은 Preview와 Production에 각각 하나씩 만들고 callback URL을 해당 Worker의 `/api/v1/auth/github/callback`으로 설정한다. Worker는 GitHub가 반환한 숫자 사용자 ID를 `ADMIN_GITHUB_USER_ID`와 비교한다. `ADMIN_SESSION_SECRET`은 환경마다 다른 최소 32자 이상의 난수로 만들며 저장소나 명령 기록에 값을 남기지 않는다.
+
+```bash
+wrangler secret put GITHUB_CLIENT_ID --env preview
+wrangler secret put GITHUB_CLIENT_SECRET --env preview
+wrangler secret put ADMIN_GITHUB_USER_ID --env preview
+wrangler secret put ADMIN_SESSION_SECRET --env preview
+```
+
+Production은 `--env production`으로 같은 네 값을 별도로 등록한다. OAuth App 권한 scope는 비워 두며 로그인 후 `GET /api/v1/auth/session`이 `authenticated: true`를 반환하는지 확인한다.
 
 Turnstile 위젯은 환경별 공개 도메인만 허용하는 `managed` 모드로 만든다. 생성 결과의 site key는 해당 `.env.<환경>`에 기록하고 secret은 터미널 기록이나 Git에 남기지 않은 채 바로 Worker secret으로 등록한다.
 
@@ -73,9 +85,9 @@ preview 확인 전 production 배포를 실행하지 않는다. preview의 `/rob
 PREVIEW_BASE_URL=https://preview.example.com npm run smoke:preview
 ```
 
-GitHub Actions의 `Preview smoke` workflow에서도 같은 검사를 수동 실행할 수 있다. 이 검사는 Worker의 관리자 차단을 확인하지만 Cloudflare Access의 이메일 허용 정책 자체는 Dashboard에서 별도로 확인한다.
+GitHub Actions의 `Preview smoke` workflow에서도 같은 검사를 수동 실행할 수 있다. 이 검사는 비인증 관리자 API 차단을 확인한다. 실제 owner 로그인과 다른 GitHub 사용자 차단은 환경별 OAuth App을 연결한 뒤 브라우저에서 별도로 확인한다.
 
-현재 Preview URL은 `https://kwak-motion-lab-preview.kwak-motion-lab.workers.dev`다. Zero Trust 무료 활성화가 결제 카드와 무료 한도 초과분 자동 청구 동의를 요구해 Access 연결은 보류했다. Access가 연결되기 전에는 원격 관리자 기능을 사용하지 않는다.
+현재 Preview URL은 `https://kwak-motion-lab-preview.kwak-motion-lab.workers.dev`다. callback URL은 `https://kwak-motion-lab-preview.kwak-motion-lab.workers.dev/api/v1/auth/github/callback`이다. 2026-10-15에 Preview 전용 OAuth App과 네 secret을 연결하고 실제 owner 로그인과 Candidate Inbox 로딩을 확인했다.
 
 Production은 공개 색인 허용, `/admin/` 차단과 sitemap 연결을 별도 smoke로 검사한다.
 
@@ -83,7 +95,7 @@ Production은 공개 색인 허용, `/admin/` 차단과 sitemap 연결을 별도
 PRODUCTION_BASE_URL=https://kwak-motion-lab-production.kwak-motion-lab.workers.dev npm run smoke:production
 ```
 
-현재 Production URL은 `https://kwak-motion-lab-production.kwak-motion-lab.workers.dev`다. Production D1, Turnstile 위젯과 Worker secret은 Preview와 분리되어 있다. 원격 관리자 기능은 Access 보류 상태이므로 Production에서도 401로 차단된다.
+현재 Production URL은 `https://kwak-motion-lab-production.kwak-motion-lab.workers.dev`다. callback URL은 `https://kwak-motion-lab-production.kwak-motion-lab.workers.dev/api/v1/auth/github/callback`이다. Production D1, OAuth App, 세션 비밀값, Turnstile 위젯과 Worker secret은 Preview와 분리한다. 2026-10-15에 Production 전용 OAuth App과 네 secret을 연결하고 실제 owner 로그인과 후보 1,861개 로딩을 확인했다.
 
 ## 무료 한도 보호
 
@@ -161,4 +173,4 @@ D1 Time Travel 복구는 현재 상태를 덮어쓰므로 장애 원인과 복�
 - 실행 환경
 - 오류 이름과 메시지
 
-요청 본문, Access token, cookie, 사용자 이메일과 IP는 로그에 넣지 않는다. 사용자에게 반환한 request ID로 Workers Logs에서 같은 오류를 찾는다.
+요청 본문, GitHub access token, session cookie, 사용자 식별자와 IP는 로그에 넣지 않는다. 사용자에게 반환한 request ID로 Workers Logs에서 같은 오류를 찾는다.

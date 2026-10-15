@@ -141,7 +141,16 @@ Home, Explore, Sections, About, 공개 Section과 공개 Entry URL만 XML sitema
 
 ## 3. 관리자 API
 
-모든 `/admin/*` API는 Cloudflare Access 신원과 서버의 `ADMIN_EMAIL` 허용 목록을 함께 확인한다. 쿠키가 포함된 같은 origin JSON 요청만 허용하고 `Origin`을 검사한다.
+모든 `/admin/*` API는 Worker가 발급한 GitHub owner 세션을 확인한다. 세션의 숫자 GitHub 사용자 ID가 `ADMIN_GITHUB_USER_ID`와 일치해야 하며, 쿠키가 포함된 같은 origin JSON 쓰기 요청만 허용한다. 세션 쿠키는 HttpOnly이므로 클라이언트 JavaScript에서 읽지 않는다.
+
+### 관리자 인증 API
+
+- `GET /auth/github/start`: OAuth `state` 쿠키를 만들고 최소 권한 GitHub 승인 화면으로 이동한다.
+- `GET /auth/github/callback`: `state`, 일회용 code와 숫자 owner ID를 확인하고 8시간 관리자 세션을 발급한다.
+- `GET /auth/session`: 현재 관리자 인증 여부와 provider만 반환한다.
+- `POST /auth/logout`: same-origin 요청에서 관리자 세션 쿠키를 제거한다.
+
+GitHub access token은 사용자 ID 확인 요청에만 사용하고 DB나 로그에 저장하지 않는다. localhost에서는 `LOCAL_ADMIN_SIMULATION=true`일 때만 로컬 신원 헤더를 허용한다.
 
 ### `GET /admin/candidates`
 

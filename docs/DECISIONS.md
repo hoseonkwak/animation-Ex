@@ -195,3 +195,15 @@
 - 결정: Phase 1 Production을 `kwak-motion-lab-production.kwak-motion-lab.workers.dev`에 우선 공개한다. 전용 도메인은 실제 이용과 브랜드 운영 기준이 정해질 때 연결한다.
 - 격리: Production은 Preview와 다른 Worker, D1, Turnstile 위젯과 ingestion 인증값을 사용한다.
 - 관리자: Cloudflare Access가 보류된 동안 Production 관리자 API는 모든 원격 요청을 401로 차단한다. 공개 탐색과 URL 제보 기능은 비로그인으로 제공한다.
+
+### D-035 무료 관리자 인증을 GitHub OAuth로 전환
+
+- 상태: 확정
+- 확인일: 2026-10-15
+- 결정: Cloudflare Access 대신 GitHub OAuth 웹 흐름으로 owner 한 명을 인증한다. GitHub 사용자명은 변경될 수 있으므로 `ADMIN_GITHUB_USER_ID`의 숫자 ID와 일치하는 계정만 허용한다.
+- 세션: Worker가 GitHub 사용자 ID를 확인한 직후 OAuth access token을 폐기하고, 환경별 `ADMIN_SESSION_SECRET`으로 서명한 8시간 HttpOnly 세션 쿠키를 발급한다. 쿠키는 `Secure`, `SameSite=Lax`이며 발급 origin을 audience로 포함한다.
+- 보호: OAuth `state` 검증, 쓰기 API의 same-origin 검사, 숫자 owner ID 재검사와 환경별 비밀값 분리를 함께 적용한다. 사용자 DB와 일반 사용자 로그인은 추가하지 않는다.
+- 로컬: localhost의 `LOCAL_ADMIN_SIMULATION`만 기존 `X-Local-Access-Email` 모의를 허용한다. Preview와 Production에서는 이 헤더를 무시한다.
+- 운영: Preview와 Production은 각 callback URL에 맞는 별도 GitHub OAuth App과 비밀값을 사용한다. Production 설정이 완료되기 전에는 관리자 API가 계속 401을 반환한다.
+- 관계: D-033의 Cloudflare Access 결제 등록 보류를 유지하며, D-034의 원격 관리자 차단은 GitHub OAuth 설정과 검증이 완료될 때까지의 상태로 대체한다.
+- 검증: 2026-10-15에 Preview와 Production 각각의 OAuth App, Worker secret, 실제 owner 승인과 Candidate Inbox 로딩을 확인했다.

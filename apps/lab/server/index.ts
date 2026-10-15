@@ -1,4 +1,11 @@
-import { actorEmailHash, AdminApiError, AdminRepository } from './admin'
+import { actorIdentityHash, AdminApiError, AdminRepository } from './admin'
+import {
+  authenticateAdminRequest,
+  beginGitHubOAuth,
+  clearAdminSessionCookie,
+  clearOAuthStateCookie,
+  completeGitHubOAuth,
+} from './auth'
 import { ApiInputError, ExamplesRepository, parseExampleFilters } from './examples'
 import {
   authenticateIngestion,
@@ -11,7 +18,10 @@ import { readUsageStatus, storeUsageSnapshot } from './operations'
 
 interface Env {
   DB: D1Database
-  ADMIN_EMAIL?: string
+  ADMIN_GITHUB_USER_ID?: string
+  ADMIN_SESSION_SECRET?: string
+  GITHUB_CLIENT_ID?: string
+  GITHUB_CLIENT_SECRET?: string
   LOCAL_ADMIN_SIMULATION?: string
   INGESTION_KEY_ID?: string
   INGESTION_HMAC_SECRET?: string
@@ -71,6 +81,66 @@ export default {
 
     if (request.method === 'GET' && url.pathname === '/api/v1/health') {
       return json({ data: { service: 'kwak-motion-lab', status: 'ok' }, meta: { requestId } })
+    }
+
+    if (url.pathname.startsWith('/api/v1/auth/')) {
+      try {
+        if (request.method === 'GET' && url.pathname === '/api/v1/auth/session') {
+          try {
+            const identity = await authenticateAdminRequest(request, env)
+            return json({
+              data: { authenticated: true, provider: identity.provider },
+              meta: { requestId },
+            })
+          } catch (error) {
+            if (error instanceof AdminApiError && (error.status === 401 || error.status === 403)) {
+              return json({ data: { authenticated: false }, meta: { requestId } })
+            }
+            throw error
+          }
+        }
+        if (request.method === 'GET' && url.pathname === '/api/v1/auth/github/start') {
+          return beginGitHubOAuth(request, env)
+        }
+        if (request.method === 'GET' && url.pathname === '/api/v1/auth/github/callback') {
+          try {
+            const result = await completeGitHubOAuth(request, env)
+            const headers = new Headers({
+              'Cache-Control': 'no-store',
+              Location: `${url.origin}/admin/review`,
+            })
+            headers.append('Set-Cookie', result.sessionCookie)
+            headers.append('Set-Cookie', clearOAuthStateCookie())
+            return new Response(null, { status: 302, headers })
+          } catch (error) {
+            if (error instanceof AdminApiError) {
+              const reason = error.status === 403 ? 'forbidden' : 'failed'
+              const headers = new Headers({
+                'Cache-Control': 'no-store',
+                Location: `${url.origin}/admin/review?auth=${reason}`,
+              })
+              headers.append('Set-Cookie', clearOAuthStateCookie())
+              return new Response(null, { status: 302, headers })
+            }
+            throw error
+          }
+        }
+        if (request.method === 'POST' && url.pathname === '/api/v1/auth/logout') {
+          assertSameOrigin(request, url)
+          return json(
+            { data: { authenticated: false }, meta: { requestId } },
+            { headers: { 'Set-Cookie': clearAdminSessionCookie() } },
+          )
+        }
+      } catch (error) {
+        if (error instanceof AdminApiError) {
+          return json(
+            { error: { code: error.code, message: error.message, requestId } },
+            { status: error.status },
+          )
+        }
+        throw error
+      }
     }
 
     if (request.method === 'GET' && url.pathname === '/api/v1/discovery') {
@@ -231,9 +301,9 @@ export default {
     }
     if (url.pathname.startsWith('/api/v1/admin/')) {
       try {
-        const email = authenticateAdmin(request, env)
+        const identity = await authenticateAdminRequest(request, env)
         if (request.method !== 'GET') assertSameOrigin(request, url)
-        const actorHash = await actorEmailHash(email)
+        const actorHash = await actorIdentityHash(identity.subject, env.ADMIN_SESSION_SECRET)
         const repository = new AdminRepository(env.DB)
 
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
@@ -334,25 +404,6 @@ export default {
     )
   }),
 } satisfies ExportedHandler<Env>
-
-function authenticateAdmin(request: Request, env: Env): string {
-  const url = new URL(request.url)
-  const accessEmail = request.headers.get('Cf-Access-Authenticated-User-Email')
-  const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
-  const localEmail =
-    isLocal && env.LOCAL_ADMIN_SIMULATION === 'true'
-      ? request.headers.get('X-Local-Access-Email')
-      : null
-  const email = accessEmail ?? localEmail
-  if (!email) throw new AdminApiError(401, 'ADMIN_AUTH_REQUIRED', '관리자 인증이 필요합니다.')
-  if (
-    !env.ADMIN_EMAIL ||
-    email.toLocaleLowerCase('en-US') !== env.ADMIN_EMAIL.toLocaleLowerCase('en-US')
-  ) {
-    throw new AdminApiError(403, 'ADMIN_FORBIDDEN', '허용된 관리자 계정이 아닙니다.')
-  }
-  return email
-}
 
 function assertSameOrigin(request: Request, url: URL): void {
   const origin = request.headers.get('Origin')

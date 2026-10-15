@@ -5,6 +5,7 @@ import type { ApiSuccess } from '@/shared/examples'
 
 const queue = ref<CandidateListPayload>({ items: [], counts: {} })
 const selected = ref<CandidateDetail | null>(null)
+const authState = ref<'checking' | 'authenticated' | 'anonymous'>('checking')
 const status = ref<CandidateStatus>('review')
 const previewFilter = ref('all')
 const viewport = ref<'desktop' | 'tablet' | 'mobile'>('desktop')
@@ -32,6 +33,7 @@ const form = reactive({
   tagIds: [] as string[],
 })
 const localHeaders = { 'X-Local-Access-Email': 'owner@local.test' }
+const authMessage = new URLSearchParams(window.location.search).get('auth')
 const frameWidth = computed(
   () => ({ desktop: '100%', tablet: '768px', mobile: '390px' })[viewport.value],
 )
@@ -48,10 +50,33 @@ const approvalIssues = computed(() => {
   return issues
 })
 
-onMounted(() => {
-  void loadQueue()
-  void loadOperations()
+onMounted(async () => {
+  await loadSession()
+  if (authState.value === 'authenticated') {
+    await Promise.all([loadQueue(), loadOperations()])
+  }
 })
+
+async function loadSession(): Promise<void> {
+  try {
+    const response = await fetch('/api/v1/auth/session', { headers: localHeaders })
+    const body = (await response.json()) as ApiSuccess<{ authenticated: boolean }>
+    authState.value = response.ok && body.data.authenticated ? 'authenticated' : 'anonymous'
+  } catch (cause) {
+    authState.value = 'anonymous'
+    showError(cause)
+  }
+}
+
+async function logout(): Promise<void> {
+  await fetch('/api/v1/auth/logout', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...localHeaders },
+  })
+  authState.value = 'anonymous'
+  queue.value = { items: [], counts: {} }
+  selected.value = null
+}
 
 async function api<T>(path: string, init: Parameters<typeof fetch>[1] = {}): Promise<T> {
   const response = await fetch(path, {
@@ -59,7 +84,10 @@ async function api<T>(path: string, init: Parameters<typeof fetch>[1] = {}): Pro
     headers: { 'content-type': 'application/json', ...localHeaders, ...init.headers },
   })
   const body = (await response.json()) as ApiSuccess<T> & { error?: { message: string } }
-  if (!response.ok) throw new Error(body.error?.message ?? `HTTP ${response.status}`)
+  if (!response.ok) {
+    if (response.status === 401) authState.value = 'anonymous'
+    throw new Error(body.error?.message ?? `HTTP ${response.status}`)
+  }
   return body.data
 }
 
@@ -233,10 +261,31 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         <p class="eyebrow">OWNER REVIEW</p>
         <h1>Candidate Inbox</h1>
       </div>
-      <a href="/">공개 Explore 보기</a>
+      <div class="admin-header-actions">
+        <a href="/">공개 Explore 보기</a>
+        <button v-if="authState === 'authenticated'" type="button" @click="logout">로그아웃</button>
+      </div>
     </header>
 
-    <section class="admin-stats" aria-label="검수 현황">
+    <section v-if="authState === 'checking'" class="admin-login-panel" aria-live="polite">
+      <p class="eyebrow">OWNER ACCESS</p>
+      <h2>관리자 세션을 확인하고 있습니다.</h2>
+    </section>
+
+    <section v-else-if="authState === 'anonymous'" class="admin-login-panel">
+      <p class="eyebrow">OWNER ACCESS</p>
+      <h2>GitHub로 관리자 로그인</h2>
+      <p>등록된 소유자 GitHub 계정만 검수 화면에 접근할 수 있습니다.</p>
+      <p v-if="authMessage === 'forbidden'" class="admin-notice error" role="alert">
+        허용된 관리자 계정이 아닙니다.
+      </p>
+      <p v-else-if="authMessage === 'failed'" class="admin-notice error" role="alert">
+        GitHub 로그인을 완료하지 못했습니다. 다시 시도해주세요.
+      </p>
+      <a class="admin-login-button" href="/api/v1/auth/github/start">GitHub로 계속하기</a>
+    </section>
+
+    <section v-else class="admin-stats" aria-label="검수 현황">
       <button
         v-for="item in ['review', 'needs-edit', 'duplicate', 'validation-failed']"
         :key="item"
@@ -255,7 +304,11 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         ><strong>{{ queue.counts[item] ?? 0 }}</strong>
       </button>
     </section>
-    <section v-if="operations" class="operations-status" aria-label="운영 상태">
+    <section
+      v-if="authState === 'authenticated' && operations"
+      class="operations-status"
+      aria-label="운영 상태"
+    >
       <span
         >환경 <strong>{{ operations.environment }}</strong></span
       >
@@ -269,10 +322,18 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         >수집 <strong>{{ operations.ingestionPaused ? '중지' : '허용' }}</strong></span
       >
     </section>
-    <p v-if="notice" class="admin-notice success" role="status">{{ notice }}</p>
-    <p v-if="error" class="admin-notice error" role="alert">{{ error }}</p>
+    <p v-if="authState === 'authenticated' && notice" class="admin-notice success" role="status">
+      {{ notice }}
+    </p>
+    <p v-if="authState === 'authenticated' && error" class="admin-notice error" role="alert">
+      {{ error }}
+    </p>
 
-    <section class="review-workspace" aria-label="후보 검수 작업 공간">
+    <section
+      v-if="authState === 'authenticated'"
+      class="review-workspace"
+      aria-label="후보 검수 작업 공간"
+    >
       <aside class="candidate-queue">
         <div class="queue-toolbar">
           <strong>Queue</strong
