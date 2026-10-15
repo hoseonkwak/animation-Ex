@@ -1,0 +1,38 @@
+name: CodePen audit smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/codepen-audit-smoke.yml
+      - apps/lab/scripts/audit-codepen-candidates.mjs
+      - apps/lab/scripts/audit-codepen-candidates.spec.mjs
+      - apps/lab/fixtures/codepen-audit-smoke.json
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node --test apps/lab/scripts/audit-codepen-candidates.spec.mjs
+      - run: npx playwright install --with-deps chromium
+      - name: Probe two known public Pens without changing content
+        working-directory: apps/lab
+        run: >-
+          node scripts/audit-codepen-candidates.mjs
+          --input fixtures/codepen-audit-smoke.json
+          --output ../../codepen-audit-smoke-result.json
+          --limit 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codepen-audit-smoke
+          path: codepen-audit-smoke-result.json

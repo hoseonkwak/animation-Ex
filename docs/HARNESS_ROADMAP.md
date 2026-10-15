@@ -70,6 +70,8 @@
 
 구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.
 
+자동 공개 전환의 현재 차단 조건과 읽기 전용 실행 검사 파일럿은 `AUTO_PUBLICATION_PILOT.md`를 따른다.
+
 ## 2. Skill 생성 기준
 
 Skill은 이름만 먼저 만들지 않는다. 다음 중 하나가 충족되면 `.agents/skills/<name>/SKILL.md`로 추가한다.
