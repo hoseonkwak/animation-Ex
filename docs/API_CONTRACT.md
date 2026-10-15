@@ -206,6 +206,14 @@ Source, 발견 경로, 추출 메타데이터, 중복 후보, 마지막 검증�
 
 실행별 발견, 신규, 중복, 실패, 승인 대기 수와 마지막 checkpoint를 반환한다.
 
+### `GET`, `POST /admin/auto-publication`
+
+owner 세션으로 중지 여부, 최근 검사 실행과 표본 묶음을 조회한다. POST 본문 `{"paused": true|false}`는 D1 중지 스위치를 변경한다. 쓰기는 동일 출처 Origin 검사를 받는다. 새 묶음의 표본은 기존 Candidate 상세에서 실행 화면을 확인하고 승인한다.
+
+### `POST /admin/auto-publication/batches/:id/rollback`
+
+예약 검사를 즉시 중지하고 이 묶음에서 자동 공개한 Entry만 일괄 공개 중지한다. 표본의 수동 공개는 유지한다. 이미 취소된 묶음에 다시 요청해도 결과는 같다.
+
 ## 4. 수집 API
 
 ### `POST /ingestion/batches`

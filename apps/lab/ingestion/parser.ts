@@ -18,6 +18,12 @@ function attribute(tag: string, name: string): string | null {
   return match?.[1] ? decode(match[1]) : null
 }
 
+function meaningfulLinkTitle(value: string): string | null {
+  const title = decode(value)
+  if (!title || /^(?:code\s*view|view\s*code|result|edit|fork|open|pen)$/i.test(title)) return null
+  return title
+}
+
 export function parseWsssList(html: string, categoryUrl: string, page = 1): DiscoveredPost[] {
   const category = decodeURIComponent(new URL(categoryUrl).pathname.replace(/^\/category\/?/, ''))
   const posts = new Map<string, DiscoveredPost>()
@@ -27,9 +33,10 @@ export function parseWsssList(html: string, categoryUrl: string, page = 1): Disc
     const url = new URL(href, categoryUrl)
     const id = url.pathname.match(/^\/(\d+)\/?$/)?.[1]
     if (!id) continue
-    const title = decode(match[2] ?? '')
+    const title = meaningfulLinkTitle(match[2] ?? '')
     if (!title) continue
-    posts.set(id, { id, url: `https://wsss.tistory.com/${id}`, title, category, page })
+    if (!posts.has(id))
+      posts.set(id, { id, url: `https://wsss.tistory.com/${id}`, title, category, page })
   }
   if (posts.size === 0) {
     throw new IngestionParseError(
@@ -91,9 +98,12 @@ export function parseWsssArticle(html: string, articleUrl: string): ExtractedArt
     const nearby = decode(html.slice(linkEnd, linkEnd + 160))
     const creatorName =
       nearby.match(/^\s*by\s+(.+?)\s+\(\s*@/i)?.[1]?.trim() ?? normalized.creatorSlug
+    const linkTitle = meaningfulLinkTitle(match[2] ?? '')
+    const previous = pens.get(normalized.penKey)
+    if (previous && (!linkTitle || previous.title !== title)) continue
     pens.set(normalized.penKey, {
       ...normalized,
-      title: decode(match[2] ?? '') || title,
+      title: linkTitle ?? title,
       creatorName,
     })
   }

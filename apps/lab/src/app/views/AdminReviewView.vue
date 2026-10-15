@@ -33,6 +33,25 @@ const operations = ref<{
   ingestionPaused: boolean
   usage: { level: 'normal' | 'warning' | 'paused'; maximumRatio: number }
 } | null>(null)
+const autoPublication = ref<{
+  paused: boolean
+  batches: Array<{
+    id: string
+    status: string
+    sampleCandidateId: string
+    sampleTitle: string
+    publishedCount: number
+    failureCode: string | null
+    createdAt: string
+  }>
+  lastRun: null | {
+    status: string
+    examinedCount: number
+    passedCount: number
+    failureCode: string | null
+    startedAt: string
+  }
+} | null>(null)
 const reasonCode = ref('missing-metadata')
 const decisionNote = ref('')
 const form = reactive({
@@ -95,7 +114,7 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await Promise.all([loadQueue(), loadOperations()])
+    await Promise.all([loadQueue(), loadOperations(), loadAutoPublication()])
   }
 })
 
@@ -188,6 +207,43 @@ async function loadOperations(): Promise<void> {
     operations.value = await api('/api/v1/admin/operations')
   } catch (cause) {
     showError(cause)
+  }
+}
+
+async function loadAutoPublication(): Promise<void> {
+  try {
+    autoPublication.value = await api('/api/v1/admin/auto-publication')
+  } catch (cause) {
+    showError(cause)
+  }
+}
+
+async function toggleAutoPublication(paused: boolean): Promise<void> {
+  busy.value = true
+  try {
+    autoPublication.value = await api('/api/v1/admin/auto-publication', {
+      method: 'POST',
+      body: JSON.stringify({ paused }),
+    })
+    notice.value = paused ? '자동 공개를 중지했습니다.' : '자동 공개 예약 실행을 허용했습니다.'
+  } catch (cause) {
+    showError(cause)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function rollbackAutoBatch(id: string): Promise<void> {
+  busy.value = true
+  try {
+    autoPublication.value = await api(`/api/v1/admin/auto-publication/batches/${id}/rollback`, {
+      method: 'POST',
+    })
+    notice.value = '자동 공개를 중지하고 이 묶음의 자동 공개 항목을 취소했습니다.'
+  } catch (cause) {
+    showError(cause)
+  } finally {
+    busy.value = false
   }
 }
 
@@ -329,7 +385,7 @@ async function approve(): Promise<void> {
       },
     )
     notice.value = `공개했습니다: /examples/${result.slug}`
-    await loadQueue()
+    await Promise.all([loadQueue(), loadAutoPublication()])
   } catch (cause) {
     showError(cause)
     approvalFeedback.value = error.value
@@ -356,7 +412,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
     })
     notice.value = '검수 결정을 저장했습니다.'
     decisionNote.value = ''
-    await loadQueue()
+    await Promise.all([loadQueue(), loadAutoPublication()])
   } catch (cause) {
     showError(cause)
   } finally {
@@ -458,6 +514,59 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         >
           {{ filter.label }} <strong>{{ filter.count }}</strong>
         </button>
+      </div>
+    </section>
+    <section
+      v-if="authState === 'authenticated' && autoPublication"
+      class="triage-panel"
+      aria-label="자동 공개 운영"
+    >
+      <div>
+        <h2>자동 공개</h2>
+        <p>
+          하루 최대 8개를 실제 실행 검사합니다. 같은 카테고리의 통과 묶음에서 표본 1개를 먼저
+          확인하면 나머지는 다음 예약 실행에서 공개됩니다.
+        </p>
+        <p>
+          상태 <strong>{{ autoPublication.paused ? '중지' : '예약 검사 허용' }}</strong>
+          <span v-if="autoPublication.lastRun">
+            · 최근 검사 {{ autoPublication.lastRun.status }} ({{
+              autoPublication.lastRun.passedCount
+            }}/{{ autoPublication.lastRun.examinedCount }})
+            <span v-if="autoPublication.lastRun.failureCode">
+              · {{ autoPublication.lastRun.failureCode }}</span
+            >
+          </span>
+        </p>
+        <button
+          type="button"
+          :disabled="busy"
+          @click="toggleAutoPublication(!autoPublication.paused)"
+        >
+          {{ autoPublication.paused ? '예약 검사 재개' : '즉시 중지' }}
+        </button>
+      </div>
+      <div v-for="batch in autoPublication.batches" :key="batch.id">
+        <strong>{{ batch.status }}</strong>
+        <p>표본: {{ batch.sampleTitle }}</p>
+        <button
+          v-if="batch.status === 'awaiting-sample'"
+          type="button"
+          :disabled="busy"
+          @click="selectCandidate(batch.sampleCandidateId)"
+        >
+          표본 실행 화면 확인
+        </button>
+        <span v-if="batch.status === 'published'">자동 공개 {{ batch.publishedCount }}건</span>
+        <button
+          v-if="batch.status === 'published' || batch.status === 'awaiting-sample'"
+          type="button"
+          :disabled="busy"
+          @click="rollbackAutoBatch(batch.id)"
+        >
+          묶음 중지·취소
+        </button>
+        <span v-if="batch.failureCode">{{ batch.failureCode }}</span>
       </div>
     </section>
     <section

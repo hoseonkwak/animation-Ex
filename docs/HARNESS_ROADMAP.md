@@ -62,6 +62,8 @@
 - Production D1 격리, 배포와 공개 색인·관리자 차단 smoke
 - Production 홈과 Turnstile 브라우저 검증
 - Production 실제 Cloudflare 사용량 최초 동기화
+- Cloudflare Browser Run 읽기 전용 CodePen 실행 검사 파일럿 (`tools/browser-run-probe`)
+- Browser Run 예약 자동 공개의 기본 중지 스위치, 표본 묶음, 실패 기록, 격리 D1 승인·취소 리허설
 
 ### 다음 구현 단계에서 추가
 
@@ -70,7 +72,7 @@
 
 구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.
 
-자동 공개 전환의 현재 차단 조건과 읽기 전용 실행 검사 파일럿은 `AUTO_PUBLICATION_PILOT.md`를 따른다.
+자동 공개 전환의 현재 상태와 남은 실제 Production 표본 확인은 `AUTO_PUBLICATION_PILOT.md`를 따른다.
 
 ## 2. Skill 생성 기준
 

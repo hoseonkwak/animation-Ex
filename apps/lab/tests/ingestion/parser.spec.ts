@@ -56,6 +56,16 @@ describe('WSSS parser fixture', () => {
     expect(article.pens.map((pen) => pen.creatorName)).toEqual(['George Francis', 'Sicontis'])
   })
 
+  it('CODE VIEW 보조 링크가 게시물과 Pen 제목을 덮어쓰지 않는다', () => {
+    const list = '<a href="/1603">GSAP 카드 전환</a><a href="/1603">CODE VIEW</a>'
+    expect(parseWsssList(list, categoryUrl)[0]?.title).toBe('GSAP 카드 전환')
+    const article = parseWsssArticle(
+      '<meta property="og:title" content="GSAP 카드 전환"><a href="/category/Animation/GSAP">GSAP</a><a href="https://codepen.io/user/pen/AbC123">Card Transition</a><a href="https://codepen.io/user/pen/AbC123">CODE VIEW</a>',
+      'https://wsss.tistory.com/1603',
+    )
+    expect(article.pens[0]?.title).toBe('Card Transition')
+  })
+
   it('목록 구조 변경을 빈 성공 대신 실패로 기록한다', () => {
     expect(() => parseWsssList('<html><body>changed</body></html>', categoryUrl)).toThrowError(
       expect.objectContaining({ code: 'LIST_STRUCTURE_CHANGED' }),

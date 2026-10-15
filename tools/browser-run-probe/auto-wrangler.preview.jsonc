@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kwak-motion-lab-auto-publication-preview",
+  "main": "auto-worker.mjs",
+  "compatibility_date": "2026-10-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "browser": { "binding": "BROWSER", "remote": true },
+  "triggers": { "crons": [] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kwak-motion-lab-preview",
+      "database_id": "706e6824-6c81-4da6-ab83-aa429cda742a",
+    },
+  ],
+}

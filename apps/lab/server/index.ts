@@ -16,6 +16,11 @@ import {
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 import { readUsageStatus, storeUsageSnapshot } from './operations'
 import { loadCandidateTriage } from './triage'
+import {
+  readAutoPublicationStatus,
+  rollbackAutoPublicationBatch,
+  setAutoPublicationPaused,
+} from './autoPublication'
 
 interface Env {
   DB: D1Database
@@ -306,6 +311,27 @@ export default {
         if (request.method !== 'GET') assertSameOrigin(request, url)
         const actorHash = await actorIdentityHash(identity.subject, env.ADMIN_SESSION_SECRET)
         const repository = new AdminRepository(env.DB)
+
+        if (url.pathname === '/api/v1/admin/auto-publication') {
+          if (request.method === 'GET') {
+            return json({ data: await readAutoPublicationStatus(env.DB), meta: { requestId } })
+          }
+          if (request.method === 'POST') {
+            const body = (await request.json()) as { paused?: unknown }
+            if (typeof body?.paused !== 'boolean') {
+              throw new AdminApiError(400, 'INVALID_BODY', 'paused는 boolean이어야 합니다.')
+            }
+            await setAutoPublicationPaused(env.DB, body.paused)
+            return json({ data: await readAutoPublicationStatus(env.DB), meta: { requestId } })
+          }
+        }
+        const autoRollback = url.pathname.match(
+          /^\/api\/v1\/admin\/auto-publication\/batches\/([^/]+)\/rollback$/,
+        )
+        if (autoRollback && request.method === 'POST') {
+          await rollbackAutoPublicationBatch(env.DB, autoRollback[1]!, actorHash)
+          return json({ data: await readAutoPublicationStatus(env.DB), meta: { requestId } })
+        }
 
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
           return json({ data: await repository.ingestionRuns(), meta: { requestId } })

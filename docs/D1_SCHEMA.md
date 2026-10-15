@@ -374,9 +374,13 @@ candidate version/status 확인
 0008_seed_legacy_examples.sql
 0009_admin_idempotency.sql
 0010_ingestion_security.sql
+0011_review_tag_vocabulary.sql
+0012_auto_publication.sql
 
 별도 seed인 `db/seeds/wp6.sql`은 공개 Pattern, Collection과 Entry 연결을 멱등하게 구성한다.
 ```
+
+`0012_auto_publication.sql`은 기본 중지 상태의 단일 `auto_publication_control`, 예약 검사 이력 `auto_publication_runs`, 소유자 표본을 기다리는 `auto_publication_batches`, 후보별 실행 증거·역할·Entry를 담는 `auto_publication_items`를 추가한다. 후보는 하나의 묶음에만 들어간다. 실패 상태와 되돌리기 이력을 지우지 않는다. 기존 공개 Entry 스키마는 변경하지 않는다.
 
 각 migration에는 다음 증거가 필요하다.
 

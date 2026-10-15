@@ -72,6 +72,8 @@ describe('AdminReviewView', () => {
           ingestionPaused: false,
           usage: { level: 'normal', maximumRatio: 0 },
         }
+      } else if (url.endsWith('/admin/auto-publication')) {
+        data = { paused: true, batches: [], lastRun: null }
       } else {
         throw new Error(`예상하지 못한 요청: ${url}`)
       }
@@ -147,6 +149,8 @@ describe('AdminReviewView', () => {
           ingestionPaused: false,
           usage: { level: 'normal', maximumRatio: 0 },
         }
+      else if (url.endsWith('/admin/auto-publication'))
+        data = { paused: true, batches: [], lastRun: null }
       else if (url.endsWith('/admin/candidates/triage'))
         data = {
           items: published

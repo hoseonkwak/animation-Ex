@@ -314,6 +314,8 @@ GSAP·Scroll·Slider·Mouse·Animation·Loading·Image·Button·Menu·Text·UI·
 
 CodePen 자동 실행 검사의 환경별 403과 양성 대조군 결과는 [`evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md`](evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md)에 기록한다. 이 검사는 자동 공개의 통과 증거가 아니다.
 
+작은 묶음 자동 공개의 Production 배포, 격리 D1 승인·취소 리허설과 남은 실제 표본 확인은 [`evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md`](evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md)에 기록한다. 실제 Production 표본과 게시가 확인되기 전에는 WP8 자동 공개 완료로 표시하지 않는다.
+
 완료 증거:
 
 - `PHASE1_ACCEPTANCE.md` 전 항목에 증거 링크

@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kwak-motion-lab-auto-publication-local-test",
+  "main": "auto-worker.mjs",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "triggers": { "crons": [] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kwak-motion-lab-auto-test",
+      "database_id": "00000000-0000-0000-0000-000000000002",
+      "migrations_dir": "../../apps/lab/db/migrations",
+    },
+  ],
+}

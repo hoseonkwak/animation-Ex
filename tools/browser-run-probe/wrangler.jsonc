@@ -1,0 +1,11 @@
+{
+  "name": "kwak-motion-lab-browser-probe",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "browser": {
+    "binding": "BROWSER",
+    "remote": true,
+  },
+}
