@@ -78,4 +78,39 @@ describe('후보 자동 사전 분류', () => {
     )
     expect(data.items[0]?.bucket).toBe('preview-needed')
   })
+
+  it('기술·영역 외의 스크롤 태그도 승인 가능한 탐색 태그로 분류한다', () => {
+    const data = classifyCandidates(
+      [{ ...base, source_category: 'Parallax/Scroll', confirmed_tag: 1, suggested_tag: 0 }],
+      [],
+      { review: 1 },
+    )
+    expect(data.items[0]?.bucket).toBe('preview-needed')
+  })
+
+  it('존재하는 태그 사전의 Canvas 제안만 정보 보완을 줄인다', () => {
+    const row = {
+      ...base,
+      source_title: 'Particle canvas demo',
+      source_category: 'Particles/Canvas',
+      confirmed_tag: 0,
+      suggested_tag: 0,
+    }
+    expect(classifyCandidates([row], [], { review: 1 }, new Set()).items[0]?.bucket).toBe(
+      'missing-info',
+    )
+    expect(
+      classifyCandidates([row], [], { review: 1 }, new Set(['technology:canvas'])).items[0]?.bucket,
+    ).toBe('preview-needed')
+  })
+
+  it('Homepage는 Hero 후보로 표시하고 Heroes는 제외한다', () => {
+    const rows = [
+      { ...base, id: 'homepage', source_title: 'GSAP Homepage Demo' },
+      { ...base, id: 'heroes', source_title: 'COMICS HEROES IN POLYGONS' },
+    ]
+    const data = classifyCandidates(rows, [], { review: 2 })
+    expect(data.items.find((item) => item.id === 'homepage')?.heroSignal).toBe(true)
+    expect(data.items.find((item) => item.id === 'heroes')?.heroSignal).toBe(false)
+  })
 })

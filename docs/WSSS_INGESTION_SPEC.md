@@ -178,6 +178,8 @@ https://codepen.io/team/{team}/pen/{penId}
 
 Mouse, Particles, Image와 일반 UI는 범위가 넓어 category 값을 그대로 확정하지 않고 제안으로만 둔다. 제목 키워드에서 찾은 `hover`, `drag`, `hero`, `reveal`, `marquee` 등도 관리자 확인 전에는 확정하지 않는다.
 
+명확한 하위 경로(`Particles/Canvas`, `Particles/Three.js`, `Image/Background`, `Image/Hover Effect`, `Image/Image Effect`, `UI/Modal UI`, `UI/Dashboard UI`, `UI/Form UI`, `UI/Login UI`, `Mouse/Mouse Effect`, `Particles/Particles`)는 각각 해당 기술·영역·트리거·모션을 신뢰도 0.85의 **미확정 제안**으로 만든다. `GSAP`, `CSS`, `SVG`, `Canvas`, `Three.js`, `slider`, `button`, `text`처럼 제목에 명시된 단어도 신뢰도 0.7의 미확정 제안이다. 새 후보와 이미 수집된 후보 모두 같은 규칙을 사용한다. 범용 `Animation/Animation` 등에서 단서가 없으면 제안하지 않는다.
+
 난이도는 WSSS 정보만으로 결정하지 않고 기본값 없이 관리자에게 남긴다.
 
 ## 7. 후보 출력 계약

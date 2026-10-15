@@ -1,5 +1,7 @@
 import type { CandidateTriageItem, CandidateTriagePayload, TriageBucket } from '../src/shared/admin'
 import { suggestCandidateCopy } from '../src/shared/candidateCopy'
+import { suggestTags } from '../ingestion/tags'
+import { isReviewTagAxis } from '../src/shared/reviewTags'
 
 interface TriageRow {
   id: string
@@ -54,6 +56,7 @@ export function classifyCandidates(
   rows: TriageRow[],
   publishedPens: Array<{ candidate_id: string | null; pen_key: string }>,
   statusCounts: Record<string, number>,
+  availableTags?: Set<string>,
 ): CandidateTriagePayload {
   const penOwners = new Map<string, Set<string>>()
   for (const row of rows) {
@@ -84,10 +87,17 @@ export function classifyCandidates(
       category: row.source_category,
       canonicalUrl: row.canonical_url ?? '',
     })
+    const proposedTags = suggestTags(
+      row.source_category ?? '',
+      `${row.source_title ?? ''} ${String(meta.publicTitle ?? '')}`,
+    )
+    const hasSuggestedReviewTag = proposedTags.some(
+      (tag) =>
+        isReviewTagAxis(tag.axis) &&
+        (!availableTags || availableTags.has(`${tag.axis}:${tag.key}`)),
+    )
     const heroSignal =
-      row.hero_tag === 1 ||
-      row.source_category === 'UI/Intro UI' ||
-      /\bhero\b|히어로/i.test(row.source_title ?? '')
+      row.hero_tag === 1 || proposedTags.some((tag) => tag.axis === 'section' && tag.key === 'hero')
     const previewChecked =
       row.validation_result === 'pass' &&
       key !== null &&
@@ -120,8 +130,8 @@ export function classifyCandidates(
         !filled(row.license_evidence_url)
       )
         reasons.push('작성자·라이선스 근거 보완')
-      if (row.confirmed_tag !== 1 && row.suggested_tag !== 1)
-        reasons.push('기술 또는 영역 태그 확정')
+      if (row.confirmed_tag !== 1 && row.suggested_tag !== 1 && !hasSuggestedReviewTag)
+        reasons.push('애니메이션 태그 확인')
       bucket = reasons.length ? 'missing-info' : previewChecked ? 'ready' : 'preview-needed'
       if (bucket === 'preview-needed') reasons = ['실제 Preview 확인 필요']
       if (bucket === 'ready') reasons = ['승인 조건 최종 확인']
@@ -159,12 +169,15 @@ export async function loadCandidateTriage(db: D1Database): Promise<CandidateTria
           v.result AS validation_result, v.subject_fingerprint AS validation_fingerprint,
           EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
             WHERE ct.candidate_id = c.id AND ct.confirmed = 1
-              AND t.axis IN ('technology', 'section')) AS confirmed_tag,
+              AND t.axis IN ('technology', 'trigger', 'motion', 'section', 'technique')) AS confirmed_tag,
           EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
             WHERE ct.candidate_id = c.id AND ct.confidence >= 0.7
-              AND t.axis IN ('technology', 'section')) AS suggested_tag,
+              AND t.axis IN ('technology', 'trigger', 'motion', 'section', 'technique')
+              AND NOT (t.axis = 'section' AND t.key = 'hero'
+                AND ct.source = 'inferred' AND ct.confirmed = 0)) AS suggested_tag,
           EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
-            WHERE ct.candidate_id = c.id AND t.axis = 'section' AND t.key = 'hero') AS hero_tag
+            WHERE ct.candidate_id = c.id AND ct.confirmed = 1
+              AND t.axis = 'section' AND t.key = 'hero') AS hero_tag
         FROM candidates c JOIN sources s ON s.id = c.source_id
         LEFT JOIN validation_runs v ON v.id = (
           SELECT id FROM validation_runs WHERE target_type = 'candidate' AND target_id = c.id
@@ -185,9 +198,13 @@ export async function loadCandidateTriage(db: D1Database): Promise<CandidateTria
       status: string
       count: number
     }>()
+  const knownTags = await db
+    .prepare('SELECT axis, key FROM tags')
+    .all<{ axis: string; key: string }>()
   return classifyCandidates(
     candidates.results,
     published.results,
     Object.fromEntries(counts.results.map((row) => [row.status, row.count])),
+    new Set(knownTags.results.map((tag) => `${tag.axis}:${tag.key}`)),
   )
 }

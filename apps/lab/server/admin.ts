@@ -6,6 +6,8 @@ import type {
 } from '../src/shared/admin'
 import type { Difficulty, TagAxis } from '../src/shared/examples'
 import { suggestCandidateCopy } from '../src/shared/candidateCopy'
+import { isReviewTagAxis } from '../src/shared/reviewTags'
+import { suggestTags } from '../ingestion/tags'
 
 type Viewport = 'desktop' | 'tablet' | 'mobile'
 type ValidationResult = 'pass' | 'fail' | 'warning'
@@ -184,6 +186,52 @@ async function candidateTags(db: D1Database, id: string): Promise<AdminTag[]> {
   }))
 }
 
+async function reviewTagSuggestions(
+  db: D1Database,
+  existing: AdminTag[],
+  category: string | null,
+  title: string | null,
+): Promise<AdminTag[]> {
+  const derived = suggestTags(category ?? '', title ?? '')
+  const validExisting = existing.filter(
+    (tag) =>
+      !(
+        tag.axis === 'section' &&
+        tag.key === 'hero' &&
+        tag.source === 'inferred' &&
+        !tag.confirmed &&
+        !derived.some((item) => item.axis === 'section' && item.key === 'hero')
+      ),
+  )
+  const suggestions = derived
+    .filter((tag) => isReviewTagAxis(tag.axis))
+    .filter((tag) => !validExisting.some((item) => item.axis === tag.axis && item.key === tag.key))
+  if (!suggestions.length) return validExisting
+  const { results } = await db
+    .prepare('SELECT id, axis, key, label_ko FROM tags')
+    .all<Pick<TagRow, 'id' | 'axis' | 'key' | 'label_ko'>>()
+  const available = new Map(results.map((tag) => [`${tag.axis}:${tag.key}`, tag]))
+  return [
+    ...validExisting,
+    ...suggestions.flatMap((tag) => {
+      const saved = available.get(`${tag.axis}:${tag.key}`)
+      return saved
+        ? [
+            {
+              id: saved.id,
+              axis: saved.axis,
+              key: saved.key,
+              label: saved.label_ko,
+              source: tag.source,
+              confidence: tag.confidence,
+              confirmed: false,
+            } satisfies AdminTag,
+          ]
+        : []
+    }),
+  ]
+}
+
 async function lastValidation(db: D1Database, id: string): Promise<ValidationRow | null> {
   return db
     .prepare(
@@ -294,6 +342,12 @@ export class AdminRepository {
         .bind(id)
         .all<ReviewRow>(),
     ])
+    const visibleTags = await reviewTagSuggestions(
+      this.db,
+      tags,
+      row.source_category,
+      `${row.source_title ?? ''} ${metadata.publicTitle ?? ''}`,
+    )
     return {
       id: row.id,
       status: row.status,
@@ -307,7 +361,7 @@ export class AdminRepository {
         !!pen &&
         validation?.result === 'pass' &&
         validation.subject_fingerprint === fingerprint(`${pen.creator}/${pen.penId}`),
-      tags,
+      tags: visibleTags,
       publicTitle: metadata.publicTitle?.trim() || suggestedCopy.publicTitle,
       summary: metadata.summary?.trim() || suggestedCopy.summary,
       slug: metadata.slug?.trim() || suggestedCopy.slug,
@@ -494,8 +548,12 @@ export class AdminRepository {
     }
     const tags = await candidateTags(this.db, id)
     const confirmed = tags.filter((tag) => tag.confirmed)
-    if (!confirmed.some((tag) => tag.axis === 'technology' || tag.axis === 'section')) {
-      throw new AdminApiError(409, 'CONFIRMED_TAG_REQUIRED', '기술 또는 영역 태그가 필요합니다.')
+    if (!confirmed.some((tag) => isReviewTagAxis(tag.axis))) {
+      throw new AdminApiError(
+        409,
+        'CONFIRMED_TAG_REQUIRED',
+        '탐색에 사용할 애니메이션 태그가 필요합니다.',
+      )
     }
     const duplicate = await this.db
       .prepare('SELECT id FROM animation_entries WHERE slug = ?')

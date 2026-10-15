@@ -16,7 +16,9 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
   await expect(page.getByText('실행 실패를 기록했습니다.')).toBeVisible()
   await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('기존 실패 1')
   await expect(page.getByRole('button', { name: '승인 및 공개' })).toBeEnabled()
-  await expect(page.getByText('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.')).toBeVisible()
+  await expect(
+    page.getByText('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.'),
+  ).toBeVisible()
 })
 
 test('P1-ADMIN 인증 없는 관리자 API 요청은 401이다', async ({ request }) => {

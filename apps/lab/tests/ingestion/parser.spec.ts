@@ -111,6 +111,24 @@ describe('CodePen canonicalization과 태그', () => {
       confirmed: false,
     })
   })
+
+  it('명확한 카테고리와 제목만 제안하고 일반 Animation은 임의 분류하지 않는다', () => {
+    expect(suggestTags('Particles/Canvas', 'Floating dots')).toContainEqual({
+      axis: 'technology',
+      key: 'canvas',
+      source: 'inferred',
+      confidence: 0.85,
+      confirmed: false,
+    })
+    expect(suggestTags('Animation/Animation', 'GSAP Text Reveal')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ axis: 'technology', key: 'gsap', confirmed: false }),
+        expect.objectContaining({ axis: 'section', key: 'text', confirmed: false }),
+      ]),
+    )
+    expect(suggestTags('Animation/Animation', 'Untitled animation')).toEqual([])
+    expect(suggestTags('Animation/Animation', 'COMICS HEROES IN POLYGONS')).toEqual([])
+  })
 })
 
 describe('checkpoint와 요청 안전 정책', () => {

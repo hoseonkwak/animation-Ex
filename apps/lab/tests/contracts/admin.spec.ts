@@ -85,6 +85,116 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(body.data.slug).toMatch(/^pen-greensock-lypgkpe-/)
   })
 
+  it('기존 Canvas 후보에 태그를 제안하고 소유자 확인 후 공개할 수 있다', async () => {
+    sqlite
+      .prepare("DELETE FROM candidate_tags WHERE candidate_id = 'candidate-admin-tutorial'")
+      .run()
+    sqlite
+      .prepare(
+        "UPDATE candidates SET source_category = 'Particles/Canvas', source_title = 'Floating particles' WHERE id = 'candidate-admin-tutorial'",
+      )
+      .run()
+    const detailResponse = await request('/api/v1/admin/candidates/candidate-admin-tutorial')
+    const detailBody = (await detailResponse.json()) as {
+      data: { tags: Array<{ id: string; key: string; confirmed: boolean }> }
+    }
+    expect(detailBody.data.tags).toContainEqual(
+      expect.objectContaining({ id: 'tag-technology-canvas', key: 'canvas', confirmed: false }),
+    )
+
+    const update = await request('/api/v1/admin/candidates/candidate-admin-tutorial', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        version: 1,
+        sourceTitle: 'Floating particles',
+        publicTitle: 'Floating particles',
+        summary: 'Canvas 파티클 움직임을 확인할 수 있는 예제입니다.',
+        slug: 'floating-particles-review',
+        difficulty: 'intermediate',
+        featured: false,
+        interactionNote: '',
+        creatorName: 'GreenSock',
+        licenseCode: 'MIT',
+        licenseEvidenceUrl: 'https://codepen.io/GreenSock/pen/LYpgKPe',
+        tagIds: ['tag-technology-canvas'],
+      }),
+    })
+    expect(update.status).toBe(200)
+    const preview = await request(
+      '/api/v1/admin/candidates/candidate-admin-tutorial/preview-checks',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          result: 'pass',
+          penKey: 'GreenSock/LYpgKPe',
+          viewport: 'desktop',
+          failureCodes: [],
+        }),
+      },
+    )
+    expect(preview.status).toBe(200)
+    const approve = await request('/api/v1/admin/candidates/candidate-admin-tutorial/approve', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'canvas-approval' },
+      body: JSON.stringify({ version: 2 }),
+    })
+    expect(approve.status).toBe(201)
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM entry_tags WHERE animation_entry_id = (SELECT id FROM animation_entries WHERE candidate_id = 'candidate-admin-tutorial') AND tag_id = 'tag-technology-canvas'",
+        )
+        .get(),
+    ).toEqual({ count: 1 })
+  })
+
+  it('스크롤 Trigger 태그만 있어도 Preview 확인 후 승인한다', async () => {
+    sqlite
+      .prepare(
+        "DELETE FROM candidate_tags WHERE candidate_id = 'candidate-admin-tutorial' AND tag_id <> 'tag-trigger-scroll'",
+      )
+      .run()
+    const preview = await request(
+      '/api/v1/admin/candidates/candidate-admin-tutorial/preview-checks',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          result: 'pass',
+          penKey: 'GreenSock/LYpgKPe',
+          viewport: 'desktop',
+          failureCodes: [],
+        }),
+      },
+    )
+    expect(preview.status).toBe(200)
+    const approve = await request('/api/v1/admin/candidates/candidate-admin-tutorial/approve', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': 'scroll-only-approval' },
+      body: JSON.stringify({ version: 1 }),
+    })
+    expect(approve.status).toBe(201)
+  })
+
+  it('Heroes라는 단어에서 과거에 잘못 추론한 Hero 태그는 제안하지 않는다', async () => {
+    sqlite
+      .prepare("DELETE FROM candidate_tags WHERE candidate_id = 'candidate-admin-tutorial'")
+      .run()
+    sqlite
+      .prepare(
+        `INSERT INTO candidate_tags (candidate_id, tag_id, source, confidence, confirmed)
+         VALUES ('candidate-admin-tutorial', 'tag-section-hero', 'inferred', 0.7, 0)`,
+      )
+      .run()
+    sqlite
+      .prepare(
+        "UPDATE candidates SET source_title = 'COMICS HEROES IN POLYGONS', source_category = 'Animation/Animation' WHERE id = 'candidate-admin-tutorial'",
+      )
+      .run()
+    const response = await request('/api/v1/admin/candidates/candidate-admin-tutorial')
+    const body = (await response.json()) as { data: { tags: Array<{ key: string }> } }
+    expect(body.data.tags.some((tag) => tag.key === 'hero')).toBe(false)
+  })
+
   it('사전 분류는 owner 전용이며 전체 검수 대기를 반환한다', async () => {
     expect((await request('/api/v1/admin/candidates/triage', {}, '')).status).toBe(401)
     const response = await request('/api/v1/admin/candidates/triage')

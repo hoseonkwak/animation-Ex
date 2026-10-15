@@ -8,6 +8,7 @@ import type {
   TriageBucket,
 } from '@/shared/admin'
 import type { ApiSuccess } from '@/shared/examples'
+import { isReviewTagAxis } from '@/shared/reviewTags'
 
 const queue = ref<CandidateListPayload>({ items: [], counts: {} })
 const triage = ref<CandidateTriagePayload | null>(null)
@@ -77,8 +78,8 @@ const approvalIssues = computed(() => {
   if (!form.creatorName || !form.licenseCode || !form.licenseEvidenceUrl)
     issues.push('출처와 라이선스 정보가 필요합니다.')
   const tags = selected.value?.tags.filter((tag) => form.tagIds.includes(tag.id)) ?? []
-  if (!tags.some((tag) => tag.axis === 'technology' || tag.axis === 'section'))
-    issues.push('기술 또는 영역 태그가 필요합니다.')
+  if (!tags.some((tag) => isReviewTagAxis(tag.axis)))
+    issues.push('탐색에 사용할 애니메이션 태그가 필요합니다.')
   return issues
 })
 
@@ -225,11 +226,7 @@ function fillForm(item: CandidateDetail): void {
     licenseCode: item.licenseCode ?? '',
     licenseEvidenceUrl: item.licenseEvidenceUrl ?? '',
     tagIds: item.tags
-      .filter(
-        (tag) =>
-          tag.confirmed ||
-          ((tag.axis === 'technology' || tag.axis === 'section') && tag.confidence >= 0.7),
-      )
+      .filter((tag) => tag.confirmed || (isReviewTagAxis(tag.axis) && tag.confidence >= 0.7))
       .map((tag) => tag.id),
   })
 }

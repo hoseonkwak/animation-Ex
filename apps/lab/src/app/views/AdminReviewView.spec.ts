@@ -87,7 +87,7 @@ describe('AdminReviewView', () => {
     await wrapper.get('button.approve').trigger('click')
 
     expect(wrapper.get('[role="alert"]').text()).toContain('승인 전에 아래 조건을 완료해 주세요.')
-    expect(wrapper.text()).toContain('기술 또는 영역 태그가 필요합니다.')
+    expect(wrapper.text()).toContain('탐색에 사용할 애니메이션 태그가 필요합니다.')
     expect(fetchMock.mock.calls.every(([url]) => !String(url).endsWith('/approve'))).toBe(true)
   })
 
