@@ -1,0 +1,71 @@
+import { describe, expect, it } from 'vitest'
+import { classifyCandidates } from './triage'
+
+type Row = Parameters<typeof classifyCandidates>[0][number]
+
+const base: Row = {
+  id: 'base',
+  status: 'review',
+  source_title: 'Example',
+  source_category: 'Animation/GSAP',
+  metadata_json: JSON.stringify({ publicTitle: '예제', summary: '요약', slug: 'example' }),
+  priority_score: 50,
+  created_at: '2026-10-15T00:00:00Z',
+  canonical_url: 'https://codepen.io/author/pen/AbCdE',
+  creator_name: 'author',
+  license_code: 'MIT',
+  license_evidence_url: 'https://example.test/license',
+  availability: 'available',
+  validation_result: null,
+  validation_fingerprint: null,
+  confirmed_tag: 1,
+  hero_tag: 0,
+}
+
+describe('후보 자동 사전 분류', () => {
+  it('주소, 중복, 실패, 정보 부족, 실행 확인, 최종 확인을 서로 구분한다', () => {
+    const rows: Row[] = [
+      { ...base, id: 'invalid', canonical_url: 'https://example.test/' },
+      { ...base, id: 'duplicate', canonical_url: 'https://codepen.io/author/pen/Dup01' },
+      {
+        ...base,
+        id: 'failed',
+        canonical_url: 'https://codepen.io/author/pen/Fail1',
+        validation_result: 'fail',
+      },
+      {
+        ...base,
+        id: 'missing',
+        canonical_url: 'https://codepen.io/author/pen/Miss1',
+        license_code: null,
+      },
+      { ...base, id: 'preview', canonical_url: 'https://codepen.io/author/pen/Prev1' },
+      {
+        ...base,
+        id: 'ready',
+        canonical_url: 'https://codepen.io/author/pen/Ready1',
+        validation_result: 'pass',
+        validation_fingerprint: 'pen:author/Ready1|theme:light|tab:result',
+        hero_tag: 1,
+      },
+    ]
+    const data = classifyCandidates(rows, [{ candidate_id: null, pen_key: 'author/Dup01' }], {
+      review: 6,
+    })
+    expect(Object.fromEntries(data.items.map((item) => [item.id, item.bucket]))).toEqual({
+      invalid: 'invalid-url',
+      duplicate: 'duplicate',
+      failed: 'known-failure',
+      missing: 'missing-info',
+      preview: 'preview-needed',
+      ready: 'ready',
+    })
+    expect(data.bucketCounts.hero).toBe(1)
+    expect(data.items.find((item) => item.id === 'ready')?.previewChecked).toBe(true)
+  })
+
+  it('접근 상태가 미확인인 Pen을 404로 단정하지 않는다', () => {
+    const data = classifyCandidates([{ ...base, availability: 'unknown' }], [], { review: 1 })
+    expect(data.items[0]?.bucket).toBe('preview-needed')
+  })
+})

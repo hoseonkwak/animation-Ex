@@ -604,6 +604,55 @@ select:focus-visible {
 .admin-stats strong {
   font-size: 1.4rem;
 }
+.triage-panel {
+  margin-bottom: 18px;
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.triage-panel h2 {
+  font-size: 1.1rem;
+}
+.triage-panel p {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+.triage-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.triage-filters button,
+.queue-pagination button {
+  padding: 8px 12px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.triage-filters button.active {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+.triage-filters strong {
+  margin-left: 5px;
+}
+.queue-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 16px;
+  font-size: 0.8rem;
+}
+.queue-pagination button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
 .operations-status {
   display: flex;
   flex-wrap: wrap;

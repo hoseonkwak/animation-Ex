@@ -277,9 +277,6 @@ export class AdminRepository {
     const row = await candidateRow(this.db, id)
     const metadata = parseMetadata(row.metadata_json)
     const pen = penParts(row.canonical_url)
-    if (!pen || !row.canonical_url) {
-      throw new AdminApiError(409, 'INVALID_PEN_SOURCE', 'CodePen 주소를 확인해주세요.')
-    }
     const [tags, validation, reviews] = await Promise.all([
       candidateTags(this.db, id),
       lastValidation(this.db, id),
@@ -301,6 +298,7 @@ export class AdminRepository {
       version: row.version,
       createdAt: row.created_at,
       previewChecked:
+        !!pen &&
         validation?.result === 'pass' &&
         validation.subject_fingerprint === fingerprint(`${pen.creator}/${pen.penId}`),
       tags,
@@ -310,10 +308,12 @@ export class AdminRepository {
       difficulty: metadata.difficulty ?? 'intermediate',
       featured: metadata.featured ?? false,
       interactionNote: metadata.interactionNote ?? '',
-      canonicalUrl: row.canonical_url,
-      penId: pen.penId,
-      penKey: `${pen.creator}/${pen.penId}`,
-      embedUrl: `https://codepen.io/${pen.creator}/embed/${pen.penId}?default-tab=result&theme-id=light`,
+      canonicalUrl: row.canonical_url ?? '',
+      penId: pen?.penId ?? '',
+      penKey: pen ? `${pen.creator}/${pen.penId}` : '',
+      embedUrl: pen
+        ? `https://codepen.io/${pen.creator}/embed/${pen.penId}?default-tab=result&theme-id=light`
+        : '',
       licenseCode: row.license_code,
       licenseEvidenceUrl: row.license_evidence_url,
       lastCheckedAt: row.last_checked_at,

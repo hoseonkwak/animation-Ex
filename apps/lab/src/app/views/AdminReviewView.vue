@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import type { CandidateDetail, CandidateListPayload, CandidateStatus } from '@/shared/admin'
+import type {
+  CandidateDetail,
+  CandidateListPayload,
+  CandidateStatus,
+  CandidateTriagePayload,
+  TriageBucket,
+} from '@/shared/admin'
 import type { ApiSuccess } from '@/shared/examples'
 
 const queue = ref<CandidateListPayload>({ items: [], counts: {} })
+const triage = ref<CandidateTriagePayload | null>(null)
+const triageFilter = ref<TriageBucket | 'all' | 'hero'>('all')
+const queuePage = ref(0)
+const pageSize = 50
 const selected = ref<CandidateDetail | null>(null)
 const authState = ref<'checking' | 'authenticated' | 'anonymous'>('checking')
 const status = ref<CandidateStatus>('review')
@@ -37,6 +47,25 @@ const authMessage = new URLSearchParams(window.location.search).get('auth')
 const frameWidth = computed(
   () => ({ desktop: '100%', tablet: '768px', mobile: '390px' })[viewport.value],
 )
+const reviewItems = computed(() =>
+  (triage.value?.items ?? []).filter((item) => {
+    if (triageFilter.value === 'hero' && !item.heroSignal) return false
+    if (
+      triageFilter.value !== 'all' &&
+      triageFilter.value !== 'hero' &&
+      item.bucket !== triageFilter.value
+    )
+      return false
+    if (previewFilter.value === 'checked' && !item.previewChecked) return false
+    if (previewFilter.value === 'unchecked' && item.previewChecked) return false
+    return true
+  }),
+)
+const visibleItems = computed(() =>
+  status.value === 'review'
+    ? reviewItems.value.slice(queuePage.value * pageSize, (queuePage.value + 1) * pageSize)
+    : queue.value.items,
+)
 const approvalIssues = computed(() => {
   const issues: string[] = []
   if (!selected.value?.previewChecked) issues.push('현재 Pen 실행 확인이 필요합니다.')
@@ -53,7 +82,8 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await Promise.all([loadQueue(), loadOperations()])
+    await loadQueue()
+    await loadOperations()
   }
 })
 
@@ -93,7 +123,31 @@ async function api<T>(path: string, init: Parameters<typeof fetch>[1] = {}): Pro
 
 function changeStatus(value: string): void {
   status.value = value as CandidateStatus
+  queuePage.value = 0
   void loadQueue()
+}
+
+function changeTriageFilter(value: TriageBucket | 'all' | 'hero'): void {
+  triageFilter.value = value
+  queuePage.value = 0
+  void selectFirstVisible()
+}
+
+function changePreviewFilter(): void {
+  queuePage.value = 0
+  if (status.value === 'review') void selectFirstVisible()
+  else void loadQueue()
+}
+
+async function selectFirstVisible(): Promise<void> {
+  const first = visibleItems.value[0]
+  if (first) await selectCandidate(first.id)
+  else selected.value = null
+}
+
+function changeQueuePage(delta: number): void {
+  queuePage.value += delta
+  void selectFirstVisible()
 }
 
 function changeViewport(value: string): void {
@@ -116,11 +170,17 @@ async function loadQueue(): Promise<void> {
   busy.value = true
   error.value = ''
   try {
-    const params = new URLSearchParams({ status: status.value, sort: 'oldest' })
-    if (previewFilter.value !== 'all') params.set('preview', previewFilter.value)
-    queue.value = await api(`/api/v1/admin/candidates?${params}`)
-    if (!queue.value.items.some((item) => item.id === selected.value?.id)) {
-      const first = queue.value.items[0]
+    if (status.value === 'review') {
+      const result = await api<CandidateTriagePayload>('/api/v1/admin/candidates/triage')
+      triage.value = result
+      queue.value = { items: [], counts: result.counts }
+    } else {
+      const params = new URLSearchParams({ status: status.value, sort: 'oldest' })
+      if (previewFilter.value !== 'all') params.set('preview', previewFilter.value)
+      queue.value = await api(`/api/v1/admin/candidates?${params}`)
+    }
+    if (!visibleItems.value.some((item) => item.id === selected.value?.id)) {
+      const first = visibleItems.value[0]
       const detail = first
         ? await api<CandidateDetail>(`/api/v1/admin/candidates/${first.id}`)
         : null
@@ -164,7 +224,7 @@ function fillForm(item: CandidateDetail): void {
   })
 }
 
-async function save(): Promise<void> {
+async function save(refreshQueue = true): Promise<void> {
   if (!selected.value) return
   busy.value = true
   try {
@@ -175,6 +235,7 @@ async function save(): Promise<void> {
     selected.value = detail
     fillForm(detail)
     notice.value = '변경사항을 저장했습니다.'
+    if (refreshQueue) await loadQueue()
   } catch (cause) {
     showError(cause)
     throw cause
@@ -197,6 +258,7 @@ async function recordPreview(result: 'pass' | 'fail'): Promise<void> {
       }),
     })
     notice.value = result === 'pass' ? '실행 확인을 저장했습니다.' : '실행 실패를 기록했습니다.'
+    await loadQueue()
   } catch (cause) {
     showError(cause)
   } finally {
@@ -207,7 +269,7 @@ async function recordPreview(result: 'pass' | 'fail'): Promise<void> {
 async function approve(): Promise<void> {
   if (!selected.value || approvalIssues.value.length) return
   try {
-    await save()
+    await save(false)
     if (!selected.value) return
     busy.value = true
     const result = await api<{ slug: string }>(
@@ -305,6 +367,47 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       </button>
     </section>
     <section
+      v-if="authState === 'authenticated' && status === 'review' && triage"
+      class="triage-panel"
+      aria-label="자동 사전 분류"
+    >
+      <div>
+        <h2>검수 우선순위</h2>
+        <p>
+          주소·중복·필수 정보·기존 실행 기록으로 분류했습니다. 실제 동작과 원본 접근 여부는 직접
+          확인해야 합니다.
+        </p>
+      </div>
+      <div class="triage-filters">
+        <button
+          v-for="filter in [
+            { key: 'all', label: '전체', count: triage.items.length },
+            { key: 'hero', label: 'Hero 후보', count: triage.bucketCounts.hero },
+            { key: 'ready', label: '최종 확인', count: triage.bucketCounts.ready },
+            {
+              key: 'preview-needed',
+              label: '실행 확인',
+              count: triage.bucketCounts['preview-needed'],
+            },
+            { key: 'missing-info', label: '정보 보완', count: triage.bucketCounts['missing-info'] },
+            { key: 'duplicate', label: '중복 의심', count: triage.bucketCounts.duplicate },
+            { key: 'invalid-url', label: '주소 오류', count: triage.bucketCounts['invalid-url'] },
+            {
+              key: 'known-failure',
+              label: '기존 실패',
+              count: triage.bucketCounts['known-failure'],
+            },
+          ]"
+          :key="filter.key"
+          type="button"
+          :class="{ active: triageFilter === filter.key }"
+          @click="changeTriageFilter(filter.key as TriageBucket | 'all' | 'hero')"
+        >
+          {{ filter.label }} <strong>{{ filter.count }}</strong>
+        </button>
+      </div>
+    </section>
+    <section
       v-if="authState === 'authenticated' && operations"
       class="operations-status"
       aria-label="운영 상태"
@@ -337,31 +440,56 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       <aside class="candidate-queue">
         <div class="queue-toolbar">
           <strong>Queue</strong
-          ><select v-model="previewFilter" aria-label="Preview 확인 필터" @change="loadQueue">
+          ><select
+            v-model="previewFilter"
+            aria-label="Preview 확인 필터"
+            @change="changePreviewFilter"
+          >
             <option value="all">전체</option>
             <option value="unchecked">미확인</option>
             <option value="checked">확인 완료</option>
           </select>
         </div>
-        <p v-if="busy && !queue.items.length">후보를 불러오는 중입니다.</p>
-        <p v-else-if="!queue.items.length">이 상태의 후보가 없습니다.</p>
+        <p v-if="busy && !visibleItems.length">후보를 불러오는 중입니다.</p>
+        <p v-else-if="!visibleItems.length">이 조건의 후보가 없습니다.</p>
         <button
-          v-for="candidate in queue.items"
+          v-for="candidate in visibleItems"
           :key="candidate.id"
           type="button"
           class="candidate-item"
           :class="{ selected: selected?.id === candidate.id }"
           @click="selectCandidate(candidate.id)"
         >
-          <span class="candidate-category">{{ candidate.sourceCategory ?? '미분류' }}</span
+          <span class="candidate-category"
+            >{{ candidate.sourceCategory ?? '미분류'
+            }}<span v-if="'heroSignal' in candidate && candidate.heroSignal">
+              · Hero 후보</span
+            ></span
           ><strong>{{ candidate.sourceTitle }}</strong
           ><small
             >{{ candidate.creatorName ?? '작성자 없음' }} · 우선순위
             {{ candidate.priorityScore }}</small
           ><span class="candidate-warning">{{
-            candidate.previewChecked ? '✓ 실행 확인' : '! 미리보기 미확인'
+            'reasons' in candidate
+              ? candidate.reasons.join(' · ')
+              : candidate.previewChecked
+                ? '✓ 실행 확인'
+                : '! 미리보기 미확인'
           }}</span>
         </button>
+        <div v-if="status === 'review' && reviewItems.length > pageSize" class="queue-pagination">
+          <button type="button" :disabled="queuePage === 0" @click="changeQueuePage(-1)">
+            이전
+          </button>
+          <span>{{ queuePage + 1 }} / {{ Math.ceil(reviewItems.length / pageSize) }}</span>
+          <button
+            type="button"
+            :disabled="(queuePage + 1) * pageSize >= reviewItems.length"
+            @click="changeQueuePage(1)"
+          >
+            다음
+          </button>
+        </div>
       </aside>
 
       <section v-if="selected" class="live-review">
@@ -370,7 +498,9 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             <p class="eyebrow">LIVE CODEPEN</p>
             <h2>{{ selected.sourceTitle }}</h2>
           </div>
-          <a :href="selected.canonicalUrl" target="_blank" rel="noreferrer">원본 Pen 열기</a>
+          <a v-if="selected.penKey" :href="selected.canonicalUrl" target="_blank" rel="noreferrer"
+            >원본 Pen 열기</a
+          >
         </div>
         <div class="viewport-controls">
           <button
@@ -385,6 +515,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         </div>
         <div class="admin-preview-stage">
           <iframe
+            v-if="selected.embedUrl"
             :key="selected.id"
             :src="selected.embedUrl"
             :style="{ width: frameWidth }"
@@ -392,20 +523,30 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             referrerpolicy="strict-origin-when-cross-origin"
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           />
+          <p v-else>CodePen 주소를 확인해야 실행 화면을 열 수 있습니다.</p>
         </div>
         <p class="interaction-note">
           {{ selected.interactionNote || '화면을 직접 조작해 동작을 확인하세요.' }}
         </p>
         <div class="preview-decision">
-          <button type="button" class="pass" :disabled="busy" @click="recordPreview('pass')">
+          <button
+            type="button"
+            class="pass"
+            :disabled="busy || !selected.penKey"
+            @click="recordPreview('pass')"
+          >
             정상 실행 확인</button
-          ><button type="button" :disabled="busy" @click="recordPreview('fail')">
+          ><button
+            type="button"
+            :disabled="busy || !selected.penKey"
+            @click="recordPreview('fail')"
+          >
             실행 실패 기록
           </button>
         </div>
       </section>
 
-      <form v-if="selected" class="edit-panel" @submit.prevent="save">
+      <form v-if="selected" class="edit-panel" @submit.prevent="save()">
         <h2>공개 정보</h2>
         <label>공개 제목<input v-model.trim="form.publicTitle" required /></label
         ><label>원본 제목<input v-model.trim="form.sourceTitle" required /></label
@@ -440,6 +581,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           <select v-model="reasonCode" aria-label="결정 사유">
             <option value="missing-metadata">정보 보완</option>
             <option value="broken-preview">Preview 실패</option>
+            <option value="source-unavailable">원본 접근 불가</option>
             <option value="license-uncertain">라이선스 불확실</option>
             <option value="insufficient-quality">품질 부족</option>
             <option value="not-animation">애니메이션 아님</option>

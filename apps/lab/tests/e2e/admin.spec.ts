@@ -6,6 +6,7 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
   await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('무료 한도 0%')
 
   await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
+  await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('실행 확인 1')
   await expect(page.getByRole('button', { name: /GSAP ScrollTrigger Tutorial/ })).toBeVisible()
   const preview = page.locator('.admin-preview-stage iframe')
   await expect(preview).toHaveAttribute('src', /codepen\.io\/GreenSock\/embed\/LYpgKPe/)
@@ -13,10 +14,19 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
 
   await page.getByRole('button', { name: '정상 실행 확인' }).click()
   await expect(page.getByText('실행 확인을 저장했습니다.')).toBeVisible()
+  await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('최종 확인 1')
   await expect(page.getByRole('button', { name: '승인 및 공개' })).toBeEnabled()
 })
 
 test('P1-ADMIN 인증 없는 관리자 API 요청은 401이다', async ({ request }) => {
   const response = await request.get('/api/v1/admin/candidates')
   expect(response.status()).toBe(401)
+  expect((await request.get('/api/v1/admin/candidates/triage')).status()).toBe(401)
+})
+
+test('공개 화면 푸터에서 관리자 검수 화면으로 이동한다', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('contentinfo').getByRole('link', { name: '관리자' }).click()
+  await expect(page).toHaveURL(/\/admin\/review$/)
+  await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
 })

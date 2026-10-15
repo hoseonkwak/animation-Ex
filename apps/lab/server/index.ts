@@ -15,6 +15,7 @@ import {
 } from './ingestion'
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 import { readUsageStatus, storeUsageSnapshot } from './operations'
+import { loadCandidateTriage } from './triage'
 
 interface Env {
   DB: D1Database
@@ -321,6 +322,10 @@ export default {
         }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates') {
           return json({ data: await repository.list(url), meta: { requestId } })
+        }
+
+        if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates/triage') {
+          return json({ data: await loadCandidateTriage(env.DB), meta: { requestId } })
         }
 
         const candidateMatch = url.pathname.match(/^\/api\/v1\/admin\/candidates\/([^/]+)$/)

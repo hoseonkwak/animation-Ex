@@ -156,6 +156,10 @@ GitHub access token은 사용자 ID 확인 요청에만 사용하고 DB나 로�
 
 상태, 출처 타입, 실패 코드와 생성일로 후보를 조회한다. 기본 페이지 크기는 50, 최대 100이다.
 
+### `GET /admin/candidates/triage`
+
+owner 전용 읽기 API다. 모든 `review` 후보를 결정적 규칙으로 사전 분류하고 상태별·분류별 건수와 Hero 신호를 반환한다. `invalid-url`, `duplicate`, `known-failure`, `missing-info`, `preview-needed`, `ready` 중 하나를 부여한다. 외부 URL에 실시간 요청하지 않으며 후보 상태를 변경하지 않는다.
+
 ### `GET /admin/candidates/:id`
 
 Source, 발견 경로, 추출 메타데이터, 중복 후보, 마지막 검증과 검수 이력을 반환한다.

@@ -71,6 +71,19 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(detailBody.data.tags.length).toBeGreaterThan(0)
   })
 
+  it('사전 분류는 owner 전용이며 전체 검수 대기를 반환한다', async () => {
+    expect((await request('/api/v1/admin/candidates/triage', {}, '')).status).toBe(401)
+    const response = await request('/api/v1/admin/candidates/triage')
+    const body = (await response.json()) as {
+      data: { items: Array<{ id: string; bucket: string }>; bucketCounts: Record<string, number> }
+    }
+    expect(response.status).toBe(200)
+    expect(body.data.items.find((item) => item.id === 'candidate-admin-tutorial')?.bucket).toBe(
+      'preview-needed',
+    )
+    expect(body.data.bucketCounts['preview-needed']).toBeGreaterThan(0)
+  })
+
   it('팀 계정 CodePen 후보에도 관리자 Preview URL을 만든다', async () => {
     sqlite
       .prepare(

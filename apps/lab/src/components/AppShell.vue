@@ -66,6 +66,7 @@ function toggleTheme(): void {
         <RouterLink to="/sections">영역별 보기</RouterLink>
         <RouterLink to="/submit">URL 제보</RouterLink>
         <RouterLink to="/about">출처 정책</RouterLink>
+        <RouterLink to="/admin/review">관리자</RouterLink>
       </nav>
       <p>외부 CodePen 콘텐츠의 권리는 각 제작자에게 있습니다.</p>
     </footer>

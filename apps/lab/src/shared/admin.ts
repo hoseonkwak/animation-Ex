@@ -59,3 +59,25 @@ export interface CandidateListPayload {
   items: CandidateSummary[]
   counts: Record<string, number>
 }
+
+export type TriageBucket =
+  'invalid-url' | 'duplicate' | 'known-failure' | 'missing-info' | 'preview-needed' | 'ready'
+
+export interface CandidateTriageItem {
+  id: string
+  sourceTitle: string
+  sourceCategory: string | null
+  creatorName: string | null
+  priorityScore: number
+  createdAt: string
+  previewChecked: boolean
+  heroSignal: boolean
+  bucket: TriageBucket
+  reasons: string[]
+}
+
+export interface CandidateTriagePayload {
+  items: CandidateTriageItem[]
+  counts: Record<string, number>
+  bucketCounts: Record<TriageBucket | 'hero', number>
+}

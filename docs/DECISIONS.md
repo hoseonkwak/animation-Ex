@@ -207,3 +207,11 @@
 - 운영: Preview와 Production은 각 callback URL에 맞는 별도 GitHub OAuth App과 비밀값을 사용한다. Production 설정이 완료되기 전에는 관리자 API가 계속 401을 반환한다.
 - 관계: D-033의 Cloudflare Access 결제 등록 보류를 유지하며, D-034의 원격 관리자 차단은 GitHub OAuth 설정과 검증이 완료될 때까지의 상태로 대체한다.
 - 검증: 2026-10-15에 Preview와 Production 각각의 OAuth App, Worker secret, 실제 owner 승인과 Candidate Inbox 로딩을 확인했다.
+
+### D-036 관리자 진입과 후보 사전 분류
+
+- 상태: 확정
+- 확인일: 2026-10-15
+- 결정: 공개 화면 푸터에 `관리자` 링크를 두고 기존 GitHub OAuth owner 인증으로 접근을 보호한다. 로고 연속 클릭과 같은 숨은 동작은 사용하지 않는다.
+- 검수: 관리자 Inbox는 모든 승인 대기 후보를 주소 형식, 같은 Pen 중복, 기록된 실패, 필수 정보, 실제 Preview 확인 상태로 읽기 전용 분류한다. Hero 신호는 우선 검수 필터로 제공하며 태그 확정이나 승인을 자동으로 수행하지 않는다.
+- 한계: 외부 요청의 403 또는 네트워크 오류는 Pen의 404 증거가 아니다. 접근 불가는 기존 기록 또는 관리자 수동 확인으로 판단한다.

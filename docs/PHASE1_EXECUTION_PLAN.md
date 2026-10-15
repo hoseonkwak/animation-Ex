@@ -310,7 +310,7 @@ WSSS 후보 수집은 원격 관리자 OAuth 설정 전에도 시작할 수 있�
 6. Phase 1 완료 기준에 증거 연결
 7. 공개 후 되돌리기 절차 확인
 
-GSAP·Scroll·Slider·Mouse·Animation·Loading·Image·Button·Menu·Text·UI·Particles 후보 수집과 재실행 검증 결과는 [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md)에 기록한다. 운영 검수 표본의 Preview와 메타데이터 준비 상태는 [`evidence/WP8_REVIEW_READINESS.md`](evidence/WP8_REVIEW_READINESS.md)에 기록한다. Hero 20개 목표의 부족분과 우선 검수 풀은 [`evidence/WP8_HERO_GAP.md`](evidence/WP8_HERO_GAP.md)에 기록한다.
+GSAP·Scroll·Slider·Mouse·Animation·Loading·Image·Button·Menu·Text·UI·Particles 후보 수집과 재실행 검증 결과는 [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md)에 기록한다. 운영 검수 표본의 Preview와 메타데이터 준비 상태는 [`evidence/WP8_REVIEW_READINESS.md`](evidence/WP8_REVIEW_READINESS.md)에 기록한다. Hero 20개 목표의 부족분과 우선 검수 풀은 [`evidence/WP8_HERO_GAP.md`](evidence/WP8_HERO_GAP.md)에 기록한다. 전체 후보 사전 분류와 관리자 진입 검증은 [`evidence/WP8_TRIAGE_2026-10-15.md`](evidence/WP8_TRIAGE_2026-10-15.md)에 기록한다.
 
 완료 증거:
 
