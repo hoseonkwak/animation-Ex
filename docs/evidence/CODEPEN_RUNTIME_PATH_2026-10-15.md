@@ -13,7 +13,7 @@
 | 로컬 Playwright headless의 Production Explore 내 iframe   | 이미 공개된 `hoseonkwak/LEVeYQO`                        | Embed HTTP 403, Result iframe 없음                                          | 첫 페이지 출처를 Production으로 바꿔도 자동화 환경 차단은 남음             |
 | 로컬 양성 대조군 검사                                     | 이미 공개된 `hoseonkwak/LEVeYQO`                        | HTTP 403, `probe-blocked`; 나머지 2건은 `inconclusive`로 기록하고 요청 생략 | 후보별 실패 판정이나 자동 공개 근거 없음                                   |
 
-로컬 대조군의 기계 판독 결과는 [`CODEPEN_POSITIVE_CONTROL_2026-10-15.json`](CODEPEN_POSITIVE_CONTROL_2026-10-15.json)에 보존했다. 토큰이나 페이지 본문은 결과에 포함하지 않는다. 앞선 GitHub Actions 실행도 공개 Pen 2건 모두 403이었다.
+로컬 대조군의 기계 판독 결과는 [`CODEPEN_POSITIVE_CONTROL_2026-10-15.json`](CODEPEN_POSITIVE_CONTROL_2026-10-15.json)에 보존했다. 토큰이나 페이지 본문은 결과에 포함하지 않는다. [GitHub Actions 실행 #1](https://github.com/hoseonkwak/animation-Ex/actions/runs/38676615600)에서는 공개 Pen 2건 모두 403이었고, [양성 대조군을 적용한 실행 #2](https://github.com/hoseonkwak/animation-Ex/actions/runs/38684535775)에서도 대조군은 `inconclusive`였다. 실행 #2의 workflow 성공은 검사 프로세스 완료를 뜻하며 CodePen 실행 성공을 뜻하지 않는다.
 
 ## 공식 경로 검토
 

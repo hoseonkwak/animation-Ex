@@ -14,6 +14,7 @@
 - 무작위 공개 CodePen URL 12개를 Playwright의 headless Chromium으로 검사했을 때 12개 모두 embed 요청에서 HTTP 403이었다. 실패한 Pen 12개라는 뜻이 아니다. 이 실행 환경에서 CodePen이 자동 요청을 허용하지 않았으므로 판정은 모두 `inconclusive`다.
 - 같은 로컬 환경에서 headed 브라우저 재검사를 시도했지만 브라우저 프로세스를 시작하지 못했다. 이 결과로 headed 환경의 접근 가능 여부를 판단하지 않는다.
 - [GitHub Actions 실행 #1](https://github.com/hoseonkwak/animation-Ex/actions/runs/38676615600)에서도 이미 공개된 Pen 2개 모두 HTTP 403, `inconclusive`였다. 로컬과 GitHub-hosted runner 양쪽에서 자동 embed 검사가 차단된다. 이 workflow는 후보를 승인하거나 공개하지 않는다.
+- 양성 대조군을 추가한 [GitHub Actions 실행 #2](https://github.com/hoseonkwak/animation-Ex/actions/runs/38684535775)는 절차 자체가 성공했지만, 대조군 검사 결과는 `inconclusive`였다. 후보의 실행 성공으로 해석하지 않는다.
 - Production의 실제 관리자 브라우저에서는 서로 다른 후보 2건의 CodePen Result iframe이 열렸다. 반면 별도 자동화 브라우저에서는 알려진 공개 Pen도 403을 받았다. 환경에 따라 결과가 달라지므로 자동화 브라우저의 403을 후보 고장으로 판정할 수 없다. 비교 기록은 [`evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md`](evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md)에 있다.
 - 이 결과로는 자동 공개의 실행 성공률이나 오류율을 계산할 수 없다. 자동 공개는 계속 꺼둔다.
 
