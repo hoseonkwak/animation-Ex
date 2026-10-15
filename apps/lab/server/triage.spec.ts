@@ -19,6 +19,7 @@ const base: Row = {
   validation_result: null,
   validation_fingerprint: null,
   confirmed_tag: 1,
+  suggested_tag: 1,
   hero_tag: 0,
 }
 
@@ -66,6 +67,15 @@ describe('후보 자동 사전 분류', () => {
 
   it('접근 상태가 미확인인 Pen을 404로 단정하지 않는다', () => {
     const data = classifyCandidates([{ ...base, availability: 'unknown' }], [], { review: 1 })
+    expect(data.items[0]?.bucket).toBe('preview-needed')
+  })
+
+  it('기존 후보의 비어 있는 요약과 slug는 자동 제안으로 보완하고 제안 태그는 검수 시 확정한다', () => {
+    const data = classifyCandidates(
+      [{ ...base, metadata_json: '{}', confirmed_tag: 0, suggested_tag: 1 }],
+      [],
+      { review: 1 },
+    )
     expect(data.items[0]?.bucket).toBe('preview-needed')
   })
 })

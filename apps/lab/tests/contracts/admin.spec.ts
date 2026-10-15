@@ -71,6 +71,20 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(detailBody.data.tags.length).toBeGreaterThan(0)
   })
 
+  it('기존 후보의 비어 있는 공개 문구를 관리자 상세에서 제안한다', async () => {
+    sqlite
+      .prepare("UPDATE candidates SET metadata_json = '{}' WHERE id = 'candidate-admin-tutorial'")
+      .run()
+    const response = await request('/api/v1/admin/candidates/candidate-admin-tutorial')
+    const body = (await response.json()) as {
+      data: { publicTitle: string; summary: string; slug: string }
+    }
+    expect(response.status).toBe(200)
+    expect(body.data.publicTitle).toBeTruthy()
+    expect(body.data.summary).toBeTruthy()
+    expect(body.data.slug).toMatch(/^pen-greensock-lypgkpe-/)
+  })
+
   it('사전 분류는 owner 전용이며 전체 검수 대기를 반환한다', async () => {
     expect((await request('/api/v1/admin/candidates/triage', {}, '')).status).toBe(401)
     const response = await request('/api/v1/admin/candidates/triage')

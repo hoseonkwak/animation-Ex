@@ -769,10 +769,22 @@ select:focus-visible {
 .interaction-note {
   color: var(--color-text-muted);
 }
+.preview-copy {
+  padding: 14px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+.preview-copy p {
+  margin: 5px 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
 .preview-decision {
   justify-content: flex-end;
 }
 .preview-decision .pass,
+.preview-decision .approve,
 .decision-actions .approve,
 .save-button {
   color: #fff;
@@ -862,6 +874,10 @@ select:focus-visible {
 .approval-issues ul {
   margin: 6px 0 12px;
   padding-left: 20px;
+}
+.approval-ready-note {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
 }
 .empty-review {
   display: grid;

@@ -193,6 +193,16 @@ describe('P1-CONTENT WSSS signed batch API', () => {
         )
         .get(),
     ).toEqual({ count: 3 })
+    const saved = sqlite
+      .prepare("SELECT metadata_json FROM candidates WHERE source_category = 'Animation/GSAP'")
+      .all() as Array<{ metadata_json: string }>
+    expect(saved).toHaveLength(3)
+    for (const row of saved) {
+      const metadata = JSON.parse(row.metadata_json) as Record<string, string>
+      expect(metadata.publicTitle).toBeTruthy()
+      expect(metadata.summary).toBeTruthy()
+      expect(metadata.slug).toMatch(/^pen-/)
+    }
   })
 
   it('팀 계정 CodePen Pen도 후보로 저장한다', async () => {

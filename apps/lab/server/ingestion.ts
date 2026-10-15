@@ -1,4 +1,5 @@
 import type { IngestionCandidate, SuggestedTag } from '../ingestion/types'
+import { suggestCandidateCopy } from '../src/shared/candidateCopy'
 
 interface IngestionEnv {
   DB: D1Database
@@ -270,10 +271,15 @@ async function processItem(
   const sourceId = newId()
   const candidateId = newId()
   const tags = await knownTags(db, item.tags)
+  const copy = suggestCandidateCopy({
+    sourceTitle: item.source.title,
+    suggestedTitle: item.suggestedTitleKo,
+    category: item.discoveredVia.category,
+    canonicalUrl: item.source.canonicalUrl,
+  })
   const metadata = JSON.stringify({
-    publicTitle: item.suggestedTitleKo,
-    summary: '',
-    slug: '',
+    ...copy,
+    difficulty: 'intermediate',
     featured: false,
     interactionNote: '',
   })

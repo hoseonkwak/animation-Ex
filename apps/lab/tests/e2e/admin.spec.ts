@@ -10,14 +10,13 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
   await expect(page.getByRole('button', { name: /GSAP ScrollTrigger Tutorial/ })).toBeVisible()
   const preview = page.locator('.admin-preview-stage iframe')
   await expect(preview).toHaveAttribute('src', /codepen\.io\/GreenSock\/embed\/LYpgKPe/)
-  await page.getByRole('button', { name: '승인 및 공개' }).click()
-  await expect(page.getByRole('alert')).toContainText('승인 전에 아래 조건을 완료해 주세요.')
-  await expect(page.getByText('현재 Pen 실행 확인이 필요합니다.')).toBeVisible()
+  await expect(page.getByText('실행 화면을 확인했다면 승인 버튼 한 번으로')).toBeVisible()
 
-  await page.getByRole('button', { name: '정상 실행 확인' }).click()
-  await expect(page.getByText('실행 확인을 저장했습니다.')).toBeVisible()
-  await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('최종 확인 1')
-  await expect(page.getByRole('alert')).toHaveCount(0)
+  await page.getByRole('button', { name: '실행 실패 기록' }).click()
+  await expect(page.getByText('실행 실패를 기록했습니다.')).toBeVisible()
+  await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('기존 실패 1')
+  await expect(page.getByRole('button', { name: '승인 및 공개' })).toBeEnabled()
+  await expect(page.getByText('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.')).toBeVisible()
 })
 
 test('P1-ADMIN 인증 없는 관리자 API 요청은 401이다', async ({ request }) => {

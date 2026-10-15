@@ -87,7 +87,91 @@ describe('AdminReviewView', () => {
     await wrapper.get('button.approve').trigger('click')
 
     expect(wrapper.get('[role="alert"]').text()).toContain('승인 전에 아래 조건을 완료해 주세요.')
-    expect(wrapper.text()).toContain('현재 Pen 실행 확인이 필요합니다.')
+    expect(wrapper.text()).toContain('기술 또는 영역 태그가 필요합니다.')
     expect(fetchMock.mock.calls.every(([url]) => !String(url).endsWith('/approve'))).toBe(true)
+  })
+
+  it('실행 화면을 본 후보는 승인 한 번에 문구 저장, 실행 확인, 공개를 순서대로 처리한다', async () => {
+    const calls: string[] = []
+    let published = false
+    const detail = {
+      id: 'candidate-2',
+      status: 'review',
+      sourceTitle: 'Scroll Demo',
+      sourceCategory: 'Animation/GSAP',
+      creatorName: 'Author',
+      priorityScore: 50,
+      version: 1,
+      createdAt: '2026-10-15T00:00:00.000Z',
+      previewChecked: false,
+      previewCheck: null,
+      tags: [
+        {
+          id: 'tag-gsap',
+          axis: 'technology',
+          key: 'gsap',
+          confidence: 1,
+          confirmed: false,
+        },
+      ],
+      publicTitle: 'Scroll Demo',
+      summary: '스크롤 애니메이션을 확인할 수 있는 예제입니다.',
+      slug: 'pen-author-abc123',
+      difficulty: 'intermediate',
+      featured: false,
+      interactionNote: '',
+      canonicalUrl: 'https://codepen.io/author/pen/AbC123',
+      penId: 'AbC123',
+      penKey: 'author/AbC123',
+      embedUrl: 'https://codepen.io/author/embed/AbC123?default-tab=result',
+      licenseCode: 'MIT',
+      licenseEvidenceUrl: 'https://codepen.io/author/pen/AbC123',
+      lastCheckedAt: null,
+      reviewHistory: [],
+    }
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      const method = init?.method ?? 'GET'
+      let data: unknown
+      if (url.endsWith('/auth/session')) data = { authenticated: true }
+      else if (url.endsWith('/admin/operations'))
+        data = {
+          environment: 'local',
+          ingestionPaused: false,
+          usage: { level: 'normal', maximumRatio: 0 },
+        }
+      else if (url.endsWith('/admin/candidates/triage'))
+        data = {
+          items: published ? [] : [{ id: 'candidate-2', bucket: 'preview-needed' }],
+          counts: { review: published ? 0 : 1 },
+          bucketCounts: {},
+        }
+      else if (url.endsWith('/admin/candidates/candidate-2') && method === 'GET') data = detail
+      else if (url.endsWith('/admin/candidates/candidate-2') && method === 'PATCH') {
+        calls.push('save')
+        const body = JSON.parse(String(init?.body)) as { tagIds: string[]; summary: string }
+        expect(body.summary).toBe(detail.summary)
+        expect(body.tagIds).toEqual(['tag-gsap'])
+        data = { ...detail, version: 2 }
+      } else if (url.endsWith('/preview-checks')) {
+        calls.push('preview')
+        data = { ...detail, version: 2, previewChecked: true }
+      } else if (url.endsWith('/approve')) {
+        calls.push('approve')
+        published = true
+        data = { slug: detail.slug }
+      } else throw new Error(`예상하지 못한 요청: ${method} ${url}`)
+      return Promise.resolve(Response.json({ data, meta: { requestId: 'test' } }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const wrapper = mount(AdminReviewView)
+    await flushPromises()
+    expect(wrapper.text()).toContain('실행 화면을 확인했다면 승인 버튼 한 번으로')
+    await wrapper.get('button.approve').trigger('click')
+    await flushPromises()
+
+    expect(calls).toEqual(['save', 'preview', 'approve'])
+    expect(wrapper.text()).toContain('공개했습니다: /examples/pen-author-abc123')
   })
 })

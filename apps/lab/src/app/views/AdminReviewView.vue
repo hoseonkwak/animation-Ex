@@ -69,7 +69,9 @@ const visibleItems = computed(() =>
 )
 const approvalIssues = computed(() => {
   const issues: string[] = []
-  if (!selected.value?.previewChecked) issues.push('현재 Pen 실행 확인이 필요합니다.')
+  if (!selected.value?.penKey) issues.push('CodePen 원본 주소를 확인해야 합니다.')
+  if (selected.value?.previewCheck?.result === 'fail')
+    issues.push('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.')
   if (!form.publicTitle || !form.summary || !form.slug)
     issues.push('공개 제목·요약·slug가 필요합니다.')
   if (!form.creatorName || !form.licenseCode || !form.licenseEvidenceUrl)
@@ -222,7 +224,13 @@ function fillForm(item: CandidateDetail): void {
     creatorName: item.creatorName ?? '',
     licenseCode: item.licenseCode ?? '',
     licenseEvidenceUrl: item.licenseEvidenceUrl ?? '',
-    tagIds: item.tags.filter((tag) => tag.confirmed).map((tag) => tag.id),
+    tagIds: item.tags
+      .filter(
+        (tag) =>
+          tag.confirmed ||
+          ((tag.axis === 'technology' || tag.axis === 'section') && tag.confidence >= 0.7),
+      )
+      .map((tag) => tag.id),
   })
 }
 
@@ -278,14 +286,28 @@ async function approve(): Promise<void> {
   approvalFeedback.value = ''
   try {
     await save(false)
-    if (!selected.value) return
+    const candidate = selected.value
+    if (!candidate) return
     busy.value = true
+    if (!candidate.previewChecked) {
+      selected.value = await api(`/api/v1/admin/candidates/${candidate.id}/preview-checks`, {
+        method: 'POST',
+        body: JSON.stringify({
+          result: 'pass',
+          penKey: candidate.penKey,
+          viewport: viewport.value,
+          failureCodes: [],
+        }),
+      })
+    }
+    const checkedCandidate = selected.value
+    if (!checkedCandidate) return
     const result = await api<{ slug: string }>(
-      `/api/v1/admin/candidates/${selected.value.id}/approve`,
+      `/api/v1/admin/candidates/${checkedCandidate.id}/approve`,
       {
         method: 'POST',
         headers: { 'Idempotency-Key': crypto.randomUUID() },
-        body: JSON.stringify({ version: selected.value.version }),
+        body: JSON.stringify({ version: checkedCandidate.version }),
       },
     )
     notice.value = `공개했습니다: /examples/${result.slug}`
@@ -537,8 +559,22 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         <p class="interaction-note">
           {{ selected.interactionNote || '화면을 직접 조작해 동작을 확인하세요.' }}
         </p>
+        <div class="preview-copy">
+          <strong>{{ form.publicTitle }}</strong>
+          <p>{{ form.summary }}</p>
+        </div>
+        <div v-if="approvalIssues.length" class="approval-issues">
+          <strong>승인 전 필요한 작업</strong>
+          <ul>
+            <li v-for="issue in approvalIssues" :key="issue">{{ issue }}</li>
+          </ul>
+        </div>
+        <p v-else class="approval-ready-note">
+          실행 화면을 확인했다면 승인 버튼 한 번으로 확인 기록과 공개를 진행합니다.
+        </p>
         <div class="preview-decision">
           <button
+            v-if="selected.previewCheck?.result === 'fail'"
             type="button"
             class="pass"
             :disabled="busy || !selected.penKey"
@@ -550,9 +586,14 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             :disabled="busy || !selected.penKey"
             @click="recordPreview('fail')"
           >
-            실행 실패 기록
+            실행 실패 기록</button
+          ><button type="button" class="approve" :disabled="busy" @click="approve">
+            승인 및 공개
           </button>
         </div>
+        <p v-if="approvalFeedback" class="admin-notice error" role="alert">
+          {{ approvalFeedback }}
+        </p>
       </section>
 
       <form v-if="selected" class="edit-panel" @submit.prevent="save()">
@@ -596,23 +637,11 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             <option value="not-animation">애니메이션 아님</option>
             <option value="other">기타</option></select
           ><textarea v-model.trim="decisionNote" rows="2" placeholder="결정 근거를 입력하세요." />
-          <div v-if="approvalIssues.length" class="approval-issues">
-            <strong>승인 전 필요한 작업</strong>
-            <ul>
-              <li v-for="issue in approvalIssues" :key="issue">{{ issue }}</li>
-            </ul>
-          </div>
           <div class="decision-actions">
             <button type="button" @click="decide('reject')">거절</button
             ><button type="button" @click="decide('merge')">중복</button
-            ><button type="button" @click="decide('needs-edit')">수정 필요</button
-            ><button type="button" class="approve" :disabled="busy" @click="approve">
-              승인 및 공개
-            </button>
+            ><button type="button" @click="decide('needs-edit')">수정 필요</button>
           </div>
-          <p v-if="approvalFeedback" class="admin-notice error" role="alert">
-            {{ approvalFeedback }}
-          </p>
         </div>
       </form>
       <div v-else class="empty-review">검수할 후보를 선택하세요.</div>

@@ -5,6 +5,7 @@ import type {
   CandidateStatus,
 } from '../src/shared/admin'
 import type { Difficulty, TagAxis } from '../src/shared/examples'
+import { suggestCandidateCopy } from '../src/shared/candidateCopy'
 
 type Viewport = 'desktop' | 'tablet' | 'mobile'
 type ValidationResult = 'pass' | 'fail' | 'warning'
@@ -277,6 +278,11 @@ export class AdminRepository {
     const row = await candidateRow(this.db, id)
     const metadata = parseMetadata(row.metadata_json)
     const pen = penParts(row.canonical_url)
+    const suggestedCopy = suggestCandidateCopy({
+      sourceTitle: row.source_title ?? '',
+      category: row.source_category,
+      canonicalUrl: row.canonical_url ?? '',
+    })
     const [tags, validation, reviews] = await Promise.all([
       candidateTags(this.db, id),
       lastValidation(this.db, id),
@@ -302,9 +308,9 @@ export class AdminRepository {
         validation?.result === 'pass' &&
         validation.subject_fingerprint === fingerprint(`${pen.creator}/${pen.penId}`),
       tags,
-      publicTitle: metadata.publicTitle ?? '',
-      summary: metadata.summary ?? '',
-      slug: metadata.slug ?? '',
+      publicTitle: metadata.publicTitle?.trim() || suggestedCopy.publicTitle,
+      summary: metadata.summary?.trim() || suggestedCopy.summary,
+      slug: metadata.slug?.trim() || suggestedCopy.slug,
       difficulty: metadata.difficulty ?? 'intermediate',
       featured: metadata.featured ?? false,
       interactionNote: metadata.interactionNote ?? '',

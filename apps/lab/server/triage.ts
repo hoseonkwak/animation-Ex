@@ -1,4 +1,5 @@
 import type { CandidateTriageItem, CandidateTriagePayload, TriageBucket } from '../src/shared/admin'
+import { suggestCandidateCopy } from '../src/shared/candidateCopy'
 
 interface TriageRow {
   id: string
@@ -16,6 +17,7 @@ interface TriageRow {
   validation_result: string | null
   validation_fingerprint: string | null
   confirmed_tag: number
+  suggested_tag: number
   hero_tag: number
 }
 
@@ -77,6 +79,11 @@ export function classifyCandidates(
     if (row.status !== 'review') continue
     const key = penKey(row.canonical_url)
     const meta = metadata(row.metadata_json)
+    const suggestedCopy = suggestCandidateCopy({
+      sourceTitle: row.source_title ?? '',
+      category: row.source_category,
+      canonicalUrl: row.canonical_url ?? '',
+    })
     const heroSignal =
       row.hero_tag === 1 ||
       row.source_category === 'UI/Intro UI' ||
@@ -102,9 +109,9 @@ export function classifyCandidates(
       reasons = []
       if (
         !filled(row.source_title) ||
-        !filled(meta.publicTitle) ||
-        !filled(meta.summary) ||
-        !filled(meta.slug)
+        !(filled(meta.publicTitle) || filled(suggestedCopy.publicTitle)) ||
+        !(filled(meta.summary) || filled(suggestedCopy.summary)) ||
+        !(filled(meta.slug) || filled(suggestedCopy.slug))
       )
         reasons.push('제목·요약·slug 보완')
       if (
@@ -113,7 +120,8 @@ export function classifyCandidates(
         !filled(row.license_evidence_url)
       )
         reasons.push('작성자·라이선스 근거 보완')
-      if (row.confirmed_tag !== 1) reasons.push('기술 또는 영역 태그 확정')
+      if (row.confirmed_tag !== 1 && row.suggested_tag !== 1)
+        reasons.push('기술 또는 영역 태그 확정')
       bucket = reasons.length ? 'missing-info' : previewChecked ? 'ready' : 'preview-needed'
       if (bucket === 'preview-needed') reasons = ['실제 Preview 확인 필요']
       if (bucket === 'ready') reasons = ['승인 조건 최종 확인']
@@ -152,6 +160,9 @@ export async function loadCandidateTriage(db: D1Database): Promise<CandidateTria
           EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
             WHERE ct.candidate_id = c.id AND ct.confirmed = 1
               AND t.axis IN ('technology', 'section')) AS confirmed_tag,
+          EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
+            WHERE ct.candidate_id = c.id AND ct.confidence >= 0.7
+              AND t.axis IN ('technology', 'section')) AS suggested_tag,
           EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
             WHERE ct.candidate_id = c.id AND t.axis = 'section' AND t.key = 'hero') AS hero_tag
         FROM candidates c JOIN sources s ON s.id = c.source_id
