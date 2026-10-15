@@ -22,6 +22,7 @@ const viewport = ref<'desktop' | 'tablet' | 'mobile'>('desktop')
 const busy = ref(false)
 const notice = ref('')
 const error = ref('')
+const approvalFeedback = ref('')
 const operations = ref<{
   environment: string
   ingestionPaused: boolean
@@ -209,6 +210,7 @@ async function selectCandidate(id: string): Promise<void> {
 }
 
 function fillForm(item: CandidateDetail): void {
+  approvalFeedback.value = ''
   Object.assign(form, {
     sourceTitle: item.sourceTitle,
     publicTitle: item.publicTitle,
@@ -258,6 +260,7 @@ async function recordPreview(result: 'pass' | 'fail'): Promise<void> {
       }),
     })
     notice.value = result === 'pass' ? '실행 확인을 저장했습니다.' : '실행 실패를 기록했습니다.'
+    approvalFeedback.value = ''
     await loadQueue()
   } catch (cause) {
     showError(cause)
@@ -267,7 +270,12 @@ async function recordPreview(result: 'pass' | 'fail'): Promise<void> {
 }
 
 async function approve(): Promise<void> {
-  if (!selected.value || approvalIssues.value.length) return
+  if (!selected.value) return
+  if (approvalIssues.value.length) {
+    approvalFeedback.value = '승인 전에 아래 조건을 완료해 주세요.'
+    return
+  }
+  approvalFeedback.value = ''
   try {
     await save(false)
     if (!selected.value) return
@@ -284,6 +292,7 @@ async function approve(): Promise<void> {
     await loadQueue()
   } catch (cause) {
     showError(cause)
+    approvalFeedback.value = error.value
   } finally {
     busy.value = false
   }
@@ -587,22 +596,23 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             <option value="not-animation">애니메이션 아님</option>
             <option value="other">기타</option></select
           ><textarea v-model.trim="decisionNote" rows="2" placeholder="결정 근거를 입력하세요." />
-          <ul v-if="approvalIssues.length" class="approval-issues">
-            <li v-for="issue in approvalIssues" :key="issue">{{ issue }}</li>
-          </ul>
+          <div v-if="approvalIssues.length" class="approval-issues">
+            <strong>승인 전 필요한 작업</strong>
+            <ul>
+              <li v-for="issue in approvalIssues" :key="issue">{{ issue }}</li>
+            </ul>
+          </div>
           <div class="decision-actions">
             <button type="button" @click="decide('reject')">거절</button
             ><button type="button" @click="decide('merge')">중복</button
             ><button type="button" @click="decide('needs-edit')">수정 필요</button
-            ><button
-              type="button"
-              class="approve"
-              :disabled="busy || approvalIssues.length > 0"
-              @click="approve"
-            >
+            ><button type="button" class="approve" :disabled="busy" @click="approve">
               승인 및 공개
             </button>
           </div>
+          <p v-if="approvalFeedback" class="admin-notice error" role="alert">
+            {{ approvalFeedback }}
+          </p>
         </div>
       </form>
       <div v-else class="empty-review">검수할 후보를 선택하세요.</div>

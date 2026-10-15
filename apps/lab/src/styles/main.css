@@ -856,9 +856,12 @@ select:focus-visible {
   justify-content: flex-start;
 }
 .approval-issues {
-  padding-left: 20px;
   color: #9a5b00;
   font-size: 0.8rem;
+}
+.approval-issues ul {
+  margin: 6px 0 12px;
+  padding-left: 20px;
 }
 .empty-review {
   display: grid;
