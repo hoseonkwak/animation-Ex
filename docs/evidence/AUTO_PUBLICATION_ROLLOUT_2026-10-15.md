@@ -46,3 +46,10 @@
 - 새 격리 로컬 D1에서 전체 migration과 fixture를 다시 적용했다. 예약 이벤트 후 실행 `published/published_count=2`, 묶음 `published`, 항목 게시 2건이 일치했다. 실제 취소 API 호출 후 실행 `blocked/published_count=0/failure_code=MANUAL_ROLLBACK`, 묶음 `rolled-back`, 취소 항목 2건, 실제 게시 0건이 일치했다.
 - 전체 Vitest 97건, 검사기 Node 테스트 7건, 앱·Worker 타입 검사, Production 빌드, 예약 Worker dry-run과 `git diff --check`를 통과했다. 로컬 `npm ci`가 잠긴 패키지 파일로 실패해 앱 의존성은 동일 버전의 로컬 pnpm 설치를 이용했다.
 - Production 앱 health는 HTTP 200이다. 운영 D1은 `paused=0`, 실행 0건, 묶음 0건, 자동 게시 0건이다. 첫 예약 실행은 2026-10-16 11:17 한국 시간이며, 같은 대화에서 매일 11:40에 상태를 확인하는 후속 작업을 등록했다. 실제 운영 자동 게시 성공 여부는 첫 표본 승인과 다음 예약 실행 후 판정한다.
+
+## 첫 Production 예약 실행: 2026-10-16
+
+- 한국 시간 11:17:45에 실행을 시작해 11:18:29에 `staged`로 마쳤다. 8개를 검사했고 7개가 통과했다. 실패 코드는 없다.
+- 묶음 `0caec4da-f00f-4757-b898-69933f593403`이 `awaiting-sample`로 생성됐다. 표본은 `[Tutorial Demo] - Simple generative GSAP animation` (`georgedoescode/qBqLrGG`, 후보 `01M35VCC0BCWB3GJMJEVABN3Z0`)이며 나머지 6개는 `pending`이다. 자동 게시 수는 아직 0건이다.
+- 관리자 `/admin/review`의 `자동 공개` 영역에서 `표본 실행 화면 확인`을 눌러 실제 결과와 제안 문구를 확인한다. 상세 응답은 빈 요약·slug를 기존 규칙의 제안값으로 채워주므로, 소유자는 필요할 때만 수정하고 `승인 및 공개`를 누른다. 다음 예약 실행은 표본 공개와 후보 상태·검사 신선도를 다시 확인한 후 나머지를 공개한다.
+- 후속 작업이 처음에는 한국 시간 02:40에 실행돼 실제 예약보다 빨랐다. 2026-10-16에 한국 시간 11:40으로 바로잡았다.
