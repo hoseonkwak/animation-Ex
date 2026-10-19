@@ -9,6 +9,7 @@ import {
 import { inspect } from "./worker.mjs";
 import { CONTROL } from "./urls.mjs";
 import { controlLoaded } from "./probe-policy.mjs";
+import { refreshStaleCandidates } from "./auto-refresh.mjs";
 
 const MAX_PROBES = 8;
 const MIN_BATCH = 3;
@@ -152,7 +153,8 @@ async function stage(db, runId, rows, probes) {
   return batchId;
 }
 
-async function releaseBatch(db, batch) {
+async function releaseBatch(env, batch) {
+  const db = env.DB;
   async function blockBatch(failure) {
     const time = now();
     await db.batch([
@@ -200,7 +202,8 @@ async function releaseBatch(db, batch) {
   const { results: items } = await db
     .prepare(
       `SELECT ai.candidate_id, ai.candidate_version, c.status, c.version,
-      c.source_title, c.source_category, c.metadata_json, s.canonical_url,
+      c.source_title, c.source_category, c.metadata_json, s.id AS source_id,
+      s.canonical_url,
       s.creator_name, s.license_code, s.license_evidence_url,
       EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
         WHERE ct.candidate_id = c.id AND ct.confirmed = 1
@@ -218,7 +221,6 @@ async function releaseBatch(db, batch) {
     )
     .bind(batch.id)
     .all();
-  const recent = Date.now() - 72 * 60 * 60 * 1000;
   const valid =
     items.length >= 2 &&
     items.every(
@@ -228,11 +230,25 @@ async function releaseBatch(db, batch) {
         isCandidateEligible(row) &&
         row.validation_result === "pass" &&
         row.subject_fingerprint ===
-          `pen:${penKey(row.canonical_url)}|theme:light|tab:result` &&
-        Date.parse(row.checked_at) >= recent,
+          `pen:${penKey(row.canonical_url)}|theme:light|tab:result`,
     );
   if (!valid) {
-    await blockBatch("CANDIDATE_CHANGED_OR_STALE");
+    await blockBatch("CANDIDATE_CHANGED_OR_VALIDATION_FAILED");
+    return;
+  }
+  const recent = Date.now() - 72 * 60 * 60 * 1000;
+  const stale = items.filter((row) => Date.parse(row.checked_at) < recent);
+  const refresh = await refreshStaleCandidates(stale, {
+    launchBrowser: () => launch(env.BROWSER),
+    inspectPage: inspect,
+    control: CONTROL,
+    controlLoaded,
+    paused: () => paused(db),
+    recordProbe: (row, probe) =>
+      recordProbe(db, { ...row, id: row.candidate_id }, probe),
+  });
+  if (refresh.status !== "passed") {
+    if (refresh.status === "blocked") await blockBatch(refresh.code);
     return;
   }
   const repository = new AdminRepository(db);
@@ -342,7 +358,7 @@ export async function runAutomaticPublication(env) {
     )
     .first();
   if (pending) {
-    await releaseBatch(db, pending);
+    await releaseBatch(env, pending);
     return;
   }
   const runId = crypto.randomUUID();
