@@ -35,6 +35,7 @@ const operations = ref<{
 } | null>(null)
 const autoPublication = ref<{
   paused: boolean
+  queuedCandidateIds: string[]
   batches: Array<{
     id: string
     status: string
@@ -73,14 +74,27 @@ const authMessage = new URLSearchParams(window.location.search).get('auth')
 const frameWidth = computed(
   () => ({ desktop: '100%', tablet: '768px', mobile: '390px' })[viewport.value],
 )
-const shortlist = computed(() => pickReviewShortlist(triage.value?.items ?? [], skippedIds.value))
+const autoQueuedIds = computed(
+  () =>
+    new Set(autoPublication.value?.paused ? [] : (autoPublication.value?.queuedCandidateIds ?? [])),
+)
+const shortlist = computed(() =>
+  pickReviewShortlist(
+    (triage.value?.items ?? []).filter((item) => !autoQueuedIds.value.has(item.id)),
+    skippedIds.value,
+  ),
+)
 const reviewItems = computed(() => {
   const items = (triage.value?.items ?? []).filter((item) => {
     if (previewFilter.value === 'checked' && !item.previewChecked) return false
     if (previewFilter.value === 'unchecked' && item.previewChecked) return false
     return true
   })
-  if (triageFilter.value === 'shortlist') return pickReviewShortlist(items, skippedIds.value)
+  if (triageFilter.value === 'shortlist')
+    return pickReviewShortlist(
+      items.filter((item) => !autoQueuedIds.value.has(item.id)),
+      skippedIds.value,
+    )
   return items.filter((item) => {
     if (triageFilter.value === 'hero' && !item.heroSignal) return false
     if (
@@ -99,6 +113,8 @@ const visibleItems = computed(() =>
 )
 const approvalIssues = computed(() => {
   const issues: string[] = []
+  if (selected.value && autoQueuedIds.value.has(selected.value.id))
+    issues.push('이 후보는 예약 자동 공개 검사를 기다리고 있습니다.')
   if (!selected.value?.penKey) issues.push('CodePen 원본 주소를 확인해야 합니다.')
   if (selected.value?.previewCheck?.result === 'fail')
     issues.push('기존 실행 실패가 있어 정상 실행을 다시 확인해야 합니다.')
@@ -115,7 +131,8 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await Promise.all([loadQueue(), loadOperations(), loadAutoPublication()])
+    await Promise.all([loadOperations(), loadAutoPublication()])
+    await loadQueue()
   }
 })
 

@@ -2,6 +2,7 @@ import { AdminApiError } from './admin'
 
 export interface AutoPublicationStatus {
   paused: boolean
+  queuedCandidateIds: string[]
   batches: Array<{
     id: string
     status: string
@@ -22,7 +23,7 @@ export interface AutoPublicationStatus {
 }
 
 export async function readAutoPublicationStatus(db: D1Database): Promise<AutoPublicationStatus> {
-  const [control, batches, run] = await Promise.all([
+  const [control, batches, run, queued] = await Promise.all([
     db
       .prepare('SELECT paused FROM auto_publication_control WHERE id = 1')
       .first<{ paused: number }>(),
@@ -59,9 +60,17 @@ export async function readAutoPublicationStatus(db: D1Database): Promise<AutoPub
         failure_code: string | null
         started_at: string
       }>(),
+    db
+      .prepare(
+        `SELECT i.candidate_id FROM auto_publication_items i
+        JOIN auto_publication_batches b ON b.id = i.batch_id
+        WHERE b.status = 'awaiting-sample' AND i.status IN ('pending', 'awaiting-sample')`,
+      )
+      .all<{ candidate_id: string }>(),
   ])
   return {
     paused: control?.paused !== 0,
+    queuedCandidateIds: queued.results.map((row) => row.candidate_id),
     batches: batches.results.map((row) => ({
       id: row.id,
       status: row.status,
