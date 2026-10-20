@@ -45,7 +45,7 @@ Invoke-RestMethod -Uri 'http://127.0.0.1:8789/' -Method Post -ContentType 'appli
 
 ## 예약 자동 공개
 
-`auto-wrangler.jsonc`는 Production D1과 Browser Run을 묶고, 한국 시간 매일 11:17에 실행한다. 공개 HTTP 주소는 없다. D1의 `auto_publication_control.paused=1`이 기본값이다. 관리자 `/admin/review`에서 예약 검사 재개·즉시 중지·표본 확인·묶음 취소를 수행한다. 소유자가 표본을 승인하기 전에는 자동 게시가 없다. 검사 실패와 보류 사유는 D1에 남는다.
+`auto-wrangler.jsonc`는 Production D1과 Browser Run을 묶고, 한국 시간 매일 11:17에 실행한다. 공개 HTTP 주소는 없다. D1의 `auto_publication_control.paused=1`이 기본값이다. `Animation/GSAP`에서 조건을 모두 통과한 묶음은 사전 클릭 없이 공개하며, 관리자 `/admin/review`에서 예약 검사 재개·즉시 중지·공개 후 표본 확인·묶음 취소를 수행한다. 검사 실패와 보류 사유는 D1에 남는다.
 
 ```powershell
 cd tools/browser-run-probe

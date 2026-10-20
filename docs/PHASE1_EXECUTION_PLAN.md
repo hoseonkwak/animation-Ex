@@ -316,6 +316,8 @@ CodePen 자동 실행 검사의 환경별 403과 양성 대조군 결과는 [`ev
 
 작은 묶음 자동 공개의 Production 배포, 격리 D1 승인·취소 리허설과 남은 실제 표본 확인은 [`evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md`](evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md)에 기록한다. 실제 Production 표본과 게시가 확인되기 전에는 WP8 자동 공개 완료로 표시하지 않는다.
 
+반복 승인 없는 GSAP 한정 자동 공개의 로컬 게시·취소 및 운영 대기 묶음 확인은 [`evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md)에 기록한다. Production 예약 실행에서 자동 게시가 확인되기 전에는 이 전환을 완료로 표시하지 않는다.
+
 완료 증거:
 
 - `PHASE1_ACCEPTANCE.md` 전 항목에 증거 링크

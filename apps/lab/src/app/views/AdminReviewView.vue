@@ -40,6 +40,7 @@ const autoPublication = ref<{
     status: string
     sampleCandidateId: string
     sampleTitle: string
+    sampleSlug: string | null
     publishedCount: number
     failureCode: string | null
     createdAt: string
@@ -524,8 +525,8 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       <div>
         <h2>자동 공개</h2>
         <p>
-          하루 최대 8개를 실제 실행 검사합니다. 같은 카테고리의 통과 묶음에서 표본 1개를 먼저
-          확인하면 나머지는 다음 예약 실행에서 공개됩니다.
+          GSAP 후보를 하루 최대 8개 검사해 조건을 통과하면 자동 공개합니다. 표본은 공개 후 선택해서
+          확인할 수 있으며, 문제가 있으면 즉시 중지·취소할 수 있습니다.
         </p>
         <p>
           상태 <strong>{{ autoPublication.paused ? '중지' : '예약 검사 허용' }}</strong>
@@ -547,15 +548,29 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         </button>
       </div>
       <div v-for="batch in autoPublication.batches" :key="batch.id">
-        <strong>{{ batch.status }}</strong>
-        <p>표본: {{ batch.sampleTitle }}</p>
+        <strong>{{
+          batch.status === 'awaiting-sample'
+            ? '재검사·자동 공개 대기'
+            : batch.status === 'published'
+              ? '공개 완료'
+              : batch.status === 'blocked'
+                ? '자동 공개 보류'
+                : batch.status
+        }}</strong>
+        <p>점검할 표본: {{ batch.sampleTitle }}</p>
+        <a
+          v-if="batch.status === 'published' && batch.sampleSlug"
+          :href="`/examples/${batch.sampleSlug}`"
+        >
+          표본 실행 화면 보기
+        </a>
         <button
           v-if="batch.status === 'awaiting-sample'"
           type="button"
           :disabled="busy"
           @click="selectCandidate(batch.sampleCandidateId)"
         >
-          표본 실행 화면 확인
+          표본 실행 화면 보기
         </button>
         <span v-if="batch.status === 'published'">자동 공개 {{ batch.publishedCount }}건</span>
         <button

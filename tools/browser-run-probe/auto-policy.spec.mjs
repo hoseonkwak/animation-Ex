@@ -8,6 +8,7 @@ import {
 
 const row = {
   status: "review",
+  source_title: "Sliding card animation",
   canonical_url: "https://codepen.io/user/pen/AbC123",
   creator_name: "user",
   license_code: "MIT",
@@ -21,6 +22,7 @@ test("불완전하거나 중복된 후보는 자동 검사 대상에서 제외�
   assert.equal(isCandidateEligible(row), true);
   assert.equal(isCandidateEligible({ ...row, confirmed_tag: 0 }), false);
   assert.equal(isCandidateEligible({ ...row, duplicate_pen: 1 }), false);
+  assert.equal(isCandidateEligible({ ...row, source_title: "CODE VIEW" }), false);
   assert.equal(
     isCandidateEligible({
       ...row,

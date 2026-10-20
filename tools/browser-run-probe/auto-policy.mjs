@@ -13,7 +13,13 @@ export function isCandidateEligible(row) {
     return false;
   }
   const title = String(metadata.publicTitle ?? "").trim();
-  return title.length >= 8 && !GENERIC_TITLE.test(title);
+  const sourceTitle = String(row.source_title ?? "").trim();
+  return (
+    title.length >= 8 &&
+    !GENERIC_TITLE.test(title) &&
+    sourceTitle.length >= 8 &&
+    !GENERIC_TITLE.test(sourceTitle)
+  );
 }
 
 export function passesAutomaticProbe(result) {

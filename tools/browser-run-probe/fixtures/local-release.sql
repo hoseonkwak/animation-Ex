@@ -28,8 +28,8 @@ VALUES ('auto-test-candidate-1', 'tag-technology-gsap', 'admin', 1, 1),
 INSERT INTO validation_runs (id, target_type, target_id, validator, validator_version, subject_fingerprint,
   result, viewport, failure_codes_json, evidence_json, checked_at, created_at)
 VALUES
-  ('auto-test-validation-1', 'candidate', 'auto-test-candidate-1', 'browser-run-auto', '1', 'pen:georgedoescode/qBqLrGG|theme:light|tab:result', 'pass', 'desktop', '[]', '{}', strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-  ('auto-test-validation-2', 'candidate', 'auto-test-candidate-2', 'browser-run-auto', '1', 'pen:Sicontis/oNbgjda|theme:light|tab:result', 'pass', 'desktop', '[]', '{}', strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), strftime('%Y-%m-%dT%H:%M:%fZ', 'now'));
+  ('auto-test-validation-1', 'candidate', 'auto-test-candidate-1', 'browser-run-auto', '1', 'pen:georgedoescode/qBqLrGG|theme:light|tab:result', 'pass', 'desktop', '[]', '{"status":"visual-change-observed","embedStatus":200,"resultStatus":200,"bodyLength":400,"elementCount":9,"earlyChange":true,"lateChange":true,"pageErrors":[]}', strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  ('auto-test-validation-2', 'candidate', 'auto-test-candidate-2', 'browser-run-auto', '1', 'pen:Sicontis/oNbgjda|theme:light|tab:result', 'pass', 'desktop', '[]', '{"status":"visual-change-observed","embedStatus":200,"resultStatus":200,"bodyLength":400,"elementCount":9,"earlyChange":true,"lateChange":true,"pageErrors":[]}', strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), strftime('%Y-%m-%dT%H:%M:%fZ', 'now'));
 
 INSERT INTO auto_publication_items (batch_id, candidate_id, candidate_version, role, status, probe_evidence_json)
 VALUES ('auto-test-batch-1', 'auto-test-candidate-1', 1, 'automatic', 'pending', '{}'),

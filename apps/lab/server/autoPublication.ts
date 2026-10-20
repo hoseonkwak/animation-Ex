@@ -7,6 +7,7 @@ export interface AutoPublicationStatus {
     status: string
     sampleCandidateId: string
     sampleTitle: string
+    sampleSlug: string | null
     publishedCount: number
     failureCode: string | null
     createdAt: string
@@ -28,10 +29,12 @@ export async function readAutoPublicationStatus(db: D1Database): Promise<AutoPub
     db
       .prepare(
         `SELECT b.id, b.status, b.sample_candidate_id, c.source_title AS sample_title,
+        e.slug AS sample_slug,
         b.failure_code, b.created_at,
         (SELECT COUNT(*) FROM auto_publication_items i
           WHERE i.batch_id = b.id AND i.status = 'published') AS published_count
       FROM auto_publication_batches b JOIN candidates c ON c.id = b.sample_candidate_id
+      LEFT JOIN animation_entries e ON e.candidate_id = b.sample_candidate_id
       ORDER BY b.created_at DESC LIMIT 10`,
       )
       .all<{
@@ -39,6 +42,7 @@ export async function readAutoPublicationStatus(db: D1Database): Promise<AutoPub
         status: string
         sample_candidate_id: string
         sample_title: string | null
+        sample_slug: string | null
         failure_code: string | null
         created_at: string
         published_count: number
@@ -63,6 +67,7 @@ export async function readAutoPublicationStatus(db: D1Database): Promise<AutoPub
       status: row.status,
       sampleCandidateId: row.sample_candidate_id,
       sampleTitle: row.sample_title ?? '제목 없음',
+      sampleSlug: row.sample_slug,
       publishedCount: row.published_count,
       failureCode: row.failure_code,
       createdAt: row.created_at,
@@ -104,7 +109,7 @@ export async function rollbackAutoPublicationBatch(
   const { results: entries } = await db
     .prepare(
       `SELECT i.entry_id FROM auto_publication_items i JOIN animation_entries e ON e.id = i.entry_id
-      WHERE i.batch_id = ? AND i.role = 'automatic' AND e.status = 'published'`,
+      WHERE i.batch_id = ? AND i.status = 'published' AND e.status = 'published'`,
     )
     .bind(id)
     .all<{ entry_id: string }>()
@@ -132,7 +137,14 @@ export async function rollbackAutoPublicationBatch(
     db
       .prepare(
         `UPDATE auto_publication_items SET status = 'rolled-back'
-          WHERE batch_id = ? AND role = 'automatic' AND status IN ('published', 'pending', 'blocked')`,
+          WHERE batch_id = ? AND (role = 'automatic' AND status IN ('published', 'pending', 'blocked')
+            OR role = 'sample' AND status = 'published')`,
+      )
+      .bind(id),
+    db
+      .prepare(
+        `UPDATE auto_publication_items SET status = 'blocked'
+          WHERE batch_id = ? AND role = 'sample' AND status = 'awaiting-sample'`,
       )
       .bind(id),
     db

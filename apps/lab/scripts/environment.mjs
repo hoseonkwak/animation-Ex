@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -17,7 +18,11 @@ if (!['preview', 'production'].includes(environment ?? '')) {
 const environmentVariables = { ...process.env, CLOUDFLARE_ENV: environment }
 
 function run(modulePath, args) {
-  const result = spawnSync(process.execPath, [path.resolve(workspaceRoot, modulePath), ...args], {
+  const binary = [root, workspaceRoot]
+    .map((base) => path.resolve(base, modulePath))
+    .find(existsSync)
+  if (!binary) throw new Error(`실행 파일을 찾을 수 없습니다: ${modulePath}`)
+  const result = spawnSync(process.execPath, [binary, ...args], {
     cwd: root,
     env: environmentVariables,
     stdio: 'inherit',

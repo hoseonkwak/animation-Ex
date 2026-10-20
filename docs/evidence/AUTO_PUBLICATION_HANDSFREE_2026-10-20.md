@@ -1,0 +1,25 @@
+# 반복 승인 없는 자동 공개 전환 검증
+
+검증일: 2026-10-20 (한국 시간)
+
+## 변경 의도
+
+기존 방식은 3~8건 묶음마다 소유자가 표본을 클릭해야 다음 묶음으로 진행했다. D-043은 `Animation/GSAP`에서 엄격한 Browser Run 실행 증거와 출처·태그·중복·제목 조건을 충족하면 예약 실행에서 바로 공개한다. 표본 확인은 공개 후 선택 사항이며 즉시 중지와 묶음 전체 취소를 유지한다. 다른 카테고리는 아직 자동 공개하지 않는다.
+
+## 격리 로컬 D1 검증
+
+`tools/browser-run-probe`의 별도 로컬 D1에 12개 migration과 `local-release.sql`·`local-handsfree.sql`을 적용했다. 예약 이벤트를 한 번 호출했을 때 수동 승인 없이 표본 포함 3건이 `published`가 됐고 실행 기록의 `published_count=3`과 일치했다. 기존 `rollback-worker.ts`를 호출하자 표본 포함 3건의 Entry가 모두 `unpublished`, 묶음이 `rolled-back`, 운영 스위치가 중지됐다.
+
+다른 격리 D1에서 같은 fixture에 `local-sample-edited.sql`을 추가했다. 생성 후 수정된 표본 1건은 `blocked`로 제외되고, 다른 후보가 표본으로 교체됐으며, 버전과 엄격한 실행 증거가 유효한 3건만 공개됐다.
+
+Worker Node 테스트 10건, 앱 Vitest 97건, 타입 검사, 수정 앱 파일의 ESLint·Prettier, 운영 Worker dry-run과 앱 production dry-run이 통과했다. 저장소 전체 `format:check`와 `lint`는 기존 CRLF 파일 및 무시된 `.wrangler` 임시 파일까지 검사해 실패하므로 수정 파일을 대상으로 별도 확인했다.
+
+## 운영 읽기 전용 확인
+
+Production D1에 `awaiting-sample` 묶음 1개가 있다. 2026-10-20 16:09경 기존 표본은 소유자가 승인해 실제 Entry가 `published`로 바뀌었다. 자동 대기 후보 6건은 모두 `review`, 생성 당시 버전과 일치했고 최신 validator는 `browser-run-auto`의 `pass`였다. 저장된 Embed·Result 응답은 200, 두 구간의 변화는 참, 페이지 오류는 0이었다. 10월 16일의 실행 증거는 72시간을 넘었으므로 다음 예약 실행에서 양성 대조군과 후보를 재검사해야 한다. 그 전에는 자동 게시 성공으로 기록하지 않는다.
+
+## 완료 기준
+
+- Production 앱과 예약 Worker 배포를 확인한다.
+- 다음 예약 실행에서 오래된 증거를 갱신한 뒤 대기 6건의 실제 자동 게시 또는 추적 가능한 보류 사유를 확인한다.
+- 새 묶음이 추가 표본 승인 없이 공개되고, 공개된 CodePen Result와 출처가 정상인지 점검한다.

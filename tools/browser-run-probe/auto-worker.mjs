@@ -14,6 +14,7 @@ import { refreshStaleCandidates } from "./auto-refresh.mjs";
 const MAX_PROBES = 8;
 const MIN_BATCH = 3;
 const ACTOR = "automatic-publication-browser-run-v1";
+const AUTO_CATEGORIES = new Set(["Animation/GSAP"]);
 
 function now() {
   return new Date().toISOString();
@@ -24,6 +25,14 @@ function penKey(url) {
     /^https:\/\/codepen\.io\/((?:team\/)?[^/]+)\/pen\/([A-Za-z0-9]+)\/?$/,
   );
   return match ? `${match[1]}/${match[2]}` : null;
+}
+
+function hasStrictEvidence(value) {
+  try {
+    return passesAutomaticProbe(JSON.parse(value));
+  } catch {
+    return false;
+  }
 }
 
 async function paused(db) {
@@ -75,7 +84,9 @@ async function eligibleRows(db) {
     )
     .bind(cutoff)
     .all();
-  const eligible = results.filter(isCandidateEligible);
+  const eligible = results.filter(
+    (row) => AUTO_CATEGORIES.has(row.source_category) && isCandidateEligible(row),
+  );
   const category = eligible.find(
     (row) =>
       eligible.filter((other) => other.source_category === row.source_category)
@@ -167,7 +178,7 @@ async function releaseBatch(env, batch) {
       db
         .prepare(
           `UPDATE auto_publication_items SET status = 'blocked'
-          WHERE batch_id = ? AND role = 'automatic' AND status = 'pending'`,
+          WHERE batch_id = ? AND status IN ('pending', 'awaiting-sample')`,
         )
         .bind(batch.id),
       db
@@ -178,9 +189,9 @@ async function releaseBatch(env, batch) {
         .bind(failure, time, batch.run_id),
     ]);
   }
-  const sample = await db
+  let sample = await db
     .prepare(
-      `SELECT c.status, e.status AS entry_status FROM candidates c
+      `SELECT c.status, c.version, e.status AS entry_status FROM candidates c
       LEFT JOIN animation_entries e ON e.candidate_id = c.id WHERE c.id = ?`,
     )
     .bind(batch.sample_candidate_id)
@@ -195,9 +206,55 @@ async function releaseBatch(env, batch) {
     await blockBatch("SAMPLE_REJECTED");
     return;
   }
-  if (sample.status !== "approved" || sample.entry_status !== "published")
-    return;
+  if (
+    sample.status === "review" &&
+    sample.version !== batch.sample_candidate_version
+  ) {
+    const replacement = await db
+      .prepare(
+        `SELECT ai.candidate_id, ai.candidate_version
+        FROM auto_publication_items ai JOIN candidates c ON c.id = ai.candidate_id
+        WHERE ai.batch_id = ? AND ai.role = 'automatic' AND ai.status = 'pending'
+          AND c.status = 'review' AND c.version = ai.candidate_version
+        ORDER BY ai.candidate_id LIMIT 1`,
+      )
+      .bind(batch.id)
+      .first();
+    if (!replacement) {
+      await blockBatch("SAMPLE_CHANGED_NO_REPLACEMENT");
+      return;
+    }
+    await db.batch([
+      db
+        .prepare(
+          `UPDATE auto_publication_items SET role = 'automatic', status = 'blocked'
+          WHERE batch_id = ? AND candidate_id = ? AND role = 'sample'`,
+        )
+        .bind(batch.id, batch.sample_candidate_id),
+      db
+        .prepare(
+          `UPDATE auto_publication_items SET role = 'sample'
+          WHERE batch_id = ? AND candidate_id = ? AND role = 'automatic'`,
+        )
+        .bind(batch.id, replacement.candidate_id),
+      db
+        .prepare(
+          `UPDATE auto_publication_batches SET sample_candidate_id = ?,
+          sample_candidate_version = ? WHERE id = ? AND status = 'awaiting-sample'`,
+        )
+        .bind(
+          replacement.candidate_id,
+          replacement.candidate_version,
+          batch.id,
+        ),
+    ]);
+    batch.sample_candidate_id = replacement.candidate_id;
+    batch.sample_candidate_version = replacement.candidate_version;
+    sample = { status: "review", version: replacement.candidate_version };
+  }
   if (await paused(db)) return;
+  const manuallyPublishedSample =
+    sample.status === "approved" && sample.entry_status === "published";
 
   const { results: items } = await db
     .prepare(
@@ -211,24 +268,30 @@ async function releaseBatch(env, batch) {
       EXISTS (SELECT 1 FROM codepen_refs r WHERE lower(r.pen_key) = lower(
         replace(replace(s.canonical_url, 'https://codepen.io/', ''), '/pen/', '/')
       )) AS duplicate_pen,
-      v.result AS validation_result, v.subject_fingerprint, v.checked_at
+      v.result AS validation_result, v.subject_fingerprint, v.checked_at,
+      v.evidence_json, v.validator
     FROM auto_publication_items ai JOIN candidates c ON c.id = ai.candidate_id
       JOIN sources s ON s.id = c.source_id
       LEFT JOIN validation_runs v ON v.id = (SELECT id FROM validation_runs
         WHERE target_type = 'candidate' AND target_id = c.id
         ORDER BY checked_at DESC, id DESC LIMIT 1)
-    WHERE ai.batch_id = ? AND ai.role = 'automatic' ORDER BY ai.candidate_id`,
+    WHERE ai.batch_id = ? AND ai.status IN ('pending', 'awaiting-sample')
+      AND (ai.role = 'automatic' OR
+      (ai.role = 'sample' AND ? = 0)) ORDER BY ai.candidate_id`,
     )
-    .bind(batch.id)
+    .bind(batch.id, manuallyPublishedSample ? 1 : 0)
     .all();
   const valid =
-    items.length >= 2 &&
+    items.length >= (manuallyPublishedSample ? 2 : MIN_BATCH) &&
     items.every(
       (row) =>
         row.status === "review" &&
         row.version === row.candidate_version &&
+        AUTO_CATEGORIES.has(row.source_category) &&
         isCandidateEligible(row) &&
+        row.validator === "browser-run-auto" &&
         row.validation_result === "pass" &&
+        hasStrictEvidence(row.evidence_json) &&
         row.subject_fingerprint ===
           `pen:${penKey(row.canonical_url)}|theme:light|tab:result`,
     );
@@ -259,14 +322,14 @@ async function releaseBatch(env, batch) {
       const meta = JSON.parse(row.metadata_json);
       const copy = suggestCandidateCopy({
         sourceTitle: row.source_title ?? "",
-        suggestedTitle: meta.publicTitle,
+        suggestedTitle: row.source_title ?? "",
         category: row.source_category,
         canonicalUrl: row.canonical_url,
       });
       const nextMeta = {
         ...meta,
         publicTitle: copy.publicTitle,
-        summary: meta.summary?.trim() || copy.summary,
+        summary: copy.summary,
         slug: meta.slug?.trim() || copy.slug,
         difficulty: meta.difficulty || "intermediate",
         featured: false,
@@ -411,8 +474,14 @@ export async function runAutomaticPublication(env) {
         });
         return;
       }
-      await stage(db, runId, successful, probes);
+      const batchId = await stage(db, runId, successful, probes);
       await recordRun(db, runId, "staged", { examined, passed });
+      await releaseBatch(env, {
+        id: batchId,
+        run_id: runId,
+        sample_candidate_id: successful[sampleIndex(batchId, successful.length)].id,
+        sample_candidate_version: successful[sampleIndex(batchId, successful.length)].version,
+      });
     } finally {
       if (browser) await browser.close();
     }
