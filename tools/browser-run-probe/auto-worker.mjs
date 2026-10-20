@@ -496,7 +496,7 @@ export async function runAutomaticPublication(env) {
 }
 
 export default {
-  async scheduled(_controller, env, context) {
-    context.waitUntil(runAutomaticPublication(env));
+  async scheduled(_controller, env) {
+    await runAutomaticPublication(env);
   },
 };

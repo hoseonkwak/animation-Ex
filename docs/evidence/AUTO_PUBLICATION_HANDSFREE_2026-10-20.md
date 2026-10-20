@@ -30,3 +30,11 @@ Production D1에 `awaiting-sample` 묶음 1개가 있다. 2026-10-20 16:09경 �
 - 앱 Worker `kwak-motion-lab-production` 버전 `88e0f782-0d83-4c18-b848-1cc416457a7b`, 예약 Worker `kwak-motion-lab-auto-publication` 버전 `072be5f5-0565-46db-b429-0aa612eb0a61`로 배포했다. Cron은 UTC 02:17(한국 시간 11:17) 그대로다.
 - Production smoke에서 health, 공개 조회, 검색엔진 설정, 비로그인 홈과 관리자 API의 비인증 차단이 모두 통과했다. 관리자 브라우저에서도 새 자동 공개 안내가 보이고, 예약 대기 6건이 기본 추천 검수에서 제외된 것을 확인했다.
 - 배포 직후 운영 D1은 `paused=0`, 기존 실행 `staged`, 묶음 `awaiting-sample`, 자동 게시 0건이다. 다음 예약 실행은 2026-10-21 한국 시간 11:17이다. 반복 승인 없는 새 묶음의 실제 성공까지 기존 heartbeat로 매일 확인한다.
+
+## 소유자 요청에 따른 즉시 실행 (2026-10-20 16:50 KST)
+
+소유자가 다음 예약 시각을 기다리지 않고 지금 실행하도록 요청했다. 실행 전 Production D1에서 `paused=0`, 기존 묶음 `awaiting-sample`, 자동 게시 0건을 확인했다. 첫 원격 예약 테스트 호출은 `HTTP 200`이었지만 `scheduled()`가 긴 검사를 `context.waitUntil()`에 맡긴 뒤 반환하여 30초 후 남은 작업이 취소됐다. 이 호출은 새 검사 기록 1건만 남겼고 게시하지 않았다.
+
+`scheduled()`가 `runAutomaticPublication(env)`를 직접 `await`하도록 수정하고 Worker 테스트 10건과 배포 dry-run을 통과시켰다. 수정 코드로 원격 예약 테스트를 **한 번 재실행**하자 약 94초 후 완료됐다. Production D1에서 묶음 `0caec4da-f00f-4757-b898-69933f593403`은 `published`, 실행 `5d486598-f581-4ee2-afa7-1d167a594d09`는 `published_count=6`, `failure_code=null`이며 자동 대상 6건 모두 Entry ID와 함께 `published`로 기록됐다. 운영 공개 API `/api/v1/examples?limit=24&sort=latest`의 최신 6건도 이 Entry ID와 일치한다. 상세 API의 예제 1건에서 CodePen Result 임베드와 제작자·원본 URL·라이선스 정보가 확인됐다.
+
+예약 Worker 수정 버전 `827d33e7-c0f8-4c57-8f30-4090573fb0c8`을 Production에 배포했다. 기존 표본은 소유자가 승인한 사례이므로, **새 묶음이 승인 없이 처음부터 공개되는지**는 다음 예약 실행에서 별도로 확인한다.
