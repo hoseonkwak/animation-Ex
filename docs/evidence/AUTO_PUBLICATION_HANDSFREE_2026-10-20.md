@@ -23,3 +23,10 @@ Production D1에 `awaiting-sample` 묶음 1개가 있다. 2026-10-20 16:09경 �
 - Production 앱과 예약 Worker 배포를 확인한다.
 - 다음 예약 실행에서 오래된 증거를 갱신한 뒤 대기 6건의 실제 자동 게시 또는 추적 가능한 보류 사유를 확인한다.
 - 새 묶음이 추가 표본 승인 없이 공개되고, 공개된 CodePen Result와 출처가 정상인지 점검한다.
+
+## Production 배포와 직후 확인
+
+- Git `master`에 `ca885c0`과 `0d46b7d`를 푸시했다.
+- 앱 Worker `kwak-motion-lab-production` 버전 `88e0f782-0d83-4c18-b848-1cc416457a7b`, 예약 Worker `kwak-motion-lab-auto-publication` 버전 `072be5f5-0565-46db-b429-0aa612eb0a61`로 배포했다. Cron은 UTC 02:17(한국 시간 11:17) 그대로다.
+- Production smoke에서 health, 공개 조회, 검색엔진 설정, 비로그인 홈과 관리자 API의 비인증 차단이 모두 통과했다. 관리자 브라우저에서도 새 자동 공개 안내가 보이고, 예약 대기 6건이 기본 추천 검수에서 제외된 것을 확인했다.
+- 배포 직후 운영 D1은 `paused=0`, 기존 실행 `staged`, 묶음 `awaiting-sample`, 자동 게시 0건이다. 다음 예약 실행은 2026-10-21 한국 시간 11:17이다. 반복 승인 없는 새 묶음의 실제 성공까지 기존 heartbeat로 매일 확인한다.
