@@ -96,3 +96,10 @@
 ## 10. 완료 판정
 
 체크리스트를 단순히 표시하는 것으로 완료하지 않는다. 각 항목에는 자동 검사 결과, 수동 검수 기록, 화면 링크 또는 재현 가능한 실행 명령 중 하나의 증거가 있어야 한다.
+
+| 기준 | 대표 증거 |
+| --- | --- |
+| `P1-UX`, `P1-DISCOVERY`, `P1-PREVIEW`, `P1-DETAIL`, `P1-LOCAL`, `P1-SEO` | [`WP2`](evidence/WP2_REPORT.md), [`WP3`](evidence/WP3_REPORT.md), [`WP6`](evidence/WP6_REPORT.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 Chromium 18건 |
+| `P1-CONTENT`, `P1-ADMIN` | [`WP4`](evidence/WP4_REPORT.md), [`WP5`](evidence/WP5_REPORT.md), [반복 승인 없는 자동 공개](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 계약 40건 |
+| `P1-OPS-01`~`07`, `09`~`12` | [`WP7`](evidence/WP7_PROGRESS.md), [`WP8 수집`](evidence/WP8_INGESTION_START.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 수집 29건·Production smoke·D1 백업·복구 리허설 |
+| `P1-OPS-08` | GitHub Actions 인증값 설정 후 수동 복구 실행과 다음 예약 실행의 Production D1 기록 필요. 아직 미완료. |

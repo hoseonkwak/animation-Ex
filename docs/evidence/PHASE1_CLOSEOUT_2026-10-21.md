@@ -18,14 +18,17 @@
 | `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run build` | 통과. |
 | `npm run verify:deploy:production` | Production D1 binding과 배포 dry-run 확인. |
 | `npm run ingest:wsss:preflight --workspace @kwak-motion/lab` | 실제 WSSS robots·GSAP 1건 파싱 통과. API 쓰기 없음. |
+| [GitHub CI #8](https://github.com/hoseonkwak/animation-Ex/actions/runs/39539325540) | `f7c68a2`의 설치·타입·린트·테스트·빌드 통과. |
 
 ## 백업과 복구
 
 - Production D1 SQL export를 로컬 무시 폴더 `apps/lab/.wrangler/backups/production-2026-10-21.sql`에 보관했다. 크기 3,898,599바이트, SHA-256 `7E02FA64ABFE271CED77185915F5D1990142E4793967297E0EEB8BB3E6D442D8`. 비밀이 포함될 수 있으므로 Git에 넣지 않는다.
-- `npm run db:rehearse:restore`로 별도 local D1 복구를 확인했다. 공개 Entry 15건, Source 17건, Tag 44건이 복구됐다. 이 리허설은 로컬 D1 export 대상이며 Production 백업 파일 자체의 복원 검증은 아니다.
+- `npm run db:rehearse:restore`로 별도 local D1 복구를 확인했다. 공개 Entry 15건, Source 17건, Tag 44건이 복구됐다.
+- 이어서 위 Production 백업 파일 자체를 별도 로컬 D1에 복원했다. SQL 9,674개 명령이 성공했고 공개 Entry 33건, 검수 후보 1,843건, 수집 실행 54건을 조회했다. 운영 D1에는 복원 명령을 실행하지 않았다.
 
 ## 남은 운영 확인
 
-- GitHub Actions의 GSAP 예약 수집을 배포한 뒤 수동 실행에서 `trigger=manual`과 원격 checkpoint 재개를 확인한다. 다음 예약 실행에서는 `trigger=schedule`과 신규 후보 또는 빈 실행 checkpoint를 확인한다. 이 전에는 `P1-OPS-08`을 완료로 표시하지 않는다.
-- 운영 배포 후 관리자 본인 세션에서 공개 오류 기록과 개별 중지 버튼을 재확인한다. 계약·브라우저 검사는 로컬에서 통과했다.
+- GitHub Actions [수동 실행 #1](https://github.com/hoseonkwak/animation-Ex/actions/runs/39539396574)은 fixture 29건을 통과한 뒤 `INGESTION_API_URL`, `INGESTION_KEY_ID`, `INGESTION_HMAC_SECRET`가 없는 상태에서 중단됐다. GitHub 저장소의 Actions Secrets 목록은 비어 있었다. WSSS 요청과 Production D1 쓰기 전에 실패했다. 인증값 등록 후 재실행에서 `trigger=manual`과 원격 checkpoint 재개를 확인해야 한다. 다음 예약 실행에서는 `trigger=schedule`과 신규 후보 또는 빈 실행 checkpoint를 확인한다. 이 전에는 `P1-OPS-08`을 완료로 표시하지 않는다.
+- 같은 코드로 기존 Production HMAC을 로컬에서 사용해 1건 제한 수동 실행을 검증했다. 운영 D1 실행 `wsss-1792553920496-eadb93bb`은 `success`, `trigger=manual`, 신규·중복·실패 0건이며 `completedPostIds`에 `1603`을 기록했다. 이는 원격 checkpoint 읽기, 빈 신규 Pen batch와 완료 API가 운영에서 작동한다는 증거다. GitHub Actions 예약자의 권한 설정은 여전히 필요하다.
+- 운영 배포 후 GitHub owner 세션의 `/admin/review`에서 공개 예제 33건의 선택 목록, 실행 iframe, 오류 기록·공개 중지 버튼이 표시되는 것을 확인했다. 실제 운영 예제에 거짓 실패를 기록하거나 공개를 중지하지는 않았다. 계약·브라우저 검사는 로컬에서 통과했다.
 - Hero 목표 20건, 월간 공개 Preview 재검사와 Analytics 일일 동기화는 운영 확장 작업으로 남는다. 추가 콘텐츠는 실제 실행과 태그 판정이 끝난 뒤 공개한다.
