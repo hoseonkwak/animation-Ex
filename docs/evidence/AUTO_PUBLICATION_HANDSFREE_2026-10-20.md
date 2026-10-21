@@ -38,3 +38,7 @@ Production D1에 `awaiting-sample` 묶음 1개가 있다. 2026-10-20 16:09경 �
 `scheduled()`가 `runAutomaticPublication(env)`를 직접 `await`하도록 수정하고 Worker 테스트 10건과 배포 dry-run을 통과시켰다. 수정 코드로 원격 예약 테스트를 **한 번 재실행**하자 약 94초 후 완료됐다. Production D1에서 묶음 `0caec4da-f00f-4757-b898-69933f593403`은 `published`, 실행 `5d486598-f581-4ee2-afa7-1d167a594d09`는 `published_count=6`, `failure_code=null`이며 자동 대상 6건 모두 Entry ID와 함께 `published`로 기록됐다. 운영 공개 API `/api/v1/examples?limit=24&sort=latest`의 최신 6건도 이 Entry ID와 일치한다. 상세 API의 예제 1건에서 CodePen Result 임베드와 제작자·원본 URL·라이선스 정보가 확인됐다.
 
 예약 Worker 수정 버전 `827d33e7-c0f8-4c57-8f30-4090573fb0c8`을 Production에 배포했다. 기존 표본은 소유자가 승인한 사례이므로, **새 묶음이 승인 없이 처음부터 공개되는지**는 다음 예약 실행에서 별도로 확인한다.
+
+## 다음 예약 실행의 운영 성공 (2026-10-21)
+
+한국 시간 11:17 예약 실행 뒤 Production D1과 공개 API를 읽기 전용으로 대조했다. 기존 대기 묶음은 6건이 게시됐고, 신규 `Animation/GSAP` 묶음 `69ddaa54-0822-40ba-acb6-3e567f77fd27`은 사전 표본 승인 없이 5건(표본 포함)을 게시했다. 실행 `536a2867-197f-47c2-8a0b-6bc650d70535`는 `published_count=5`, 완료 시각 `2026-10-21T02:18:33Z`를 기록했다. 다섯 항목의 Entry가 모두 공개 API에서 조회됐다. 이로써 D-043의 반복 승인 없는 **자동 공개 자체**는 운영에서 입증됐다. 공개 후 표본 점검과 수집 예약은 별도 운영 과제로 이어간다.

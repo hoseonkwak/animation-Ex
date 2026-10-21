@@ -74,6 +74,8 @@ describe('AdminReviewView', () => {
         }
       } else if (url.endsWith('/admin/auto-publication')) {
         data = { paused: true, batches: [], lastRun: null }
+      } else if (url.endsWith('/admin/examples')) {
+        data = { items: [] }
       } else {
         throw new Error(`예상하지 못한 요청: ${url}`)
       }
@@ -151,6 +153,7 @@ describe('AdminReviewView', () => {
         }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
+      else if (url.endsWith('/admin/examples')) data = { items: [] }
       else if (url.endsWith('/admin/candidates/triage'))
         data = {
           items: published

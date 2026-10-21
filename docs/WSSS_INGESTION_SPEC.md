@@ -257,9 +257,9 @@ npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
 npm run ingest:wsss:live -- --backfill --category 'https://wsss.tistory.com/category/Parallax/Scroll' --max-articles 50 --max-pages 4 --checkpoint '.wrangler/wsss-production-scroll-checkpoint.json'
 ```
 
-`preflight`는 fixture 검사를 먼저 수행한 뒤 현재 WSSS HTML을 한 건 읽고 결과만 출력한다. 후보 등록이나 checkpoint 완료 API는 호출하지 않는다. live 실행과 수동 GitHub Actions workflow는 HMAC 환경 변수 세 개가 있을 때만 제출한다. 하루 1회 schedule은 수동 실행이 안정화된 뒤 별도 변경으로 활성화한다.
+`preflight`는 fixture 검사를 먼저 수행한 뒤 현재 WSSS HTML을 한 건 읽고 결과만 출력한다. 후보 등록이나 checkpoint 완료 API는 호출하지 않는다. live 실행과 GitHub Actions workflow는 HMAC 환경 변수 세 개가 있을 때만 제출한다. GSAP 한정 예약 실행은 한국 시간 매일 10:37에 최대 20개 게시물·첫 목록 페이지를 검사한다. 실행 환경의 임시 파일 대신 `--remote-checkpoint`로 Production D1에 완료된 같은 카테고리의 마지막 checkpoint를 읽는다. `--scheduled`는 실행 출처를 `schedule`로 기록한다.
 
-전체 카테고리를 채울 때는 `--backfill`을 사용한다. 저장이 끝난 게시물은 checkpoint의 `completedPostIds`로 건너뛰고, 실패하거나 일부 Pen만 저장된 게시물은 다음 배치에서 재시도한다. 일반 증분 실행에서는 기존의 연속 30건 중복 중지선을 유지한다. checkpoint 파일은 카테고리마다 별도로 둔다.
+전체 카테고리를 채울 때는 `--backfill`을 사용한다. 저장이 끝난 게시물은 checkpoint의 `completedPostIds`로 건너뛰고, 실패하거나 일부 Pen만 저장된 게시물은 다음 배치에서 재시도한다. 새 Pen이 0개여도 완료 게시물 checkpoint를 D1에 저장한다. 게시물 파싱 실패는 성공으로 숨기지 않고 실행을 실패시킨다. 일반 증분 실행에서는 기존의 연속 30건 중복 중지선을 유지한다. 수동 로컬 실행의 checkpoint 파일은 카테고리마다 별도로 둔다.
 
 ## 10. Fixture
 

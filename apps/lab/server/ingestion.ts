@@ -145,10 +145,9 @@ function parseBatch(rawBody: string): BatchBody {
     typeof body.runId !== 'string' ||
     !['manual', 'schedule'].includes(body.trigger ?? '') ||
     !Array.isArray(body.items) ||
-    body.items.length === 0 ||
     body.items.length > 50
   ) {
-    throw new IngestionApiError(400, 'INVALID_BATCH', 'runId, trigger와 1~50개 items가 필요합니다.')
+    throw new IngestionApiError(400, 'INVALID_BATCH', 'runId, trigger와 0~50개 items가 필요합니다.')
   }
   return body as BatchBody
 }
@@ -491,4 +490,37 @@ export async function completeIngestionRun(
       runId,
     )
     .run()
+}
+
+export async function readIngestionCheckpoint(
+  rawBody: string,
+  env: IngestionEnv,
+): Promise<unknown | null> {
+  let category: unknown
+  try {
+    category = (JSON.parse(rawBody) as { category?: unknown }).category
+  } catch {
+    throw new IngestionApiError(400, 'INVALID_JSON', 'JSON 요청 본문을 확인해주세요.')
+  }
+  if (
+    typeof category !== 'string' ||
+    category.length > 100 ||
+    category.includes('..') ||
+    !/^[\p{L}\p{N}][\p{L}\p{N} .-]*(?:\/[\p{L}\p{N}][\p{L}\p{N} .-]*)+$/u.test(category)
+  ) {
+    throw new IngestionApiError(400, 'INVALID_CATEGORY', '수집 카테고리를 확인해주세요.')
+  }
+  const row = await env.DB.prepare(
+    `SELECT checkpoint_after FROM ingestion_runs
+     WHERE discovery_source_id = 'discovery-wsss'
+       AND status IN ('success', 'partial')
+       AND json_extract(
+         CASE WHEN json_valid(checkpoint_after) THEN checkpoint_after ELSE '{}' END,
+         '$.category'
+       ) = ?
+     ORDER BY finished_at DESC, id DESC LIMIT 1`,
+  )
+    .bind(category)
+    .first<{ checkpoint_after: string }>()
+  return row ? JSON.parse(row.checkpoint_after) : null
 }

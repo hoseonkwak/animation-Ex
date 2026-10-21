@@ -202,6 +202,10 @@ Source, 발견 경로, 추출 메타데이터, 중복 후보, 마지막 검증�
 
 공개 중지 이유를 기록하고 상태를 `unpublished`로 바꾼다. 기존 URL은 `404` 대신 공개 중지 안내가 가능한 `410 Gone`을 반환한다.
 
+### `GET /admin/examples`, `POST /admin/examples/:id/preview-checks`
+
+Owner는 최근 공개 예제 100개와 마지막 공개 Preview 점검 결과를 조회한다. 실제 실행 화면을 본 뒤 `result`, `viewport`, 실패 사유 코드를 기록한다. 실패 기록은 관리자 화면의 오류 목록에 표시된다. 공개 중지한 자동 게시 항목은 묶음 항목에도 `rolled-back`으로 반영된다.
+
 ### `GET /admin/ingestion-runs`
 
 실행별 발견, 신규, 중복, 실패, 승인 대기 수와 마지막 checkpoint를 반환한다.
@@ -229,7 +233,7 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 - `X-Ingestion-Request-Id`
 - `X-Ingestion-Signature`
 
-서명 대상은 `method`, `path`, `timestamp`, `request ID`, `SHA-256(body)`를 줄바꿈으로 연결한 문자열이다. Worker는 Web Crypto HMAC-SHA256으로 검증한다. 허용 시간 차이는 5분이며 request ID를 저장해 재전송 공격을 막는다. 본문은 최대 256 KiB, 한 batch는 1~50개다.
+서명 대상은 `method`, `path`, `timestamp`, `request ID`, `SHA-256(body)`를 줄바꿈으로 연결한 문자열이다. Worker는 Web Crypto HMAC-SHA256으로 검증한다. 허용 시간 차이는 5분이며 request ID를 저장해 재전송 공격을 막는다. 본문은 최대 256 KiB, 한 batch는 0~50개다. 새 Pen이 없는 실행에서 빈 batch는 checkpoint 기록을 위한 실행 ID를 만든다.
 
 요청 본문에는 `runId`, `trigger`, `checkpointBefore`, `items`를 전달한다. `items`는 정규화한 CodePen 원본, WSSS 발견 경로와 추천 태그만 포함한다.
 
@@ -253,6 +257,10 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 ```
 
 일부 항목이 실패해도 성공 항목을 다시 보낼 필요가 없게 결과를 분리한다. `externalId`와 canonical URL은 멱등 키로 사용한다.
+
+### `POST /ingestion/checkpoint`
+
+동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면, 해당 카테고리의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. 이 기록이 없으면 `null`이다. 예약 실행은 WSSS를 읽기 전에 이 값을 받아 중복 게시물과 완료 게시물을 건너뛴다.
 
 ### `POST /ingestion/usage`
 

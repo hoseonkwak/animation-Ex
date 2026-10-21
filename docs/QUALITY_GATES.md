@@ -102,7 +102,7 @@
 
 ## 8. 자동 공개 조건
 
-Production에는 사전 표본 승인 방식의 파일럿이 배포됐고 자동 게시 건수는 아직 0이다. D-043에 따라 검증된 GSAP 카테고리부터 반복 승인 없는 작은 묶음으로 전환한다. 구체적인 파일럿과 현 상태는 `AUTO_PUBLICATION_PILOT.md`를 따른다.
+Production에서는 2026-10-21에 D-043의 반복 승인 없는 GSAP 자동 게시 5건과 기존 대기 묶음 6건을 확인했다. 다른 카테고리는 같은 방식으로 공개하지 않는다. 실행 근거와 취소 경로는 `AUTO_PUBLICATION_PILOT.md` 및 `evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`를 따른다.
 
 - 충분한 수동 승인 표본
 - 출처별 오류율

@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { createRequire } from 'node:module'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -7,8 +8,11 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const workspaceRoot = path.resolve(root, '..', '..')
-const wrangler = path.resolve(workspaceRoot, 'node_modules/wrangler/bin/wrangler.js')
+const require = createRequire(import.meta.url)
+const wrangler = path.join(
+  path.dirname(require.resolve('wrangler/package.json')),
+  'bin/wrangler.js',
+)
 const temporaryRoot = mkdtempSync(path.join(os.tmpdir(), 'kwak-motion-d1-restore-'))
 const exportPath = path.join(temporaryRoot, 'local-export.sql')
 const restoreStatePath = path.join(temporaryRoot, 'restore-state')

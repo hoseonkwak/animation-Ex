@@ -344,7 +344,26 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
       sqlite.prepare("SELECT status FROM candidates WHERE id = 'candidate-admin-tutorial'").get(),
     ).toEqual({ status: 'review' })
   })
-  it('P1-ADMIN-10 공개 중지 후 기존 상세 URL은 410이다', async () => {
+  it('P1-OPS-04 공개 Preview 실패를 관리자에게 표시하고 P1-ADMIN-06 공개를 중지한다', async () => {
+    expect((await request('/api/v1/admin/examples', {}, '')).status).toBe(401)
+    const failed = await request('/api/v1/admin/examples/entry-basic-1/preview-checks', {
+      method: 'POST',
+      body: JSON.stringify({
+        result: 'fail',
+        viewport: 'desktop',
+        failureCodes: ['broken-preview'],
+      }),
+    })
+    expect(failed.status).toBe(200)
+    const list = await request('/api/v1/admin/examples')
+    const body = (await list.json()) as {
+      data: { items: Array<{ id: string; previewResult: string; failureCodes: string[] }> }
+    }
+    expect(body.data.items.find((item) => item.id === 'entry-basic-1')).toMatchObject({
+      previewResult: 'fail',
+      failureCodes: ['broken-preview'],
+    })
+
     const response = await request('/api/v1/admin/examples/entry-basic-1/unpublish', {
       method: 'POST',
       body: JSON.stringify({ reasonCode: 'owner-request', note: '운영 검증을 위한 공개 중지' }),
@@ -356,5 +375,8 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
       context,
     )
     expect(publicResponse.status).toBe(410)
+    const after = await request('/api/v1/admin/examples')
+    const afterBody = (await after.json()) as { data: { items: Array<{ id: string }> } }
+    expect(afterBody.data.items.some((item) => item.id === 'entry-basic-1')).toBe(false)
   })
 })

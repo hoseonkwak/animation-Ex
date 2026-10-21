@@ -46,6 +46,10 @@ async function fixtureRun() {
 async function liveRun(submit: boolean): Promise<void> {
   await fixtureRun()
   const categoryUrl = value('--category', 'https://wsss.tistory.com/category/Animation/GSAP')!
+  const category = decodeURIComponent(new URL(categoryUrl).pathname.replace(/^\/category\//, ''))
+  const apiBase = process.env.INGESTION_API_URL
+  const keyId = process.env.INGESTION_KEY_ID
+  const secret = process.env.INGESTION_HMAC_SECRET
   const maxArticles = Math.min(Number(value('--max-articles', '200')), 200)
   const maxPages = Math.max(1, Number(value('--max-pages', '1')))
   const backfill = args.includes('--backfill')
@@ -56,6 +60,18 @@ async function liveRun(submit: boolean): Promise<void> {
       checkpoint = JSON.parse(await readFile(checkpointPath, 'utf8')) as IngestionCheckpoint
     } catch {
       checkpoint = undefined
+    }
+  }
+  if (args.includes('--remote-checkpoint')) {
+    if (!apiBase || !keyId || !secret) {
+      throw new Error('원격 checkpoint 조회에는 ingestion API 인증값이 필요합니다.')
+    }
+    const response = await sendSignedJson<{
+      data: { checkpoint: IngestionCheckpoint | null }
+    }>(apiBase, '/api/v1/ingestion/checkpoint', { category }, { keyId, secret })
+    checkpoint = response.data.checkpoint ?? undefined
+    if (checkpoint && checkpoint.category !== category) {
+      throw new Error('CHECKPOINT_CATEGORY_MISMATCH')
     }
   }
 
@@ -81,25 +97,39 @@ async function liveRun(submit: boolean): Promise<void> {
     process.stdout.write(`${JSON.stringify({ mode, ...result }, null, 2)}\n`)
     return
   }
-  const apiBase = process.env.INGESTION_API_URL
-  const keyId = process.env.INGESTION_KEY_ID
-  const secret = process.env.INGESTION_HMAC_SECRET
   if (!apiBase || !keyId || !secret) {
     throw new Error('INGESTION_API_URL, INGESTION_KEY_ID, INGESTION_HMAC_SECRET가 필요합니다.')
   }
-  if (result.items.length === 0) {
-    process.stdout.write(`${JSON.stringify({ mode, ...result }, null, 2)}\n`)
-    return
+  if (result.failures.length > 0) {
+    throw new Error(`WSSS_ARTICLE_FAILURES: ${JSON.stringify(result.failures)}`)
   }
 
   const runId = `wsss-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
-  const batch = await submitCandidateBatches(
-    apiBase,
-    runId,
-    result.items,
-    checkpoint ? JSON.stringify(checkpoint) : null,
-    { keyId, secret },
-  )
+  const trigger = args.includes('--scheduled') ? 'schedule' : 'manual'
+  const batch = result.items.length
+    ? await submitCandidateBatches(
+        apiBase,
+        runId,
+        result.items,
+        checkpoint ? JSON.stringify(checkpoint) : null,
+        { keyId, secret },
+        trigger,
+      )
+    : (
+        await sendSignedJson<{
+          data: Awaited<ReturnType<typeof submitCandidateBatches>>
+        }>(
+          apiBase,
+          '/api/v1/ingestion/batches',
+          {
+            runId,
+            trigger,
+            checkpointBefore: checkpoint ? JSON.stringify(checkpoint) : null,
+            items: [],
+          },
+          { keyId, secret },
+        )
+      ).data
   const savedIds = batch.items
     .filter((item) => item.result !== 'failed')
     .map((item) => item.externalId)

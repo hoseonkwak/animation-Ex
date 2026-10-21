@@ -12,6 +12,7 @@ import {
   completeIngestionRun,
   handleIngestionBatch,
   IngestionApiError,
+  readIngestionCheckpoint,
 } from './ingestion'
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 import { readUsageStatus, storeUsageSnapshot } from './operations'
@@ -275,6 +276,12 @@ export default {
             throw error
           }
         }
+        if (url.pathname === '/api/v1/ingestion/checkpoint') {
+          return json({
+            data: { checkpoint: await readIngestionCheckpoint(rawBody, env) },
+            meta: { requestId },
+          })
+        }
         if (url.pathname === '/api/v1/ingestion/batches') {
           const usage = await readUsageStatus(env.DB)
           if (env.INGESTION_PAUSED === 'true' || usage.level === 'paused') {
@@ -346,6 +353,9 @@ export default {
             meta: { requestId },
           })
         }
+        if (request.method === 'GET' && url.pathname === '/api/v1/admin/examples') {
+          return json({ data: await repository.publishedEntries(), meta: { requestId } })
+        }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates') {
           return json({ data: await repository.list(url), meta: { requestId } })
         }
@@ -404,6 +414,17 @@ export default {
         const unpublishMatch = url.pathname.match(
           /^\/api\/v1\/admin\/examples\/([^/]+)\/unpublish$/,
         )
+        const publishedPreviewMatch = url.pathname.match(
+          /^\/api\/v1\/admin\/examples\/([^/]+)\/preview-checks$/,
+        )
+        if (publishedPreviewMatch && request.method === 'POST') {
+          await repository.publishedPreviewCheck(
+            publishedPreviewMatch[1]!,
+            await request.json(),
+            actorHash,
+          )
+          return json({ data: { recorded: true }, meta: { requestId } })
+        }
         if (unpublishMatch && request.method === 'POST') {
           await repository.unpublish(unpublishMatch[1]!, await request.json(), actorHash)
           return json({ data: { unpublished: true }, meta: { requestId } })

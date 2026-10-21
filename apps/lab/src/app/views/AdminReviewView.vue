@@ -54,6 +54,26 @@ const autoPublication = ref<{
     startedAt: string
   }
 } | null>(null)
+interface PublishedExample {
+  id: string
+  slug: string
+  title: string
+  embedUrl: string
+  publishedAt: string
+  previewResult: 'pass' | 'fail' | null
+  previewCheckedAt: string | null
+  failureCodes: string[]
+}
+const publishedExamples = ref<PublishedExample[]>([])
+const selectedPublishedId = ref('')
+const selectedPublished = computed(() =>
+  publishedExamples.value.find((item) => item.id === selectedPublishedId.value),
+)
+const failedPublished = computed(() =>
+  publishedExamples.value.filter((item) => item.previewResult === 'fail'),
+)
+const publishedReason = ref('broken-preview')
+const publishedNote = ref('')
 const reasonCode = ref('missing-metadata')
 const decisionNote = ref('')
 const form = reactive({
@@ -131,7 +151,7 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await Promise.all([loadOperations(), loadAutoPublication()])
+    await Promise.all([loadOperations(), loadAutoPublication(), loadPublishedExamples()])
     await loadQueue()
   }
 })
@@ -233,6 +253,58 @@ async function loadAutoPublication(): Promise<void> {
     autoPublication.value = await api('/api/v1/admin/auto-publication')
   } catch (cause) {
     showError(cause)
+  }
+}
+
+async function loadPublishedExamples(): Promise<void> {
+  try {
+    const result = await api<{ items: PublishedExample[] }>('/api/v1/admin/examples')
+    publishedExamples.value = result.items
+    if (!result.items.some((item) => item.id === selectedPublishedId.value)) {
+      selectedPublishedId.value = result.items[0]?.id ?? ''
+    }
+  } catch (cause) {
+    showError(cause)
+  }
+}
+
+async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
+  if (!selectedPublished.value) return
+  busy.value = true
+  try {
+    await api(`/api/v1/admin/examples/${selectedPublished.value.id}/preview-checks`, {
+      method: 'POST',
+      body: JSON.stringify({
+        result,
+        viewport: viewport.value,
+        failureCodes: result === 'fail' ? ['broken-preview'] : [],
+      }),
+    })
+    await loadPublishedExamples()
+    notice.value =
+      result === 'fail' ? '공개 Preview 오류를 기록했습니다.' : '공개 Preview 실행을 확인했습니다.'
+  } catch (cause) {
+    showError(cause)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function unpublishPublished(): Promise<void> {
+  if (!selectedPublished.value || !publishedNote.value.trim()) return
+  busy.value = true
+  try {
+    await api(`/api/v1/admin/examples/${selectedPublished.value.id}/unpublish`, {
+      method: 'POST',
+      body: JSON.stringify({ reasonCode: publishedReason.value, note: publishedNote.value.trim() }),
+    })
+    await Promise.all([loadPublishedExamples(), loadAutoPublication()])
+    publishedNote.value = ''
+    notice.value = '선택한 예제의 공개를 중지했습니다.'
+  } catch (cause) {
+    showError(cause)
+  } finally {
+    busy.value = false
   }
 }
 
@@ -599,6 +671,97 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           묶음 중지·취소
         </button>
         <span v-if="batch.failureCode">{{ batch.failureCode }}</span>
+      </div>
+    </section>
+    <section v-if="authState === 'authenticated'" class="triage-panel" aria-label="공개 예제 점검">
+      <div>
+        <h2>공개 예제 점검</h2>
+        <p>
+          공개된 CodePen의 실제 실행 화면을 확인하고, 오류가 있으면 기록하거나 공개를 중지합니다.
+        </p>
+        <p>
+          기록된 Preview 오류 <strong>{{ failedPublished.length }}건</strong>
+        </p>
+        <div v-if="failedPublished.length" class="decision-panel">
+          <a v-for="item in failedPublished" :key="item.id" :href="`/examples/${item.slug}`"
+            >{{ item.title }} · {{ item.failureCodes.join(', ') }}</a
+          >
+        </div>
+      </div>
+      <div v-if="publishedExamples.length">
+        <label>
+          점검할 공개 예제
+          <select v-model="selectedPublishedId" aria-label="점검할 공개 예제">
+            <option v-for="item in publishedExamples" :key="item.id" :value="item.id">
+              {{ item.title }}{{ item.previewResult === 'fail' ? ' · 오류 기록' : '' }}
+            </option>
+          </select>
+        </label>
+        <div v-if="selectedPublished" class="published-review">
+          <a
+            :href="`/examples/${selectedPublished.slug}`"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            공개 상세 열기
+          </a>
+          <div class="viewport-controls">
+            <button
+              v-for="size in ['desktop', 'tablet', 'mobile']"
+              :key="size"
+              type="button"
+              :class="{ active: viewport === size }"
+              @click="changeViewport(size)"
+            >
+              {{ size }}
+            </button>
+          </div>
+          <div class="admin-preview-stage">
+            <iframe
+              :key="selectedPublished.id"
+              :src="selectedPublished.embedUrl"
+              :style="{ width: frameWidth }"
+              :title="`${selectedPublished.title} 공개 실행 화면`"
+              referrerpolicy="strict-origin-when-cross-origin"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            />
+          </div>
+          <p v-if="selectedPublished.previewCheckedAt">
+            최근 점검: {{ selectedPublished.previewResult }} ·
+            {{ selectedPublished.previewCheckedAt }}
+          </p>
+          <div class="preview-decision">
+            <button type="button" :disabled="busy" @click="recordPublishedPreview('pass')">
+              정상 실행 확인
+            </button>
+            <button type="button" :disabled="busy" @click="recordPublishedPreview('fail')">
+              Preview 오류 기록
+            </button>
+          </div>
+          <label>
+            공개 중지 사유
+            <select v-model="publishedReason" aria-label="공개 중지 사유">
+              <option value="broken-preview">Preview 오류</option>
+              <option value="source-unavailable">원본 접근 불가</option>
+              <option value="owner-request">관리자 결정</option>
+            </select>
+          </label>
+          <label>
+            공개 중지 근거
+            <textarea
+              v-model.trim="publishedNote"
+              rows="2"
+              placeholder="확인한 문제를 기록하세요."
+            />
+          </label>
+          <button
+            type="button"
+            :disabled="busy || !publishedNote.trim()"
+            @click="unpublishPublished"
+          >
+            선택한 예제 공개 중지
+          </button>
+        </div>
       </div>
     </section>
     <section

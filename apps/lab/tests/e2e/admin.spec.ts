@@ -10,7 +10,7 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
   await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
   await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('실행 확인 1')
   await expect(page.getByRole('button', { name: /GSAP ScrollTrigger Tutorial/ })).toBeVisible()
-  const preview = page.locator('.admin-preview-stage iframe')
+  const preview = page.locator('iframe[title*="GSAP ScrollTrigger Tutorial"]')
   await expect(preview).toHaveAttribute('src', /codepen\.io\/GreenSock\/embed\/LYpgKPe/)
   await expect(page.getByText('실행 화면을 확인했다면 승인 버튼 한 번으로')).toBeVisible()
 
@@ -28,6 +28,15 @@ test('P1-ADMIN 인증 없는 관리자 API 요청은 401이다', async ({ reques
   const response = await request.get('/api/v1/admin/candidates')
   expect(response.status()).toBe(401)
   expect((await request.get('/api/v1/admin/candidates/triage')).status()).toBe(401)
+})
+
+test('P1-OPS-04 owner가 공개 Preview 오류를 기록하고 목록에서 확인한다', async ({ page }) => {
+  await page.goto('/admin/review')
+  const section = page.getByRole('region', { name: '공개 예제 점검' })
+  await expect(section.getByRole('heading', { name: '공개 예제 점검' })).toBeVisible()
+  await expect(section.locator('iframe')).toHaveAttribute('src', /codepen\.io\/.*\/embed\//)
+  await section.getByRole('button', { name: 'Preview 오류 기록' }).click()
+  await expect(section).toContainText('기록된 Preview 오류 1건')
 })
 
 test('공개 화면 푸터에서 관리자 검수 화면으로 이동한다', async ({ page }) => {

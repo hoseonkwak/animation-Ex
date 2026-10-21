@@ -1,6 +1,8 @@
 name: WSSS ingestion
 
 on:
+  schedule:
+    - cron: "37 1 * * *"
   workflow_dispatch:
     inputs:
       category:
@@ -35,9 +37,15 @@ jobs:
           INGESTION_API_URL: ${{ secrets.INGESTION_API_URL }}
           INGESTION_KEY_ID: ${{ secrets.INGESTION_KEY_ID }}
           INGESTION_HMAC_SECRET: ${{ secrets.INGESTION_HMAC_SECRET }}
-        run: >-
-          node --experimental-transform-types ingestion/cli.ts --live
-          --category "${{ inputs.category }}"
-          --max-articles "${{ inputs.max_articles }}"
-          --max-pages "${{ inputs.max_pages }}"
-          --checkpoint "$RUNNER_TEMP/wsss-checkpoint.json"
+          CATEGORY_URL: ${{ inputs.category || 'https://wsss.tistory.com/category/Animation/GSAP' }}
+          MAX_ARTICLES: ${{ inputs.max_articles || '20' }}
+          MAX_PAGES: ${{ inputs.max_pages || '1' }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            set -- --scheduled
+          else
+            set --
+          fi
+          node --experimental-transform-types ingestion/cli.ts --live \
+            --category "$CATEGORY_URL" --max-articles "$MAX_ARTICLES" \
+            --max-pages "$MAX_PAGES" --remote-checkpoint "$@"

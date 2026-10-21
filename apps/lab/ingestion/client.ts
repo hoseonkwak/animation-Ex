@@ -82,13 +82,14 @@ export async function submitCandidateBatches(
   items: IngestionCandidate[],
   checkpointBefore: string | null,
   credentials: { keyId: string; secret: string },
+  trigger: 'manual' | 'schedule' = 'manual',
 ): Promise<BatchResponse['data']> {
   const total: BatchResponse['data'] = { accepted: 0, duplicates: 0, failed: 0, items: [] }
   for (let offset = 0; offset < items.length; offset += 50) {
     const response = await sendSignedJson<BatchResponse>(
       apiBase,
       '/api/v1/ingestion/batches',
-      { runId, trigger: 'manual', checkpointBefore, items: items.slice(offset, offset + 50) },
+      { runId, trigger, checkpointBefore, items: items.slice(offset, offset + 50) },
       credentials,
     )
     total.accepted += response.data.accepted

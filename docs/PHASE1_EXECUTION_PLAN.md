@@ -2,7 +2,7 @@
 
 문서 상태: Active v0.2
 목적: 설계 문서를 작고 검토 가능한 구현 단위와 검증 증거로 변환한다.
-현재 단계: WP0~WP6 완료, WP7 진행 중
+현재 단계: WP0~WP6 완료, WP7·WP8 운영 마감 검증 중
 
 ## 진행 현황
 
@@ -24,8 +24,7 @@ Phase 1이 끝나면 다음 흐름이 공개 환경에서 동작해야 한다.
 
 ```text
 WSSS 후보 수집
-→ 관리자 실제 Preview 검수
-→ 승인
+→ 수동 승인 또는 GSAP 엄격한 자동 공개 게이트
 → 공개 Explore 검색
 → CodePen 실제 실행
 → 브라우저 저장
@@ -314,9 +313,9 @@ GSAP·Scroll·Slider·Mouse·Animation·Loading·Image·Button·Menu·Text·UI·
 
 CodePen 자동 실행 검사의 환경별 403과 양성 대조군 결과는 [`evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md`](evidence/CODEPEN_RUNTIME_PATH_2026-10-15.md)에 기록한다. 이 검사는 자동 공개의 통과 증거가 아니다.
 
-작은 묶음 자동 공개의 Production 배포, 격리 D1 승인·취소 리허설과 남은 실제 표본 확인은 [`evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md`](evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md)에 기록한다. 실제 Production 표본과 게시가 확인되기 전에는 WP8 자동 공개 완료로 표시하지 않는다.
+작은 묶음 자동 공개의 Production 배포와 격리 D1 승인·취소 리허설은 [`evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md`](evidence/AUTO_PUBLICATION_ROLLOUT_2026-10-15.md)에 기록한다. 이후 반복 승인 없는 방식의 운영 결과는 다음 증거 문서를 따른다.
 
-반복 승인 없는 GSAP 한정 자동 공개의 로컬 게시·취소 및 운영 대기 묶음 확인은 [`evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md)에 기록한다. Production 예약 실행에서 자동 게시가 확인되기 전에는 이 전환을 완료로 표시하지 않는다.
+반복 승인 없는 GSAP 한정 자동 공개의 로컬 게시·취소 및 Production 게시 결과는 [`evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md)에 기록한다. 2026-10-21 예약 실행에서 새로운 묶음 5건이 사전 승인 없이 게시됐고 공개 API와 일치했다.
 
 완료 증거:
 

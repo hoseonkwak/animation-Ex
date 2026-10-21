@@ -723,6 +723,101 @@ export class AdminRepository {
       })),
     }
   }
+  async publishedEntries(): Promise<{
+    items: Array<{
+      id: string
+      slug: string
+      title: string
+      embedUrl: string
+      publishedAt: string
+      previewResult: ValidationResult | null
+      previewCheckedAt: string | null
+      failureCodes: string[]
+    }>
+  }> {
+    const { results } = await this.db
+      .prepare(
+        `SELECT e.id, e.slug, e.title, e.published_at, r.embed_url,
+          v.result AS preview_result, v.checked_at AS preview_checked_at,
+          v.failure_codes_json
+        FROM animation_entries e JOIN codepen_refs r ON r.animation_entry_id = e.id
+        LEFT JOIN validation_runs v ON v.id = (
+          SELECT id FROM validation_runs
+          WHERE target_type = 'entry' AND target_id = e.id
+          ORDER BY checked_at DESC, id DESC LIMIT 1
+        )
+        WHERE e.status = 'published'
+        ORDER BY e.published_at DESC, e.id DESC LIMIT 100`,
+      )
+      .all<{
+        id: string
+        slug: string
+        title: string
+        published_at: string
+        embed_url: string
+        preview_result: ValidationResult | null
+        preview_checked_at: string | null
+        failure_codes_json: string | null
+      }>()
+    return {
+      items: results.map((row) => ({
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        embedUrl: row.embed_url,
+        publishedAt: row.published_at,
+        previewResult: row.preview_result,
+        previewCheckedAt: row.preview_checked_at,
+        failureCodes: row.failure_codes_json
+          ? (JSON.parse(row.failure_codes_json) as string[])
+          : [],
+      })),
+    }
+  }
+
+  async publishedPreviewCheck(entryId: string, value: unknown, actorHash: string): Promise<void> {
+    const body = object(value)
+    const result = stringField(body, 'result') as ValidationResult
+    const viewport = stringField(body, 'viewport') as Viewport
+    if (!['pass', 'fail'].includes(result) || !viewports.has(viewport)) {
+      throw new AdminApiError(400, 'INVALID_BODY', '검사 결과나 viewport를 확인해주세요.')
+    }
+    const failureCodes = Array.isArray(body.failureCodes)
+      ? body.failureCodes.filter((code): code is string => typeof code === 'string')
+      : []
+    if (result === 'fail' && failureCodes.length === 0) {
+      throw new AdminApiError(400, 'FAILURE_CODE_REQUIRED', '실패 사유를 선택해주세요.')
+    }
+    const entry = await this.db
+      .prepare(
+        `SELECT r.pen_key FROM animation_entries e JOIN codepen_refs r
+         ON r.animation_entry_id = e.id WHERE e.id = ? AND e.status = 'published'`,
+      )
+      .bind(entryId)
+      .first<{ pen_key: string }>()
+    if (!entry) throw new AdminApiError(404, 'ENTRY_NOT_FOUND', '공개 예제를 찾을 수 없습니다.')
+    const now = new Date().toISOString()
+    await this.db
+      .prepare(
+        `INSERT INTO validation_runs (
+          id, target_type, target_id, validator, validator_version, subject_fingerprint,
+          result, viewport, failure_codes_json, evidence_json, checked_at, created_at
+        ) VALUES (?, 'entry', ?, 'admin-public-preview', '1', ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(
+        newId(),
+        entryId,
+        fingerprint(entry.pen_key),
+        result,
+        viewport,
+        JSON.stringify(result === 'fail' ? failureCodes : []),
+        JSON.stringify({ actorHash }),
+        now,
+        now,
+      )
+      .run()
+  }
+
   async unpublish(entryId: string, value: unknown, actorHash: string): Promise<void> {
     const body = object(value)
     const reasonCode = stringField(body, 'reasonCode')
@@ -747,6 +842,12 @@ export class AdminRepository {
           ) VALUES (?, 'entry', ?, 'unpublish', ?, ?, '{}', ?, ?)`,
         )
         .bind(newId(), entryId, reasonCode, note, actorHash, now),
+      this.db
+        .prepare(
+          `UPDATE auto_publication_items SET status = 'rolled-back'
+           WHERE entry_id = ? AND status = 'published'`,
+        )
+        .bind(entryId),
     ])
   }
 }

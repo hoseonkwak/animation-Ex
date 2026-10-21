@@ -1,12 +1,15 @@
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
-const workspaceRoot = path.resolve(appRoot, '../..')
-const viteCli = path.join(workspaceRoot, 'node_modules/vite/bin/vite.js')
-const playwrightCli = path.join(workspaceRoot, 'node_modules/@playwright/test/cli.js')
-const wranglerCli = path.join(workspaceRoot, 'node_modules/wrangler/bin/wrangler.js')
+const require = createRequire(import.meta.url)
+const packageCli = (packageName, relativePath) =>
+  path.join(path.dirname(require.resolve(`${packageName}/package.json`)), relativePath)
+const viteCli = packageCli('vite', 'bin/vite.js')
+const playwrightCli = packageCli('@playwright/test', 'cli.js')
+const wranglerCli = packageCli('wrangler', 'bin/wrangler.js')
 const baseUrl = 'http://127.0.0.1:5173'
 
 async function runCommand(command, args) {
@@ -86,7 +89,7 @@ const server = spawn(
     cwd: appRoot,
     env: {
       ...process.env,
-      MINIFLARE_REGISTRY_PATH: path.join(workspaceRoot, '.wrangler/registry-e2e'),
+      MINIFLARE_REGISTRY_PATH: path.join(appRoot, '.wrangler/registry-e2e'),
     },
     stdio: 'inherit',
     detached: process.platform !== 'win32',

@@ -68,6 +68,92 @@ beforeEach(() => {
 afterEach(() => sqlite.close())
 
 describe('P1-CONTENT WSSS signed batch API', () => {
+  it('예약 실행 checkpoint를 카테고리별로 이어받고 서명 없는 조회를 거부한다', async () => {
+    const pathname = '/api/v1/ingestion/checkpoint'
+    const category = 'Animation/GSAP'
+    const checkpoint = {
+      category,
+      page: 1,
+      lastPostId: '1603',
+      processedExternalIds: ['wsss:1603:0'],
+      completedPostIds: ['1603'],
+    }
+    const unsigned = await worker.fetch(
+      new Request(`https://example.test${pathname}`, {
+        method: 'POST',
+        body: JSON.stringify({ category }),
+      }),
+      env(),
+      context,
+    )
+    expect(unsigned.status).toBe(401)
+    expect((await signedRequest(pathname, { category })).status).toBe(200)
+
+    const batch = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'scheduled-checkpoint-run',
+      trigger: 'schedule',
+      checkpointBefore: null,
+      items: fixtureItems().slice(0, 1),
+    })
+    expect(batch.status).toBe(200)
+    expect(
+      (
+        await signedRequest('/api/v1/ingestion/runs/scheduled-checkpoint-run/complete', {
+          checkpointAfter: checkpoint,
+        })
+      ).status,
+    ).toBe(200)
+    expect(
+      sqlite
+        .prepare("SELECT trigger FROM ingestion_runs WHERE id = 'scheduled-checkpoint-run'")
+        .get(),
+    ).toEqual({ trigger: 'schedule' })
+    expect((await (await signedRequest(pathname, { category })).json()) as object).toMatchObject({
+      data: { checkpoint },
+    })
+    expect(
+      (await (await signedRequest(pathname, { category: 'Parallax/Scroll' })).json()) as object,
+    ).toMatchObject({ data: { checkpoint: null } })
+    expect((await signedRequest(pathname, { category: '../../other' })).status).toBe(400)
+  })
+
+  it('새 Pen이 없어도 예약 실행과 완료 게시물 checkpoint를 기록한다', async () => {
+    const batch = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'no-new-pen-run',
+      trigger: 'schedule',
+      checkpointBefore: null,
+      items: [],
+    })
+    expect(batch.status).toBe(200)
+    expect((await batch.json()) as object).toMatchObject({
+      data: { accepted: 0, duplicates: 0, failed: 0, items: [] },
+    })
+    const checkpoint = {
+      category: 'Animation/GSAP',
+      page: 1,
+      lastPostId: '1603',
+      processedExternalIds: ['wsss:1603:0'],
+      completedPostIds: ['1603'],
+    }
+    expect(
+      (
+        await signedRequest('/api/v1/ingestion/runs/no-new-pen-run/complete', {
+          checkpointAfter: checkpoint,
+        })
+      ).status,
+    ).toBe(200)
+    expect(
+      sqlite
+        .prepare("SELECT status, discovered_count FROM ingestion_runs WHERE id = 'no-new-pen-run'")
+        .get(),
+    ).toEqual({ status: 'success', discovered_count: 0 })
+    expect(
+      (await (
+        await signedRequest('/api/v1/ingestion/checkpoint', { category: checkpoint.category })
+      ).json()) as object,
+    ).toMatchObject({ data: { checkpoint } })
+  })
+
   it('Cloudflare 사용량 snapshot을 날짜별 절대값으로 저장하고 관리자에게 표시한다', async () => {
     const date = new Date().toISOString().slice(0, 10)
     const first = await signedRequest('/api/v1/ingestion/usage', {
