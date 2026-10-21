@@ -102,4 +102,4 @@
 | `P1-UX`, `P1-DISCOVERY`, `P1-PREVIEW`, `P1-DETAIL`, `P1-LOCAL`, `P1-SEO` | [`WP2`](evidence/WP2_REPORT.md), [`WP3`](evidence/WP3_REPORT.md), [`WP6`](evidence/WP6_REPORT.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 Chromium 18건 |
 | `P1-CONTENT`, `P1-ADMIN` | [`WP4`](evidence/WP4_REPORT.md), [`WP5`](evidence/WP5_REPORT.md), [반복 승인 없는 자동 공개](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 계약 40건 |
 | `P1-OPS-01`~`07`, `09`~`12` | [`WP7`](evidence/WP7_PROGRESS.md), [`WP8 수집`](evidence/WP8_INGESTION_START.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 수집 29건·Production smoke·D1 백업·복구 리허설 |
-| `P1-OPS-08` | GitHub Actions 인증값 설정 후 수동 복구 실행과 다음 예약 실행의 Production D1 기록 필요. 아직 미완료. |
+| `P1-OPS-08` | [GitHub Actions 수동 실행 #2](https://github.com/hoseonkwak/animation-Ex/actions/runs/39544825824) 성공과 Production checkpoint `1599` 기록 확인. 첫 실제 예약 실행의 `trigger=schedule` 및 이어진 checkpoint 기록은 아직 확인 전이므로 미완료. |
