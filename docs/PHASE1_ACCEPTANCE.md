@@ -87,7 +87,7 @@
 - [x] `P1-OPS-05` 백업과 복구 절차가 문서화된다.
 - [x] `P1-OPS-06` 일일 Worker 요청과 D1 읽기, 쓰기 사용량을 확인할 수 있다.
 - [x] `P1-OPS-07` 무료 한도 70%에서 경고하고 90%에서 예약 수집을 중지한다.
-- [ ] `P1-OPS-08` 예약 수집이 멈춰도 수동 실행으로 복구할 수 있다.
+- [x] `P1-OPS-08` 예약 수집이 멈춰도 수동 실행으로 복구할 수 있다.
 - [x] `P1-OPS-09` WSSS parser 구조 변경을 빈 성공으로 처리하지 않는다.
 - [x] `P1-OPS-10` WSSS 수집기는 ZIP, 이미지와 CodePen 페이지를 자동으로 내려받지 않는다.
 - [x] `P1-OPS-11` Preview 환경은 production D1에 쓰지 못한다.
@@ -102,4 +102,4 @@
 | `P1-UX`, `P1-DISCOVERY`, `P1-PREVIEW`, `P1-DETAIL`, `P1-LOCAL`, `P1-SEO` | [`WP2`](evidence/WP2_REPORT.md), [`WP3`](evidence/WP3_REPORT.md), [`WP6`](evidence/WP6_REPORT.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 Chromium 18건 |
 | `P1-CONTENT`, `P1-ADMIN` | [`WP4`](evidence/WP4_REPORT.md), [`WP5`](evidence/WP5_REPORT.md), [반복 승인 없는 자동 공개](evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 계약 40건 |
 | `P1-OPS-01`~`07`, `09`~`12` | [`WP7`](evidence/WP7_PROGRESS.md), [`WP8 수집`](evidence/WP8_INGESTION_START.md), [`Phase 1 마감 검증`](evidence/PHASE1_CLOSEOUT_2026-10-21.md)의 수집 29건·Production smoke·D1 백업·복구 리허설 |
-| `P1-OPS-08` | [GitHub Actions 수동 실행 #2](https://github.com/hoseonkwak/animation-Ex/actions/runs/39544825824) 성공과 Production checkpoint `1599` 기록 확인. 첫 실제 예약 실행의 `trigger=schedule` 및 이어진 checkpoint 기록은 아직 확인 전이므로 미완료. |
+| `P1-OPS-08` | [GitHub Actions 수동 실행 #2](https://github.com/hoseonkwak/animation-Ex/actions/runs/39544825824)에서 Production checkpoint `1599`를 기록했다. 이어 [예약 실행 #3](https://github.com/hoseonkwak/animation-Ex/actions/runs/39734609389)이 `schedule`로 성공했다. 운영 완료 API가 실행 `wsss-1792650836100-1a15f1c9`의 checkpoint `1256` 기록을 마친 뒤 응답했으며, 신규 후보 0건·실패 0건과 완료 게시물 15건이 로그에 남았다. 상세 증거는 [마감 검증](evidence/PHASE1_CLOSEOUT_2026-10-21.md)을 참고한다. |
