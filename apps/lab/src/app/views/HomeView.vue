@@ -9,7 +9,12 @@ import type { ApiSuccess, ExampleCard, ExamplesPayload } from '@/shared/examples
 
 const scheduler = createPreviewScheduler(2)
 const examples = ref<ExampleCard[]>([])
-const discovery = ref<DiscoveryPayload>({ sections: [], patterns: [], collections: [] })
+const discovery = ref<DiscoveryPayload>({
+  totalCount: 0,
+  sections: [],
+  patterns: [],
+  collections: [],
+})
 const loading = ref(true)
 const error = ref('')
 
@@ -50,7 +55,7 @@ onMounted(async () => {
       </div>
       <nav class="category-list" aria-label="애니메이션 카테고리">
         <RouterLink class="category-pill category-pill-all" to="/explore">
-          <span>전체</span><strong>{{ examples.length }}+</strong>
+          <span>전체</span><strong>{{ discovery.totalCount }}</strong>
         </RouterLink>
         <RouterLink
           v-for="section in discovery.sections"

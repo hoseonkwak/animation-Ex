@@ -124,6 +124,7 @@ Explore / 결과 수
 - 사용자가 누른 카드를 우선하고 세 번째 실행 시 가장 먼저 실행한 카드로 썸네일을 되돌린다.
 - 화면 밖 iframe은 제거하고 다시 들어오면 재생성한다.
 - WebGL, Three.js 등 무거운 예제는 항상 수동 Run으로 시작한다.
+- 실행 검사 전 공개한 카드에는 `실행 미확인`을 표시한다. 썸네일과 실행 iframe이 자동 검증 완료를 암시하지 않도록 한다.
 
 ## 5. Sections
 
@@ -169,6 +170,7 @@ Related examples / Pattern
 - `Created by`에는 CodePen 제작자를 표시한다.
 - WSSS는 공개 출처가 아니라 내부 발견 경로이므로 기본 상세에 표시하지 않는다.
 - 원본 Pen 링크와 MIT 라이선스 안내를 함께 제공한다.
+- `runtimeVerified=false`인 상세에는 원본이 변경되었거나 열리지 않을 수 있다는 안내를 보여준다.
 - 코드 탭은 실제 코드를 확보하는 Phase 2 전까지 표시하지 않는다.
 - 연습 기능이 없을 때 `자유 연습` 버튼을 표시하지 않는다. `연습 버전 요청`은 선택적으로 제공할 수 있다.
 
@@ -256,7 +258,7 @@ Turnstile
 
 ## 11. SEO와 공유
 
-- Home, Explore, Section, 공개 상세와 About만 index 허용
+- Home, Explore, Section, 실행 확인된 공개 상세와 About만 index 허용. 실행 미확인 상세는 색인에서 제외한다.
 - 검색 query 조합 페이지는 canonical을 Explore 기본 URL로 설정
 - 상세 title: `{예제 제목} | Kwak Motion Lab`
 - 상세 description: 한국어 요약 80~150자

@@ -22,6 +22,7 @@ export interface CollectionSummary {
 }
 
 export interface DiscoveryPayload {
+  totalCount: number
   sections: SectionSummary[]
   patterns: PatternSummary[]
   collections: CollectionSummary[]

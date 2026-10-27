@@ -101,18 +101,18 @@ Cursor에는 정렬 기준 값과 ID만 넣고 버전을 포함한다. 서버는
 
 `preview.kind`는 다음 중 하나다.
 
-- `codepen`: 검증된 원본 Pen 임베드
+- `codepen`: 원본 Pen 임베드. `runtimeVerified=false`이면 현재 실행은 미확인이다.
 - `internal`: 서비스 내부 CodePackage의 격리 Preview
 
-Phase 1 공개 데이터에는 `codepen`만 사용한다. 공개 CodePackage 원문은 Phase 2 API에서 별도로 설계한다.
+Phase 1 공개 데이터에는 `codepen`만 사용한다. 카드와 상세 응답의 `runtimeVerified`는 boolean이며, 실행 검사를 거치지 않은 일회성 공개분은 `false`다. 공개 CodePackage 원문은 Phase 2 API에서 별도로 설계한다.
 
 ### `GET /discovery`
 
-Home과 Sections에 필요한 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개·실행 가능한 예제 수가 1개 이상인 경우만 포함한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 5분간 캐시한다.
+Home과 Sections에 필요한 전체 공개 예제 수(`totalCount`), 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개 예제 수가 1개 이상인 경우만 포함한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 5분간 캐시한다.
 
 ### `GET /sitemap.xml`
 
-Home, Explore, Sections, About, 공개 Section과 공개 Entry URL만 XML sitemap으로 반환한다. draft, unpublished, Saved, 제보와 관리자 경로는 포함하지 않는다.
+Home, Explore, Sections, About, 공개 Section과 실행이 확인된 공개 Entry URL만 XML sitemap으로 반환한다. 실행 미확인 Entry는 목록에서 열 수 있지만 검색 색인 대상으로 내보내지 않는다. draft, unpublished, Saved, 제보와 관리자 경로는 포함하지 않는다.
 
 ### `GET /robots.txt`
 

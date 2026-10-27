@@ -41,7 +41,14 @@ export class PublicRepository {
   constructor(private readonly db: D1Database) {}
 
   async discovery(): Promise<DiscoveryPayload> {
-    const [sectionResult, patternResult, collectionResult] = await Promise.all([
+    const [totalResult, sectionResult, patternResult, collectionResult] = await Promise.all([
+      this.db
+        .prepare(
+          `SELECT COUNT(DISTINCT e.id) AS count FROM animation_entries e
+          JOIN codepen_refs p ON p.animation_entry_id = e.id AND p.active = 1
+          WHERE e.status = 'published' AND e.preview_kind = 'codepen'`,
+        )
+        .first<{ count: number }>(),
       this.db
         .prepare(
           `SELECT t.key, t.label_ko, COUNT(DISTINCT e.id) AS count
@@ -94,13 +101,15 @@ export class PublicRepository {
       const items = await this.collectionItems(collection.id)
       if (items.length) collections.push({ ...collection, items })
     }
-    return { sections, patterns, collections }
+    return { totalCount: Number(totalResult?.count ?? 0), sections, patterns, collections }
   }
 
   async sitemapSlugs(): Promise<{ examples: string[]; sections: string[] }> {
     const [examples, discovery] = await Promise.all([
       this.db
-        .prepare("SELECT slug FROM animation_entries WHERE status = 'published' ORDER BY slug")
+        .prepare(
+          "SELECT slug FROM animation_entries WHERE status = 'published' AND runtime_verified = 1 ORDER BY slug",
+        )
         .all<{ slug: string }>(),
       this.discovery(),
     ])

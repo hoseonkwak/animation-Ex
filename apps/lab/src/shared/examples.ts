@@ -26,6 +26,7 @@ export interface ExampleCard {
   origin: ContentOrigin
   difficulty: Difficulty
   featured: boolean
+  runtimeVerified: boolean
   preview: CodePenPreview
   tags: Partial<Record<TagAxis, string[]>>
   publishedAt: string

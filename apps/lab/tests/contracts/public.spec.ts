@@ -1,6 +1,8 @@
 // @vitest-environment node
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 
 import worker from '../../server/index'
 import { createMigratedDatabase } from './database'
@@ -9,6 +11,54 @@ const context = { waitUntil() {}, passThroughOnException() {} } as ExecutionCont
 
 describe('WP6 public API', () => {
   afterEach(() => vi.restoreAllMocks())
+
+  it('미검증 후보를 한 번만 공개하고 API에 실행 미확인을 표시한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase({ includeAdminSeed: true })
+    const script = readFileSync(path.resolve('db/ops/publish_pending_unverified.sql'), 'utf8')
+    sqlite.exec(script)
+    sqlite.exec(script)
+    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM bulk_publication_items').get()).toEqual({
+      count: 1,
+    })
+    expect(
+      sqlite.prepare("SELECT COUNT(*) AS count FROM candidates WHERE status='review'").get(),
+    ).toEqual({
+      count: 0,
+    })
+    const response = await worker.fetch(
+      new Request('https://example.test/api/v1/examples/bulk-candidate-admin-tutorial'),
+      { DB: d1 },
+      context,
+    )
+    const body = (await response.json()) as { data: { runtimeVerified: boolean } }
+    expect(response.status).toBe(200)
+    expect(body.data.runtimeVerified).toBe(false)
+    const discovery = await worker.fetch(
+      new Request('https://example.test/api/v1/discovery'),
+      { DB: d1 },
+      context,
+    )
+    expect(((await discovery.json()) as { data: { totalCount: number } }).data.totalCount).toBe(16)
+    const sitemap = await worker.fetch(
+      new Request('https://example.test/sitemap.xml'),
+      { DB: d1 },
+      context,
+    )
+    expect(await sitemap.text()).not.toContain('bulk-candidate-admin-tutorial')
+    sqlite.exec(readFileSync(path.resolve('db/ops/rollback_pending_unverified.sql'), 'utf8'))
+    expect(
+      sqlite.prepare("SELECT COUNT(*) AS count FROM candidates WHERE status='review'").get(),
+    ).toEqual({
+      count: 1,
+    })
+    const removed = await worker.fetch(
+      new Request('https://example.test/api/v1/examples/bulk-candidate-admin-tutorial'),
+      { DB: d1 },
+      context,
+    )
+    expect(removed.status).toBe(410)
+    sqlite.close()
+  })
 
   it('공개 Section, Pattern과 Collection만 허브에 반환한다', async () => {
     const { sqlite, d1 } = createMigratedDatabase()

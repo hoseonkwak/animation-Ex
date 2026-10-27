@@ -39,7 +39,7 @@ async function load(): Promise<void> {
     }
     if (!response.ok) throw new Error('load failed')
     item.value = ((await response.json()) as ApiSuccess<ExampleDetail>).data
-    setPageMeta(item.value.title, item.value.summary, route.path)
+    setPageMeta(item.value.title, item.value.summary, route.path, item.value.runtimeVerified)
     const section = item.value.tags.section?.[0]
     if (section) {
       const relatedResponse = await fetch(`/api/v1/examples?section=${section}&limit=4`)
@@ -92,6 +92,10 @@ function openFullscreen(): void {
           <p class="eyebrow">LIVE CODE EXAMPLE</p>
           <h1>{{ item.title }}</h1>
           <p class="description">{{ item.summary }}</p>
+          <p v-if="!item.runtimeVerified" class="status-message" role="note">
+            이 예제의 CodePen 실행 상태는 아직 확인되지 않았습니다. 원본이 변경되었거나 열리지 않을
+            수 있습니다.
+          </p>
         </div>
         <div class="detail-actions">
           <button type="button" :aria-pressed="saved" @click="library.toggle('saved', slug)">

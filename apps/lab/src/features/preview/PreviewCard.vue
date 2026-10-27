@@ -124,6 +124,7 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
       <div class="card-meta">
         <span>{{ difficultyLabel(example.difficulty) }}</span>
         <span v-if="example.featured">추천</span>
+        <span v-if="!example.runtimeVerified">실행 미확인</span>
       </div>
       <h3>
         <a :href="`/examples/${example.slug}`">{{ example.title }}</a>

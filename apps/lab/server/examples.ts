@@ -38,6 +38,7 @@ interface EntryRow {
   content_origin: ContentOrigin
   difficulty: Difficulty
   featured: number
+  runtime_verified: number
   published_at: string
   pen_id: string
   embed_url: string
@@ -213,6 +214,7 @@ function toCard(row: EntryRow, tags: ExampleCard['tags']): ExampleCard {
     origin: row.content_origin,
     difficulty: row.difficulty,
     featured: row.featured === 1,
+    runtimeVerified: row.runtime_verified === 1,
     preview: {
       kind: 'codepen',
       penId: row.pen_id,
@@ -302,7 +304,7 @@ export class ExamplesRepository {
     bindings.push(filters.limit + 1)
     const query = `
       SELECT e.id, e.slug, e.title, e.original_title, e.summary,
-        e.content_origin, e.difficulty, e.featured, e.published_at,
+        e.content_origin, e.difficulty, e.featured, e.runtime_verified, e.published_at,
         p.pen_id, p.embed_url, s.creator_name, s.canonical_url,
         s.license_code, s.license_evidence_url
       FROM animation_entries e
@@ -331,7 +333,7 @@ export class ExamplesRepository {
     const row = await this.db
       .prepare(
         `SELECT e.id, e.slug, e.title, e.original_title, e.summary,
-          e.content_origin, e.difficulty, e.featured, e.published_at,
+          e.content_origin, e.difficulty, e.featured, e.runtime_verified, e.published_at,
           p.pen_id, p.embed_url, s.creator_name, s.canonical_url,
           s.license_code, s.license_evidence_url
         FROM animation_entries e

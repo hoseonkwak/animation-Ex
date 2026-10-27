@@ -139,6 +139,7 @@ any active state → source-unavailable | validation-failed
 | `status`                         | TEXT    | `draft`, `published`, `unpublished`    |
 | `difficulty`                     | TEXT    | `beginner`, `intermediate`, `advanced` |
 | `featured`                       | INTEGER | 기본 0                                 |
+| `runtime_verified`               | INTEGER | 기본 1, 미검증 일괄 공개는 0            |
 | `active_code_package_version_id` | TEXT    | Phase 2까지 nullable                   |
 | `published_at`                   | TEXT    | nullable                               |
 | `created_at`                     | TEXT    | 필수                                   |
@@ -165,9 +166,11 @@ any active state → source-unavailable | validation-failed
 | `theme_id`           | TEXT    | 기본 `light`                       |
 | `default_tab`        | TEXT    | 기본 `result`                      |
 | `active`             | INTEGER | 기본 1                             |
-| `last_verified_at`   | TEXT    | 필수                               |
+| `last_verified_at`   | TEXT    | 필수. 미검증 일괄 공개는 1970년 sentinel |
 
 클라이언트가 보낸 임의 embed URL을 그대로 저장하지 않는다. 검증한 creator와 Pen ID로 서버가 생성한다.
+
+`bulk_publication_runs`는 D-050의 일회성 공개 요청·처리 수·상태·시각을, `bulk_publication_items`는 후보와 생성 Entry의 1:1 연결을 기록한다. 이 테이블에 포함된 Entry는 실행 미확인 상태로 시작하며, `last_verified_at`의 sentinel은 검증 완료를 뜻하지 않는다.
 
 ### `tags`
 
