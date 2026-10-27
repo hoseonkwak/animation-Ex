@@ -102,6 +102,12 @@ async function load(): Promise<void> {
           <h2>현재 이용할 수 없음</h2>
           <p>공개가 중지됐거나 원본 상태를 확인할 수 없습니다.</p></template
         >
+        <RouterLink
+          v-if="item.detail && activeTab === 'practiceLater'"
+          class="secondary-action"
+          :to="{ name: 'practice-new', query: { reference: item.slug } }"
+          >연습 시작</RouterLink
+        >
         <button type="button" @click="library.remove(activeTab, item.slug)">목록에서 제거</button>
       </article>
     </div>

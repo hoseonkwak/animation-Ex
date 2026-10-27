@@ -86,6 +86,22 @@ export default {
   fetch: withErrorBoundary(async (request, env, requestId): Promise<Response> => {
     const url = new URL(request.url)
 
+    if (
+      url.pathname.startsWith('/api/v1/') &&
+      ['frame', 'iframe'].includes(request.headers.get('Sec-Fetch-Dest') ?? '')
+    ) {
+      return json(
+        { error: { code: 'FRAME_NAVIGATION_FORBIDDEN', requestId } },
+        {
+          status: 403,
+          headers: {
+            'X-Frame-Options': 'DENY',
+            'Content-Security-Policy': "frame-ancestors 'none'; default-src 'none'",
+          },
+        },
+      )
+    }
+
     if (request.method === 'GET' && url.pathname === '/api/v1/health') {
       return json({ data: { service: 'kwak-motion-lab', status: 'ok' }, meta: { requestId } })
     }

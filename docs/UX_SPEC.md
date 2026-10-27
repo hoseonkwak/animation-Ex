@@ -241,12 +241,14 @@ Phase 3: + Learn
 
 ## 11. Practice
 
+Phase 2에는 자유 연습만 제공한다. 아래 Mission·Hint 요소는 Phase 3의 실제 미션 콘텐츠가 준비된 뒤 표시한다. Phase 2의 화면·상태·출처별 진입 규칙은 `PHASE2_PRACTICE_SPEC.md`를 따른다.
+
 ### 데스크톱
 
 ```text
 상단: 제목 / 자동 실행 / Run / 초기화 / CodePen / 나가기
 본문: Code Editor | Live Preview
-하단: Mission / Hint / Console
+하단: Console (Phase 3에서 Mission / Hint 추가)
 ```
 
 - 편집기와 Preview 폭을 조절할 수 있다.
@@ -257,7 +259,7 @@ Phase 3: + Learn
 
 ### 모바일
 
-- Code, Preview와 Mission을 탭으로 전환한다.
+- Phase 2에서는 Code와 Preview를 탭으로 전환한다. Mission 탭은 Phase 3에 추가한다.
 - Preview 전체 화면을 제공한다.
 - 작은 화면에서 코드와 Preview를 동시에 강제로 표시하지 않는다.
 

@@ -34,6 +34,9 @@
 - `docs/evidence/WP4_REPORT.md`
 - `docs/evidence/WP5_REPORT.md`
 - `docs/evidence/WP6_REPORT.md`
+- `docs/PHASE2_PRACTICE_SPEC.md`
+- `docs/PHASE2_EXECUTION_PLAN.md`
+- `docs/PHASE2_PREVIEW_THREAT_MODEL.md`
 - `apps/lab`의 TypeScript, ESLint, Prettier, Vitest, Playwright와 production build 하네스
 - `.github/workflows/ci.yml`의 install → typecheck → lint → test → build 게이트
 - Node SQLite 기반 D1 migration 및 공개 API 계약 fixture
@@ -69,8 +72,10 @@
 
 - 실제 GitHub OAuth owner 숫자 ID와 callback 정책 확인 기록
 - Analytics 읽기 전용 API token과 일일 workflow 활성화 기록
+- Phase 2 자체 코드 Preview 출처·CSP·메시지 계약의 브라우저 회귀 검사
+- Phase 2 CodePackage/PracticeKit 스키마·API·브라우저 저장 계약
 
-구현 순서와 각 항목의 증거는 `PHASE1_EXECUTION_PLAN.md`를 따른다.
+구현 순서와 각 항목의 증거는 Phase 1은 `PHASE1_EXECUTION_PLAN.md`, Phase 2는 `PHASE2_EXECUTION_PLAN.md`를 따른다.
 
 자동 공개 전환의 현재 상태와 남은 실제 Production 표본 확인은 `AUTO_PUBLICATION_PILOT.md`를 따른다.
 

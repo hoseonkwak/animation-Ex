@@ -6,6 +6,9 @@ import ExampleDetailView from '@/app/views/ExampleDetailView.vue'
 import ExploreView from '@/app/views/ExploreView.vue'
 import HomeView from '@/app/views/HomeView.vue'
 import NotFoundView from '@/app/views/NotFoundView.vue'
+import PracticeHomeView from '@/app/views/PracticeHomeView.vue'
+import PracticeNewView from '@/app/views/PracticeNewView.vue'
+import PracticeWorkspaceView from '@/app/views/PracticeWorkspaceView.vue'
 import SavedView from '@/app/views/SavedView.vue'
 import SectionDetailView from '@/app/views/SectionDetailView.vue'
 import SectionsView from '@/app/views/SectionsView.vue'
@@ -26,6 +29,14 @@ export const router = createRouter({
     { path: '/saved', name: 'saved', component: SavedView },
     { path: '/submit', name: 'submit', component: SubmitView },
     { path: '/about', name: 'about', component: AboutView },
+    { path: '/practice', name: 'practice-home', component: PracticeHomeView },
+    { path: '/practice/new', name: 'practice-new', component: PracticeNewView },
+    {
+      path: '/practice/drafts/:id',
+      name: 'practice-draft',
+      component: PracticeWorkspaceView,
+      meta: { practiceWorkspace: true },
+    },
     {
       path: '/admin/review',
       name: 'admin-review',

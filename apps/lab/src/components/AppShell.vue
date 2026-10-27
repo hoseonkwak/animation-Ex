@@ -41,6 +41,7 @@ function toggleTheme(): void {
         <nav id="primary-navigation" :class="{ open: menuOpen }" aria-label="주요 메뉴">
           <RouterLink to="/explore" @click="menuOpen = false">예제 탐색</RouterLink>
           <RouterLink to="/sections" @click="menuOpen = false">영역별 보기</RouterLink>
+          <RouterLink to="/practice" @click="menuOpen = false">자유 연습</RouterLink>
           <RouterLink to="/about" @click="menuOpen = false">소개</RouterLink>
           <RouterLink to="/saved" @click="menuOpen = false">
             저장함<span v-if="library.savedCount.value"> {{ library.savedCount.value }}</span>
@@ -64,6 +65,7 @@ function toggleTheme(): void {
       <nav aria-label="하단 메뉴">
         <RouterLink to="/explore">예제 탐색</RouterLink>
         <RouterLink to="/sections">영역별 보기</RouterLink>
+        <RouterLink to="/practice">자유 연습</RouterLink>
         <RouterLink to="/submit">URL 제보</RouterLink>
         <RouterLink to="/about">출처 정책</RouterLink>
         <RouterLink to="/admin/review">관리자</RouterLink>

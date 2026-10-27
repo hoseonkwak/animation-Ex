@@ -360,6 +360,8 @@ Hero는 독립된 Section 허브로 제공한다.
 
 ## 14. Practice 경험
 
+이 절의 자유 연습은 Phase 2, 단계별 미션은 Phase 3에 제공한다. Phase 2 상세 동작은 `PHASE2_PRACTICE_SPEC.md`를 따른다.
+
 ### 화면
 
 - 데스크톱: 크기 조절 가능한 코드와 Preview 분할 화면

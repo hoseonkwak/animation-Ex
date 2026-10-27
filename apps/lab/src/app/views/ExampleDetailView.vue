@@ -108,6 +108,12 @@ function openFullscreen(): void {
           >
             {{ practiceLater ? '연습 목록에 추가됨' : '나중에 연습' }}
           </button>
+          <RouterLink
+            class="primary-action"
+            :to="{ name: 'practice-new', query: { reference: slug } }"
+          >
+            빈 코드로 연습하기
+          </RouterLink>
         </div>
       </header>
       <ul class="tag-list detail-tags">

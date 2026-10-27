@@ -24,6 +24,23 @@ describe('health API', () => {
     expect(body.meta.requestId).toBeTruthy()
   })
 
+  it('iframe이 API를 문서로 여는 요청을 거절한다', async () => {
+    const request = {
+      url: 'https://example.test/api/v1/health',
+      method: 'GET',
+      headers: { get: (name: string) => (name === 'Sec-Fetch-Dest' ? 'iframe' : null) },
+    } as Request
+    const response = await worker.fetch(request, { DB: {} as D1Database }, {
+      waitUntil() {},
+      passThroughOnException() {},
+    } as ExecutionContext)
+    const body = (await response.json()) as { error: { code: string } }
+
+    expect(response.status).toBe(403)
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY')
+    expect(body.error.code).toBe('FRAME_NAVIGATION_FORBIDDEN')
+  })
+
   it('예상하지 못한 오류를 request ID가 있는 구조화 로그로 남긴다', async () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const response = await worker.fetch(
