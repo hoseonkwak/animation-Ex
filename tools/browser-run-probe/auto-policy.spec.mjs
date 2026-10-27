@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   isCandidateEligible,
+  pickAutomaticCandidates,
   passesAutomaticProbe,
   sampleIndex,
 } from "./auto-policy.mjs";
@@ -9,6 +10,7 @@ import {
 const row = {
   status: "review",
   source_title: "Sliding card animation",
+  source_category: "Animation/GSAP",
   canonical_url: "https://codepen.io/user/pen/AbC123",
   creator_name: "user",
   license_code: "MIT",
@@ -30,6 +32,43 @@ test("불완전하거나 중복된 후보는 자동 검사 대상에서 제외�
     }),
     false,
   );
+});
+
+test("Loading은 원본 제목에서 로더임을 확인할 수 있어야 한다", () => {
+  assert.equal(
+    isCandidateEligible({
+      ...row,
+      source_category: "Animation/Loading",
+      source_title: "Concentric Circle Loader",
+    }),
+    true,
+  );
+  assert.equal(
+    isCandidateEligible({
+      ...row,
+      source_category: "Animation/Loading",
+      source_title: "Rotating links/buttons with text placed on a circular path",
+    }),
+    false,
+  );
+});
+
+test("GSAP이 부족하면 검증 가능한 Loading 묶음을 선택한다", () => {
+  const gsap = Array.from({ length: 2 }, (_, index) => ({
+    ...row,
+    id: `gsap-${index}`,
+  }));
+  const loading = Array.from({ length: 4 }, (_, index) => ({
+    ...row,
+    id: `loading-${index}`,
+    source_category: "Animation/Loading",
+    source_title: "Concentric Circle Loader",
+  }));
+  assert.deepEqual(
+    pickAutomaticCandidates([...gsap, ...loading], 8).map((candidate) => candidate.id),
+    loading.map((candidate) => candidate.id),
+  );
+  assert.deepEqual(pickAutomaticCandidates(gsap, 8), []);
 });
 
 test("Result 로드와 두 구간의 움직임 증거가 모두 있어야 통과한다", () => {

@@ -1,6 +1,9 @@
 const GENERIC_TITLE =
   /^(?:code\s*view|view\s*code|untitled|source|result|웹 애니메이션 예제\s*[a-z0-9]*)$/i;
 
+export const AUTO_CATEGORIES = ["Animation/GSAP", "Animation/Loading"];
+export const MIN_AUTO_BATCH = 3;
+
 export function isCandidateEligible(row) {
   if (row.status !== "review" || !row.canonical_url || !row.creator_name)
     return false;
@@ -14,12 +17,28 @@ export function isCandidateEligible(row) {
   }
   const title = String(metadata.publicTitle ?? "").trim();
   const sourceTitle = String(row.source_title ?? "").trim();
+  if (
+    row.source_category === "Animation/Loading" &&
+    !/\b(?:preload(?:er|ing)?|load(?:er|ing)?|spinner|progress)\b/i.test(
+      sourceTitle,
+    )
+  )
+    return false;
   return (
     title.length >= 8 &&
     !GENERIC_TITLE.test(title) &&
     sourceTitle.length >= 8 &&
     !GENERIC_TITLE.test(sourceTitle)
   );
+}
+
+export function pickAutomaticCandidates(rows, maxCount) {
+  const eligible = rows.filter(isCandidateEligible);
+  for (const category of AUTO_CATEGORIES) {
+    const matches = eligible.filter((row) => row.source_category === category);
+    if (matches.length >= MIN_AUTO_BATCH) return matches.slice(0, maxCount);
+  }
+  return [];
 }
 
 export function passesAutomaticProbe(result) {

@@ -102,7 +102,7 @@
 
 ## 8. 자동 공개 조건
 
-Production에서는 2026-10-21에 D-043의 반복 승인 없는 GSAP 자동 게시 5건과 기존 대기 묶음 6건을 확인했다. 다른 카테고리는 같은 방식으로 공개하지 않는다. 실행 근거와 취소 경로는 `AUTO_PUBLICATION_PILOT.md` 및 `evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`를 따른다.
+Production에서는 2026-10-21에 D-043의 반복 승인 없는 GSAP 자동 게시 5건과 기존 대기 묶음 6건을 확인했다. D-049에 따라 교정된 `Animation/Loading`도 원본 제목으로 로더 여부를 확인한 뒤 같은 엄격한 검사와 취소 절차를 적용할 수 있다. 그 외 카테고리는 별도 교정 전까지 자동 공개하지 않는다. 실행 근거와 취소 경로는 `AUTO_PUBLICATION_PILOT.md`, `evidence/AUTO_PUBLICATION_HANDSFREE_2026-10-20.md`, `evidence/AUTO_PUBLICATION_LOADING_2026-10-27.md`를 따른다.
 
 - 충분한 수동 승인 표본
 - 출처별 오류율

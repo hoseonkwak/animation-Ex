@@ -2,6 +2,9 @@ import { launch } from "@cloudflare/playwright";
 import { AdminRepository } from "../../apps/lab/server/admin.ts";
 import { suggestCandidateCopy } from "../../apps/lab/src/shared/candidateCopy.ts";
 import {
+  AUTO_CATEGORIES,
+  MIN_AUTO_BATCH,
+  pickAutomaticCandidates,
   isCandidateEligible,
   passesAutomaticProbe,
   sampleIndex,
@@ -12,9 +15,7 @@ import { controlLoaded } from "./probe-policy.mjs";
 import { refreshStaleCandidates } from "./auto-refresh.mjs";
 
 const MAX_PROBES = 8;
-const MIN_BATCH = 3;
 const ACTOR = "automatic-publication-browser-run-v1";
-const AUTO_CATEGORIES = new Set(["Animation/GSAP"]);
 
 function now() {
   return new Date().toISOString();
@@ -75,28 +76,19 @@ async function eligibleRows(db) {
       )) AS duplicate_pen
     FROM candidates c JOIN sources s ON s.id = c.source_id
     WHERE c.status = 'review' AND s.type = 'codepen'
+      AND c.source_category IN ('Animation/GSAP', 'Animation/Loading')
       AND NOT EXISTS (SELECT 1 FROM auto_publication_items ai WHERE ai.candidate_id = c.id)
       AND NOT EXISTS (SELECT 1 FROM animation_entries e WHERE e.candidate_id = c.id)
       AND NOT EXISTS (SELECT 1 FROM validation_runs v WHERE v.target_type = 'candidate'
         AND v.target_id = c.id AND v.validator = 'browser-run-auto'
         AND v.checked_at > ?)
-    ORDER BY c.priority_score DESC, c.created_at ASC LIMIT 100`,
+    ORDER BY CASE c.source_category
+      WHEN 'Animation/GSAP' THEN 0 ELSE 1 END,
+      c.priority_score DESC, c.created_at ASC LIMIT 100`,
     )
     .bind(cutoff)
     .all();
-  const eligible = results.filter(
-    (row) => AUTO_CATEGORIES.has(row.source_category) && isCandidateEligible(row),
-  );
-  const category = eligible.find(
-    (row) =>
-      eligible.filter((other) => other.source_category === row.source_category)
-        .length >= MIN_BATCH,
-  )?.source_category;
-  return category
-    ? eligible
-        .filter((row) => row.source_category === category)
-        .slice(0, MAX_PROBES)
-    : [];
+  return pickAutomaticCandidates(results, MAX_PROBES);
 }
 
 async function recordProbe(db, row, probe) {
@@ -282,12 +274,12 @@ async function releaseBatch(env, batch) {
     .bind(batch.id, manuallyPublishedSample ? 1 : 0)
     .all();
   const valid =
-    items.length >= (manuallyPublishedSample ? 2 : MIN_BATCH) &&
+    items.length >= (manuallyPublishedSample ? 2 : MIN_AUTO_BATCH) &&
     items.every(
       (row) =>
         row.status === "review" &&
         row.version === row.candidate_version &&
-        AUTO_CATEGORIES.has(row.source_category) &&
+        AUTO_CATEGORIES.includes(row.source_category) &&
         isCandidateEligible(row) &&
         row.validator === "browser-run-auto" &&
         row.validation_result === "pass" &&
@@ -435,7 +427,7 @@ export async function runAutomaticPublication(env) {
   let passed = 0;
   try {
     const rows = await eligibleRows(db);
-    if (rows.length < MIN_BATCH) {
+    if (rows.length < MIN_AUTO_BATCH) {
       await recordRun(db, runId, "no-batch", {
         failure: "INSUFFICIENT_ELIGIBLE",
       });
@@ -466,7 +458,7 @@ export async function runAutomaticPublication(env) {
           passed++;
         }
       }
-      if (successful.length < MIN_BATCH) {
+      if (successful.length < MIN_AUTO_BATCH) {
         await recordRun(db, runId, "no-batch", {
           examined,
           passed,

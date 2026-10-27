@@ -614,8 +614,9 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       <div>
         <h2>자동 공개</h2>
         <p>
-          GSAP 후보를 하루 최대 8개 검사해 조건을 통과하면 자동 공개합니다. 표본은 공개 후 선택해서
-          확인할 수 있으며, 문제가 있으면 즉시 중지·취소할 수 있습니다.
+          GSAP 또는 Loading 후보를 하루 최대 8개 검사해 조건을 통과하면 자동 공개합니다. 수집 후보
+          전체가 한 번에 공개되는 것은 아닙니다. 표본은 공개 후 선택해서 확인할 수 있으며, 문제가
+          있으면 즉시 중지·취소할 수 있습니다.
         </p>
         <p>
           상태 <strong>{{ autoPublication.paused ? '중지' : '예약 검사 허용' }}</strong>
