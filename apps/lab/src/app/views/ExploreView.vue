@@ -16,15 +16,27 @@ const loadingMore = ref(false)
 const errorMessage = ref('')
 const nextCursor = ref<string | null>(null)
 const searchInput = ref(queryValue('q'))
+const gridColumns = ref<2 | 3 | 4>(3)
+const gridOptions = [
+  { columns: 2, label: '크게 보기 · 2열' },
+  { columns: 3, label: '기본 보기 · 3열' },
+  { columns: 4, label: '촘촘히 보기 · 4열' },
+] as const
 let requestVersion = 0
 
-onMounted(() =>
+onMounted(() => {
+  try {
+    const saved = Number(localStorage.getItem('kwak-motion:explore-grid'))
+    if (saved === 2 || saved === 3 || saved === 4) gridColumns.value = saved
+  } catch {
+    // Browsing still works when storage is unavailable.
+  }
   setPageMeta(
     'Explore',
     '기술, 트리거와 적용 영역으로 실행 가능한 웹 애니메이션을 탐색하세요.',
     '/explore',
-  ),
-)
+  )
+})
 
 const filterGroups: Array<{
   axis: TagAxis
@@ -197,6 +209,15 @@ function clearFilters(): void {
   for (const group of filterGroups) values[group.axis] = undefined
   updateQuery(values)
 }
+
+function setGridColumns(columns: 2 | 3 | 4): void {
+  gridColumns.value = columns
+  try {
+    localStorage.setItem('kwak-motion:explore-grid', String(columns))
+  } catch {
+    // The current selection still applies for this visit.
+  }
+}
 </script>
 
 <template>
@@ -246,6 +267,25 @@ function clearFilters(): void {
             <option value="featured">추천순</option>
             <option value="difficulty">난이도순</option>
           </select>
+          <div class="grid-view-toggle" role="group" aria-label="예제 보기 방식">
+            <button
+              v-for="option in gridOptions"
+              :key="option.columns"
+              type="button"
+              :aria-label="option.label"
+              :title="option.label"
+              :aria-pressed="gridColumns === option.columns"
+              @click="setGridColumns(option.columns)"
+            >
+              <span
+                class="grid-view-icon"
+                :style="{ gridTemplateColumns: `repeat(${option.columns}, 1fr)` }"
+                aria-hidden="true"
+              >
+                <span v-for="cell in option.columns * 2" :key="cell" />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -284,7 +324,12 @@ function clearFilters(): void {
             <p>검색어를 바꾸거나 선택한 필터를 초기화해보세요.</p>
             <button type="button" @click="clearFilters">필터 초기화</button>
           </div>
-          <div v-else class="example-grid" data-testid="example-grid">
+          <div
+            v-else
+            class="example-grid"
+            :data-grid-columns="gridColumns"
+            data-testid="example-grid"
+          >
             <PreviewCard
               v-for="example in examples"
               :key="example.id"

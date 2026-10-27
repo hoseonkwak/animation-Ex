@@ -84,7 +84,7 @@ test('썸네일을 클릭한 Preview만 실행하고 동시 실행 수를 2개�
   await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
 })
 
-test('화면 너비에 따라 결과 그리드를 4·3·2·1열로 바꾼다', async ({ page }) => {
+test('예제 그리드를 2·3·4열로 바꾸고 선택을 기억한다', async ({ page }) => {
   const columns = () =>
     page
       .getByTestId('example-grid')
@@ -93,12 +93,28 @@ test('화면 너비에 따라 결과 그리드를 4·3·2·1열로 바꾼다', a
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/explore')
   await expect(page.locator('.example-card')).toHaveCount(12)
+  expect(await columns()).toBe(3)
+
+  await page.getByRole('button', { name: '크게 보기 · 2열' }).click()
+  expect(await columns()).toBe(2)
+  await page.getByRole('button', { name: '촘촘히 보기 · 4열' }).click()
+  expect(await columns()).toBe(4)
+  await page.reload()
+  await expect(page.getByRole('button', { name: '촘촘히 보기 · 4열' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   expect(await columns()).toBe(4)
 
   await page.setViewportSize({ width: 1024, height: 900 })
+  await page.getByRole('button', { name: '기본 보기 · 3열' }).click()
   expect(await columns()).toBe(3)
 
   await page.setViewportSize({ width: 768, height: 900 })
+  expect(await columns()).toBe(3)
+
+  await page.setViewportSize({ width: 640, height: 900 })
+  await expect(page.getByRole('group', { name: '예제 보기 방식' })).toBeHidden()
   expect(await columns()).toBe(2)
 
   await page.setViewportSize({ width: 320, height: 900 })
