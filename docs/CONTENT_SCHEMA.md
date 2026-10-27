@@ -1,6 +1,6 @@
 # 콘텐츠 스키마 계약
 
-문서 상태: Draft v0.2
+문서 상태: Draft v0.3
 목적: 수집, 생성, 검증과 공개 단계가 공유하는 최소 콘텐츠 계약
 
 ## 1. 공개 콘텐츠 예시
@@ -90,6 +90,8 @@
 빈 HTML, CSS와 JavaScript 문자열은 허용할 수 있지만 세 값이 모두 비어 있으면 공개할 수 없다.
 
 원본 CodePen을 직접 실행하는 `original-pen` 콘텐츠는 CodePackage 대신 검증된 creator, Pen ID, canonical URL과 embed URL을 가진 CodePenRef를 사용한다.
+
+Phase 2 자유 연습용 시작 코드는 원본 Pen의 CodePackage를 뜻하지 않는다. 별도 PracticeKit이 같은 Entry에 연결된 불변 CodePackageVersion을 가리킨다. `ready` Kit에는 독립 제작 근거, 코드 라이선스와 외부 리소스 목록을 기록한다. 외부 리소스가 없는 자체 제작 Kit만 초기 공개 API에서 제공하며, Kit이 없어도 빈 기본 코드 연습은 가능하다.
 
 ## 3. 상태 값
 

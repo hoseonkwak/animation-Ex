@@ -79,6 +79,15 @@ await runCommand(process.execPath, [
   'kwak-motion-lab-local',
   '--local',
   '--file',
+  'db/seeds/practice_phase2.sql',
+])
+await runCommand(process.execPath, [
+  wranglerCli,
+  'd1',
+  'execute',
+  'kwak-motion-lab-local',
+  '--local',
+  '--file',
   'tests/e2e/reset.sql',
 ])
 

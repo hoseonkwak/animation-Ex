@@ -47,6 +47,9 @@ const codePenPayload = computed(() =>
     snapshot(),
     title.value.trim() || '새 연습',
     reference.value?.source.canonicalUrl,
+    draft.value?.kitAuthor && draft.value.kitLicenseCode
+      ? { author: draft.value.kitAuthor, licenseCode: draft.value.kitLicenseCode }
+      : undefined,
   ),
 )
 
@@ -464,7 +467,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
             자동 실행 {{ autoRun ? '켜짐' : '꺼짐' }}
           </button>
           <button class="practice-run" type="button" @click="run">Run</button>
-          <button type="button" @click="restore(blankCode, '처음 코드')">초기화</button>
+          <button type="button" @click="restore(draft.initialCode ?? blankCode, '처음 코드')">
+            초기화
+          </button>
           <button
             v-if="lastGoodAvailable"
             type="button"
@@ -624,7 +629,14 @@ async function copyCode(tab: CodeTab): Promise<void> {
           rel="noopener noreferrer"
           >라이선스 근거</a
         >
-        <p>원본의 코드는 편집기에 복사하지 않았습니다.</p>
+        <p v-if="draft.kitVersionId">
+          자체 제작 시작 코드 {{ draft.kitVersionId }}을 사용합니다. 원본 Pen 코드는 복사하지
+          않았습니다.
+        </p>
+        <p v-if="draft.kitAuthor && draft.kitLicenseCode">
+          시작 코드: {{ draft.kitAuthor }} · {{ draft.kitLicenseCode }}
+        </p>
+        <p v-else>원본의 코드는 편집기에 복사하지 않았습니다.</p>
         <button v-if="!referencePreviewLoaded" type="button" @click="referencePreviewLoaded = true">
           원본 실행 화면 보기
         </button>

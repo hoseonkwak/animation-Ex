@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 0001~0010 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 현재 0001~0014 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. `practice_phase2.sql`은 자체 제작 카드 Practice Kit 한 건을 로컬에서만 제공합니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 처음 한 번 `apps/lab/.dev.vars.example`을 `apps/lab/.dev.vars`로 복사합니다. `.dev.vars`는 Git에서 제외되며 로컬 관리자, GitHub OAuth와 수집 서명 모의 값만 담습니다. 로컬 관리자 화면은 `LOCAL_ADMIN_SIMULATION=true` 설정을 사용하므로 실제 GitHub OAuth App이 없어도 실행됩니다.
 

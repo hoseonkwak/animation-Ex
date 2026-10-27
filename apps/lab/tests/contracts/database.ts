@@ -35,7 +35,11 @@ class PreparedStatementAdapter {
 }
 
 export function createMigratedDatabase(
-  options: { includeAdminSeed?: boolean; includeIngestionSeed?: boolean } = {},
+  options: {
+    includeAdminSeed?: boolean
+    includeIngestionSeed?: boolean
+    includePracticeSeed?: boolean
+  } = {},
 ): {
   sqlite: DatabaseSync
   d1: D1Database
@@ -53,6 +57,9 @@ export function createMigratedDatabase(
   }
   if (options.includeIngestionSeed) {
     sqlite.exec(readFileSync(path.resolve('db/seeds/wp5.sql'), 'utf8'))
+  }
+  if (options.includePracticeSeed) {
+    sqlite.exec(readFileSync(path.resolve('db/seeds/practice_phase2.sql'), 'utf8'))
   }
 
   const d1 = {

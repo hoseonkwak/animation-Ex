@@ -357,9 +357,17 @@ export class ExamplesRepository {
       )
       .bind(row.id)
       .all<{ slug: string; title: string }>()
+    const readyKit = await this.db
+      .prepare(
+        `SELECT 1 AS ready FROM practice_kits
+         WHERE animation_entry_id = ? AND status = 'ready' LIMIT 1`,
+      )
+      .bind(row.id)
+      .first<{ ready: number }>()
     return {
       ...card,
       originalTitle: row.original_title,
+      practiceKitReady: Boolean(readyKit),
       patterns: patterns.results,
       source: {
         creatorName: row.creator_name,

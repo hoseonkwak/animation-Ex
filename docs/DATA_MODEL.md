@@ -146,6 +146,8 @@ Source
 - solutionVersionId
 - status
 
+Phase 2 첫 구현에서는 `mode=free`만 지원한다. `ready` Kit은 같은 AnimationEntry에 속한 불변 CodePackageVersion을 시작 코드로 사용한다. 사용자 초안은 D1에 저장하지 않고 브라우저 IndexedDB에 시작 코드 스냅샷과 버전 ID를 보관한다. Kit 버전을 교체해도 기존 초안을 자동 수정하지 않는다.
+
 ### Tutorial
 
 - id

@@ -16,6 +16,7 @@ import {
 } from './ingestion'
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 import { readUsageStatus, storeUsageSnapshot } from './operations'
+import { findReadyPracticeKit } from './practice'
 import { loadCandidateTriage } from './triage'
 import {
   readAutoPublicationStatus,
@@ -249,6 +250,18 @@ export default {
         }
         throw error
       }
+    }
+
+    const practiceKitMatch = url.pathname.match(/^\/api\/v1\/examples\/([a-z0-9-]+)\/practice-kit$/)
+    if (request.method === 'GET' && practiceKitMatch) {
+      const kit = await findReadyPracticeKit(env.DB, practiceKitMatch[1]!)
+      if (kit) {
+        return json(
+          { data: kit, meta: { requestId } },
+          { headers: { 'cache-control': 'public, max-age=60' } },
+        )
+      }
+      return json({ error: { code: 'PRACTICE_KIT_NOT_FOUND', requestId } }, { status: 404 })
     }
 
     const exampleMatch = url.pathname.match(/^\/api\/v1\/examples\/([a-z0-9-]+)$/)

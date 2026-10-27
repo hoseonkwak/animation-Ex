@@ -320,3 +320,11 @@ checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 �
 - 수집 HMAC, 만료 timestamp와 request ID 재사용
 - Turnstile 성공과 실패
 - 응답에 내부 provenance와 운영 메모가 포함되지 않는지 검사
+
+## 8. Phase 2 Practice Kit 읽기
+
+`GET /api/v1/examples/:slug`의 `practiceKitReady`는 공개 Entry에 `ready` Kit이 있는지 나타낸다. false이면 사용자는 빈 기본 코드로 연습할 수 있다.
+
+`GET /api/v1/examples/:slug/practice-kit`은 공개 Entry의 `ready` Kit에 한해서 불변 CodePackageVersion의 ID·버전, HTML·CSS·JavaScript 시작 코드, 상호작용 안내와 공개 가능한 제작·라이선스 정보를 반환한다. Kit이 없거나 중지됐거나 Entry가 비공개이면 `404 PRACTICE_KIT_NOT_FOUND`다. 응답 캐시는 최대 60초다.
+
+초기 버전은 외부 스크립트·스타일·에셋을 포함하지 않는다. 내부 provenance 원문과 운영 메모는 API에 노출하지 않는다. Kit의 권리·실행 정책이 계약과 다르면 성공 응답을 만들지 않고 추적 가능한 서버 오류를 남긴다.

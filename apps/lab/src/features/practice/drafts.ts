@@ -7,6 +7,10 @@ export interface PracticeDraft {
   code: PracticeCode
   lastGoodCode: PracticeCode | null
   recoveryCode?: PracticeCode | null
+  initialCode?: PracticeCode
+  kitVersionId?: string | null
+  kitAuthor?: string | null
+  kitLicenseCode?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -37,6 +41,16 @@ function isDraft(value: unknown): value is PracticeDraft {
     (draft.recoveryCode === undefined ||
       draft.recoveryCode === null ||
       isCode(draft.recoveryCode)) &&
+    (draft.initialCode === undefined || isCode(draft.initialCode)) &&
+    (draft.kitVersionId === undefined ||
+      draft.kitVersionId === null ||
+      typeof draft.kitVersionId === 'string') &&
+    (draft.kitAuthor === undefined ||
+      draft.kitAuthor === null ||
+      typeof draft.kitAuthor === 'string') &&
+    (draft.kitLicenseCode === undefined ||
+      draft.kitLicenseCode === null ||
+      typeof draft.kitLicenseCode === 'string') &&
     typeof draft.createdAt === 'string' &&
     !Number.isNaN(Date.parse(draft.createdAt)) &&
     typeof draft.updatedAt === 'string' &&
@@ -80,6 +94,10 @@ export async function saveDraft(draft: PracticeDraft): Promise<void> {
     code: { ...draft.code },
     lastGoodCode: draft.lastGoodCode ? { ...draft.lastGoodCode } : null,
     recoveryCode: draft.recoveryCode ? { ...draft.recoveryCode } : null,
+    initialCode: draft.initialCode ? { ...draft.initialCode } : { ...blankCode },
+    kitVersionId: draft.kitVersionId ?? null,
+    kitAuthor: draft.kitAuthor ?? null,
+    kitLicenseCode: draft.kitLicenseCode ?? null,
     createdAt: draft.createdAt,
     updatedAt: draft.updatedAt,
   }
@@ -123,15 +141,23 @@ export async function listDrafts(): Promise<{ drafts: PracticeDraft[]; invalidCo
   })
 }
 
-export async function createDraft(title = '새 연습', referenceSlug: string | null = null) {
+export async function createDraft(
+  title = '새 연습',
+  referenceSlug: string | null = null,
+  starter?: { code: PracticeCode; versionId: string; author: string; licenseCode: string },
+) {
   const now = new Date().toISOString()
   const draft: PracticeDraft = {
     id: crypto.randomUUID(),
     title,
     referenceSlug,
-    code: { ...blankCode },
+    code: starter ? { ...starter.code } : { ...blankCode },
     lastGoodCode: null,
     recoveryCode: null,
+    initialCode: starter ? { ...starter.code } : { ...blankCode },
+    kitVersionId: starter?.versionId ?? null,
+    kitAuthor: starter?.author ?? null,
+    kitLicenseCode: starter?.licenseCode ?? null,
     createdAt: now,
     updatedAt: now,
   }

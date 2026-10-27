@@ -1,5 +1,60 @@
 import { expect, test } from '@playwright/test'
 
+test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 같은 버전을 유지한다', async ({
+  page,
+}) => {
+  await page.goto('/examples/interactive-card-hover')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const card = preview.getByRole('button', { name: /움직이는 카드/ })
+  await expect(card).toBeVisible()
+  await card.hover({ position: { x: 30, y: 30 } })
+  await expect
+    .poll(() => card.evaluate((element) => (element as HTMLElement).style.getPropertyValue('--ry')))
+    .not.toBe('0.0deg')
+  await page.getByRole('button', { name: '원본 참고' }).click()
+  await expect(page.getByLabel('원본 참고')).toContainText('practice-card-hover-v1')
+  await page.getByLabel('원본 참고').getByRole('button', { name: '닫기' }).click()
+  await page.getByRole('textbox', { name: 'HTML 코드' }).fill('<main>직접 수정</main>')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(preview.locator('main')).toHaveText('직접 수정')
+  page.once('dialog', (dialog) => void dialog.accept())
+  await page.getByRole('button', { name: '초기화' }).click()
+  await expect(preview.getByRole('button', { name: /움직이는 카드/ })).toBeVisible()
+  await page.reload()
+  await expect(preview.getByRole('button', { name: /움직이는 카드/ })).toBeVisible()
+})
+
+test('Dark 테마와 움직임 줄이기 설정을 작업 공간과 Kit에 적용한다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.addInitScript(() => localStorage.setItem('kwak-motion:theme', 'dark'))
+  await page.goto('/examples/interactive-card-hover')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  const card = page
+    .frameLocator('iframe[title="내 코드 실행 화면"]')
+    .getByRole('button', { name: /움직이는 카드/ })
+  await expect(card).toBeVisible()
+  expect(await card.evaluate((element) => getComputedStyle(element).transitionDuration)).toBe('0s')
+})
+
+test('Kit을 불러오지 못하면 오류를 알리고 같은 예제를 빈 코드로 연습할 수 있다', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/examples/interactive-card-hover/practice-kit', (route) =>
+    route.fulfill({ status: 503, body: '{}' }),
+  )
+  await page.goto('/examples/interactive-card-hover')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page.getByText('시작 코드를 불러오지 못했습니다.')).toBeVisible()
+  await page.getByRole('button', { name: '빈 코드로 시작' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await expect(page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('.stage')).toHaveText(
+    '여기에서 시작해보세요',
+  )
+})
+
 test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행·복원된다', async ({ page, request }) => {
   const response = await request.get('/api/v1/examples?limit=1')
   const first = (await response.json()).data.items[0] as { slug: string }
