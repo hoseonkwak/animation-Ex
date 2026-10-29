@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   pull_request:
   push:
@@ -23,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -34,3 +40,94 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  deploy-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://kwak-motion-lab-production.kwak-motion-lab.workers.dev
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      PREVIEW_TURNSTILE_SITE_KEY: ${{ vars.PREVIEW_TURNSTILE_SITE_KEY }}
+      PRODUCTION_TURNSTILE_SITE_KEY: ${{ vars.PRODUCTION_TURNSTILE_SITE_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Check Production configuration
+        shell: bash
+        run: |
+          for name in CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN PREVIEW_TURNSTILE_SITE_KEY PRODUCTION_TURNSTILE_SITE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "Production environment is missing $name" >&2
+              exit 1
+            fi
+          done
+
+      - name: Skip superseded commit
+        id: current
+        shell: bash
+        run: |
+          current_sha="$(git ls-remote origin refs/heads/master | cut -f1)"
+          if [ -z "$current_sha" ]; then
+            echo 'Unable to read current master commit' >&2
+            exit 1
+          elif [ "$current_sha" = "$GITHUB_SHA" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping deployment of superseded master commit"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.current.outputs.deploy == 'true'
+        run: npm ci
+
+      - name: Verify Preview build and Worker bindings
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.PREVIEW_TURNSTILE_SITE_KEY }}
+        run: npm run verify:deploy:preview --workspace @kwak-motion/lab
+
+      - name: Deploy Preview Worker
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.PREVIEW_TURNSTILE_SITE_KEY }}
+        run: npm run deploy:preview --workspace @kwak-motion/lab
+
+      - name: Smoke test Preview
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          PREVIEW_BASE_URL: https://kwak-motion-lab-preview.kwak-motion-lab.workers.dev
+        run: npm run smoke:preview --workspace @kwak-motion/lab
+
+      - name: Verify Production build and Worker bindings
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.PRODUCTION_TURNSTILE_SITE_KEY }}
+        run: npm run verify:deploy:production --workspace @kwak-motion/lab
+
+      - name: Deploy Production Worker
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.PRODUCTION_TURNSTILE_SITE_KEY }}
+        run: npm run deploy:production --workspace @kwak-motion/lab
+
+      - name: Smoke test Production
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          PRODUCTION_BASE_URL: https://kwak-motion-lab-production.kwak-motion-lab.workers.dev
+        run: npm run smoke:production --workspace @kwak-motion/lab

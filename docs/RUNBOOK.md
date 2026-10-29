@@ -72,6 +72,10 @@ npm run verify:deploy:production --workspace @kwak-motion/lab
 
 ## 배포
 
+`master`에 push하면 GitHub Actions의 CI 통과 후 Preview 배포·smoke, Production 배포·smoke가 순서대로 실행된다. Actions `production` 환경에는 `CLOUDFLARE_ACCOUNT_ID`와 `CLOUDFLARE_API_TOKEN` secret을 등록한다. API token은 이 Cloudflare 계정의 Workers 편집 권한으로 범위를 제한하고 저장소 파일이나 로그에 넣지 않는다. 저장소 Actions 일반 변수 `PREVIEW_TURNSTILE_SITE_KEY`, `PRODUCTION_TURNSTILE_SITE_KEY`에는 각 공개 site key를 등록한다. 누락된 값이 있으면 배포 job은 실패한다.
+
+자동 배포는 Worker 코드와 정적 자산에만 적용한다. 새로운 D1 migration이 있는 commit을 `master`에 반영하기 전에 해당 운영 DB를 백업하고 migration을 적용한다. Preview에도 필요한 migration을 먼저 적용한다. `db:seed:production`과 Practice Kit fixture는 CI에서 실행하지 않는다. 배포 job이 실패하면 GitHub Actions의 `deploy-production` 단계와 Preview·Production smoke 결과를 확인하고, 원인을 고친 commit을 다시 push한다. D1 문제에는 Worker 버전 롤백만으로 복구되지 않는다.
+
 ```bash
 npm run deploy:preview --workspace @kwak-motion/lab
 npm run deploy:production --workspace @kwak-motion/lab

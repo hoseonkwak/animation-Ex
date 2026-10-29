@@ -362,3 +362,11 @@
 - 결정: `gsap-scrolltrigger@3.15.0`은 `gsap@3.15.0`과 함께 지정된 자체 제작 Kit에서만 허용한다. 앱에 고정 설치한 플러그인 파일을 격리 Preview에서 GSAP 코어 다음에 넣는다. CodePen prefill의 `js_external`에도 코어와 플러그인 URL을 세미콜론으로 연결해 같은 순서로 전달한다. 임의 플러그인 URL, 플러그인만 단독 사용, 중복 라이브러리 선언은 거부한다.
 - 근거: [GSAP ScrollTrigger 문서](https://gsap.com/docs/v3/Plugins/ScrollTrigger/), [CodePen prefill 형식](https://blog.codepen.io/docs/api/post-to-prefill-pen/).
 - 출시 경계: 스크롤 Kit은 로컬 fixture다. 실제 스크롤·축소 동작과 공개 권리 게이트를 통과하기 전에는 Production에 seed하지 않는다.
+
+### D-055 master 자동 배포
+
+- 상태: 구성 중
+- 확인일: 2026-10-29
+- 결정: `master` push의 CI가 통과하면 같은 commit을 Preview에 배포하고 공개·관리자 경계 smoke를 통과한 뒤 Production Worker를 배포하고 다시 smoke를 실행한다. 실패하면 다음 배포 단계로 넘어가지 않는다. 이전 commit이 대기 중 최신 `master`로 교체되면 오래된 commit은 배포하지 않는다.
+- 인증: GitHub Actions의 `production` 환경에 계정 범위를 제한한 Cloudflare 배포 API token을 secret으로 두고, 공개 Turnstile site key는 저장소 Actions 변수로 분리한다. Worker의 OAuth·Turnstile·수집 secret은 Cloudflare에 그대로 둔다.
+- 데이터 경계: Worker 자동 배포는 D1 migration이나 Practice Kit seed를 자동 적용하지 않는다. 스키마 변경은 운영 D1 백업과 별도 migration 확인 뒤 `master` 배포 전에 적용한다. D-052~D-054의 Kit fixture는 소유자 검수와 공개 게이트 전까지 Production에 입력하지 않는다.

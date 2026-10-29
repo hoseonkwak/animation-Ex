@@ -232,6 +232,8 @@ Production OAuth callback URL은 `https://kwak-motion-lab-production.kwak-motion
 
 ### 4. Production build와 미리보기
 
+`master` push는 CI 통과 후 Preview와 Production Worker를 순서대로 자동 배포하고 각 환경의 smoke를 실행합니다. 배포 인증값은 GitHub Actions의 `production` 환경 secret, 공개 Turnstile site key는 저장소 Actions 변수로 관리합니다. D1 migration은 운영 백업 후 별도로 적용하며, Practice Kit fixture는 소유자 검수 전까지 Production에 넣지 않습니다. 설정과 실패 복구 절차는 [운영 Runbook](docs/RUNBOOK.md#배포)을 따릅니다.
+
 ```bash
 npm run build
 npm run preview
