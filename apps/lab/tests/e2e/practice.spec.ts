@@ -513,6 +513,11 @@ test('CodePen 내보내기는 버튼을 눌렀을 때 현재 코드를 POST한�
   await page.getByRole('button', { name: 'CodePen으로 보내기' }).click()
   await popup
   await expect.poll(() => submitted).not.toBeNull()
+  await expect(
+    page.getByRole('status').filter({ hasText: 'CodePen 새 창이 열리지 않았다면' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: '복사 가능한 코드 보기' }).click()
+  await expect(page.locator('#practice-copy-html')).toHaveValue('<main>내 코드</main>')
   const body = new URLSearchParams(submitted ?? '')
   const data = JSON.parse(body.get('data') ?? '{}') as { html: string }
   expect(data.html).toBe('<main>내 코드</main>')

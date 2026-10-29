@@ -38,6 +38,7 @@ const logs = ref<Array<{ type: 'log' | 'warn' | 'error'; message: string }>>([])
 const showReference = ref(false)
 const referencePreviewLoaded = ref(false)
 const showExportCode = ref(false)
+const exportHint = ref(false)
 const copiedTab = ref<CodeTab | null>(null)
 const showConsole = ref(false)
 const lastGoodAvailable = computed(() => Boolean(draft.value?.lastGoodCode))
@@ -227,6 +228,11 @@ async function run(): Promise<void> {
   if (compactLayout.value) workspaceTab.value = 'preview'
   if (!(await persist())) return
   execute()
+}
+
+function onCodePenSubmit(): void {
+  exportHint.value = true
+  void persist()
 }
 
 function openPreview(): void {
@@ -497,7 +503,7 @@ async function copyCode(tab: CodeTab): Promise<void> {
             method="post"
             target="_blank"
             rel="noopener noreferrer"
-            @submit="persist"
+            @submit="onCodePenSubmit"
           >
             <input type="hidden" name="data" :value="codePenPayload" />
             <button type="submit">CodePen으로 보내기</button>
@@ -505,6 +511,13 @@ async function copyCode(tab: CodeTab): Promise<void> {
           <button type="button" @click="toggleExportCode">코드 복사</button>
         </div>
       </header>
+      <div v-if="exportHint" class="practice-export-hint" role="status">
+        <span>CodePen 새 창이 열리지 않았다면 팝업 차단을 확인하거나 코드를 직접 복사하세요.</span>
+        <button type="button" @click="toggleExportCode">복사 가능한 코드 보기</button>
+        <button type="button" aria-label="CodePen 안내 닫기" @click="exportHint = false">
+          닫기
+        </button>
+      </div>
       <div v-if="saveStatus === 'error'" class="practice-save-error" role="alert">
         브라우저에 코드를 저장하지 못했습니다. 코드를 복사해 보관한 뒤 다시 시도하거나 저장 없이
         실행하세요.

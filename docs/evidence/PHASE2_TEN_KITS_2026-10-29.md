@@ -27,6 +27,7 @@
 | WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
 | Linux Firefox CI | [Actions 실행 #6](https://github.com/hoseonkwak/animation-Ex/actions/runs/40807931385)에서 연습 34개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
 | 좁은 화면·다운로드 격리 추가 검사 | 320px 작업 공간의 가로 넘침 없음과 sandbox iframe의 다운로드 차단을 로컬 Chromium·WebKit 및 Linux Firefox에서 확인. 320px 검사는 배포된 Preview Chromium에서도 통과 |
+| CodePen 새 창 복구 안내 | 내보내기 클릭 뒤 새 창이 안 열렸을 때 확인할 안내와 복사 가능한 현재 코드 경로를 추가. POST payload·안내·복사 경로는 로컬 Chromium·WebKit에서 확인. CodePen 서비스의 실제 수신은 아직 확인 전 |
 | `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수
