@@ -567,7 +567,7 @@ test('연습 코드가 부모 앱에 접근하지 못하고 네트워크 요청�
   await page
     .getByRole('textbox', { name: 'JavaScript 코드' })
     .fill(
-      "try { parent.document.title = 'unsafe' } catch { console.log('parent blocked') }; try { localStorage.getItem('kwak-motion:theme') } catch { console.log('storage blocked') }; try { top.location.href = '/api/v1/health' } catch { console.log('top blocked') }; console.log(window.open('/api/v1/health') ? 'popup opened' : 'popup blocked'); const form = document.createElement('form'); form.action = '/api/v1/health'; document.body.append(form); form.submit(); fetch('/api/v1/health').catch(() => console.log('network blocked'))",
+      "try { parent.document.title = 'unsafe' } catch { console.log('parent blocked') }; try { localStorage.getItem('kwak-motion:theme') } catch { console.log('storage blocked') }; try { top.location.href = '/api/v1/health' } catch { console.log('top blocked') }; try { console.log(window.open('/api/v1/health') ? 'popup opened' : 'popup blocked') } catch { console.log('popup blocked') }; const form = document.createElement('form'); form.action = '/api/v1/health'; document.body.append(form); form.submit(); fetch('/api/v1/health').catch(() => console.log('network blocked'))",
     )
   await page.getByRole('button', { name: 'Run', exact: true }).click()
   const consoleButton = page.getByRole('button', { name: /^Console/ })

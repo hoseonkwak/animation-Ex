@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 import { setPageMeta } from '@/app/pageMeta'
@@ -116,6 +116,7 @@ onMounted(async () => {
     }
     Object.assign(code, draft.value.code)
     title.value = draft.value.title
+    await nextTick()
     setPageMeta(
       draft.value.title,
       '이 브라우저에 저장되는 자유 연습 공간입니다.',
