@@ -1,6 +1,6 @@
 # Phase 2 Practice 운영 점검과 중지 절차
 
-상태: 출시 전 절차. Production의 Practice Kit 10건은 아직 배포하지 않았다.
+상태: Preview에서 Kit 10건과 중지·복구를 검증했다. Production의 Practice Kit은 아직 배포하지 않았다.
 
 ## 공개 순서
 

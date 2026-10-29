@@ -1,6 +1,6 @@
-# Phase 2 자체 제작 Kit 10개 로컬 구현 · 2026-10-29
+# Phase 2 자체 제작 Kit 10개 구현·Preview 검증 · 2026-10-29
 
-상태: 로컬 fixture. Production 공개 및 Phase 2 완료 판정 전.
+상태: 로컬·Preview 검증. Production 공개 및 Phase 2 완료 판정 전.
 
 ## 이번 추가 6개
 
@@ -19,21 +19,31 @@
 
 | 검사 | 결과 |
 | --- | --- |
-| `npm run test:contracts` | 50개 통과. 로컬 `ready` Kit 10건과 새 6건의 버전·권리 메타데이터 확인. 변형 Kit v1 보존과 v2 연결 확인 |
-| `npm run test` | 118개 통과. 플러그인 허용 목록·CodePen 순서·Preview 주입 순서 확인 |
-| `npm run format:check`, `npm run typecheck`, `npm run lint`, `npm run build` | 통과 |
-| `npm run test:e2e` | Chromium 49개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기와 기존 초안 보호/새 버전 선택 포함 |
+| `npm run test:contracts` | 51개 통과. 로컬 `ready` Kit 10건, 목록 필터, 새 6건의 버전·권리 메타데이터와 변형 Kit v1 보존/v2 연결 확인 |
+| `npm run test` | 119개 통과. 플러그인 허용 목록·CodePen 순서·Preview 주입 순서 확인 |
+| `npm run format:check`, `npm run typecheck`, `npm run lint`, `npm run build:preview` | 통과 |
+| `npm run test:e2e` | Chromium 50개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기, 기존 초안 보호/새 버전 선택, Practice 홈의 Kit 목록·모바일 진입 포함 |
 | WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 31개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
-| `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과. 원격 쓰기는 수행하지 않음 |
-| Preview D1 읽기 | `wrangler d1 list --json`으로 Preview DB 존재 확인. `wrangler d1 execute ... --remote --env preview --command "SELECT COUNT(*) ..."`는 Cloudflare API 7403으로 실패. Kit seed·배포는 진행하지 않음 |
+| WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
+| `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수
 
 1280×800과 390×844에서 10개 Kit의 실제 iframe 화면 20장을 캡처해 보았다. 변형 Kit의 `도착` 라벨이 움직인 원과 겹치는 문제를 발견해, 기존 `practice-basic-transform-v1`은 보존하고 라벨 위치를 고친 `v2`를 새 진입에 연결했다. 수정 후 두 화면 크기에서 겹침이 사라졌고, 결정적 가로 넘침 검사도 통과했다. 이 검수는 소유자의 콘텐츠 승인이나 모든 확대·보조 기술 환경의 확인을 대신하지 않는다.
 
+Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데스크톱·모바일 전체 화면을 다시 캡처해 비어 보이던 CodePen 원격 썸네일을 로컬 이미지로 교체하고, 연습 행동 버튼을 카드 폭에 맞게 정리했다. 로컬 썸네일이 없는 향후 Kit은 원본 CodePen 이미지와 제목 대체 화면으로 순서대로 내려간다.
+
+## Preview 배포와 복구 증거
+
+- Preview D1을 `.wrangler/preview-before-phase2-2026-10-29.sql`로 백업했다. 이 파일은 Git에서 제외된 로컬 운영 백업이다.
+- 첫 원격 query는 Cloudflare API 7403이었지만, 재조회에서 실제 상태인 `no such table: practice_kits`를 확인했다. 미적용 0013·0014 migration을 적용했고, 대상 공개 Entry 10건의 ID·상태를 읽기 전용으로 확인했다.
+- `practice_phase2.sql`을 Preview D1에 적용했다. 22개 SQL 명령이 성공했고 `practice_kits.status='ready'` 10건을 재조회했다.
+- Preview Worker 최종 버전 `f71b374f-41ed-4d57-8acf-a3e0295e549a`를 배포했다. 공개 Practice Kit API 10건의 버전·라이브러리, `practiceReady=true` 목록 10건과 로컬 썸네일 10개의 HTTP 200을 확인했다.
+- `smoke:preview`의 health, 공개 목록, robots 차단, 비로그인 홈, 관리자 비인증 차단 5개가 통과했다. 배포된 URL의 Chromium 연습 검사 31개와, 홈 목록·모바일 진입 대상 1개가 통과했다.
+- Preview의 `practice-basic-tween` Kit을 잠시 `paused`로 바꿨을 때 공개 API는 404를 반환했다. 즉시 `ready`로 복구하니 200을 반환했다. Production D1은 변경하지 않았다.
+
 ## 남은 공개 게이트
 
 - 이번 10건의 화면·키보드·축소·권리 정보를 사람이 검수하고 결과를 기록한다. 자동 검사는 미적 유사성과 권리 판단을 대신하지 않는다.
-- Firefox, 모바일 확대, 저장 용량 한계, 오래된 실행 로그, CodePen 실제 수신과 운영 smoke·롤백을 검증한다. 이 Windows 환경의 Playwright Firefox 실행 파일은 앱 시작 전에 side-by-side configuration 오류로 종료되어 브라우저 검사가 실행되지 않았다. 제품 실패로 계산하지 않고 다른 실행 환경에서 재검증한다.
-- Preview D1의 원격 조회 7403 원인을 확인하고 나서만 Preview에 Kit을 입력한다. Wrangler OAuth 로그인과 D1 목록은 정상이지만 query API는 거절됐다. 권한 또는 서비스 상태 중 무엇이 원인인지는 아직 확정하지 않았다.
-- Production에는 아직 seed하지 않는다. `ready`는 로컬 fixture 상태이며 운영 공개 승인 근거가 아니다.
+- Firefox, 모바일 확대, 저장 용량 한계, 오래된 실행 로그와 CodePen 실제 수신을 검증한다. 이 Windows 환경의 Playwright Firefox 실행 파일은 앱 시작 전에 side-by-side configuration 오류로 종료되어 브라우저 검사가 실행되지 않았다. 제품 실패로 계산하지 않고 다른 실행 환경에서 재검증한다.
+- Production에는 아직 seed하지 않는다. Preview의 `ready`와 운영 리허설은 소유자의 콘텐츠 승인 및 Production 출시 근거를 대신하지 않는다.

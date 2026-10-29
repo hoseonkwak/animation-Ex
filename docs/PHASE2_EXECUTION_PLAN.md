@@ -21,11 +21,11 @@ P2-1은 빈 기본 코드의 로컬 실행 흐름부터 검증하고 자체 제�
 | 단계 | 현재 상태 | 남은 게이트 |
 | --- | --- | --- |
 | P2-0 | `srcdoc` 불투명 출처, CSP, 실행 ID 메시지, API iframe 탐색 403, 상위 이동·폼·팝업 차단을 Chromium에서 검증 | 다른 브라우저와 다운로드 차단, 긴 실행의 실제 제한 검증 |
-| P2-1 | 빈 코드 초안에서 편집·Run·Preview, 데스크톱 폭 조절과 모바일 탭 구현. 자체 제작 카드 Kit 한 건의 로컬 실행·초기화, Dark·reduced motion 검증. Kit API 장애 시 오류 안내와 같은 예제의 빈 코드 연습 복구 | 전체 키보드·화면 확대 점검과 나머지 Kit |
+| P2-1 | 빈 코드 초안에서 편집·Run·Preview, 데스크톱 폭 조절과 모바일 탭 구현. 자체 제작 Kit 10건의 로컬 실행, Dark·reduced motion 검증. Kit API 장애 시 오류 안내와 같은 예제의 빈 코드 연습 복구. Practice 홈에서 Kit 목록·썸네일·직접 시작 제공 | 전체 키보드·화면 확대 점검 |
 | P2-2 | 입력 지연 자동 실행, iframe 교체, Console 상한, heartbeat·시간 초과 구현. 연속 환경 실패 3회 중지·정상 실행 복구와 50개/500자 Console 제한을 Chromium에서 검증 | 오래된 실행 로그와 코드 오류의 브라우저 회귀 검사 |
 | P2-3 | IndexedDB 초안, 이름·새로고침 복원, 최근 목록, 초기화 전 복구 스냅샷과 손상·저장 실패 상태를 Chromium에서 검증. 화면 설정 localStorage가 막혀도 초안 편집·실행 유지. 같은 예제 재진입 때 기존 초안 이어가기/새 초안 생성 선택. Kit 시작 코드와 버전 ID를 초안에 고정 | 실제 용량 한계와 Kit 변경 후 기존 초안 보호의 전체 브라우저 검증 |
 | P2-4 | 원본 참고 Embed를 별도 클릭 때 로드하고 닫으면 제거, 빈 코드 진입, CodePen POST prefill, 수동 코드 복사 제공 | CodePen 실제 수신·팝업 실패 UX 및 권리 고지 점검 |
-| P2-5 | D1 0014 migration, 공개 읽기 API, 자체 제작 Kit 10건의 로컬 fixture와 GSAP/ScrollTrigger 고정 실행 정책. Chromium 49개, WebKit 연습 31개 통과. Preview 배포 dry-run 통과 | 사람의 Kit별 시각·권리 검수, Firefox·확대, Preview D1 query 7403 해결과 운영 smoke·롤백 증거 |
+| P2-5 | D1 0014 migration, 공개 읽기 API, 자체 제작 Kit 10건과 GSAP/ScrollTrigger 고정 실행 정책. Chromium 50개, WebKit 연습 31개 통과. Preview D1 백업·migration·Kit 10건 적용, Worker 배포와 공개 API·브라우저 smoke 및 Kit 중지·복구 리허설 완료 | 사람의 Kit별 시각·권리 검수, Firefox·확대·CodePen 실제 수신·저장 용량 검증과 Production 출시 증거 |
 
 첫 구현 증거는 `evidence/PHASE2_PRACTICE_SLICE_2026-10-27.md`에, GSAP 실행 환경 증거는 `evidence/PHASE2_GSAP_KIT_2026-10-29.md`에, Kit 묶음은 `evidence/PHASE2_GSAP_KITS_BATCH_2026-10-29.md`와 `evidence/PHASE2_TEN_KITS_2026-10-29.md`에 기록한다. 배포 순서와 중지·복구는 `PHASE2_OPERATIONS.md`를 따른다. 위 구현 상태는 Phase 2 완료 판정이 아니다.
 

@@ -9,6 +9,34 @@
   word-break: keep-all;
 }
 
+.practice-kit-section {
+  margin-bottom: 48px;
+}
+
+.practice-kit-section > p {
+  color: var(--color-text-muted);
+}
+
+.practice-kit-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 20px;
+}
+
+.practice-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--color-brand);
+  text-decoration: none;
+}
+
 .practice-draft-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -375,6 +403,9 @@
 }
 
 @media (max-width: 1023px) {
+  .practice-kit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .practice-draft-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -407,6 +438,9 @@
 }
 
 @media (max-width: 639px) {
+  .practice-kit-grid {
+    grid-template-columns: 1fr;
+  }
   .practice-draft-grid {
     grid-template-columns: 1fr;
   }

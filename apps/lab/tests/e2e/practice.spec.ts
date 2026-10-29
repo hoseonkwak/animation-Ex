@@ -1,5 +1,34 @@
 import { expect, test } from '@playwright/test'
 
+test('Practice 홈에서 준비된 Kit 10개를 보고 바로 연습한다', async ({ page }, testInfo) => {
+  await page.goto('/practice')
+  await expect(page.getByRole('heading', { name: '시작 코드가 있는 예제' })).toBeVisible()
+  await expect(page.locator('.practice-kit-grid .example-card')).toHaveCount(10)
+  if (process.env.KWAK_CAPTURE_KITS === '1') {
+    await page.screenshot({
+      path: testInfo.outputPath('practice-home-desktop.png'),
+      fullPage: true,
+    })
+  }
+  await page.setViewportSize({ width: 390, height: 844 })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
+  if (process.env.KWAK_CAPTURE_KITS === '1') {
+    await page.screenshot({ path: testInfo.outputPath('practice-home-mobile.png'), fullPage: true })
+  }
+  const card = page.locator('[data-example-id="entry-basic-1"]')
+  await expect(card.getByRole('button', { name: /실행 화면 보기/ })).toBeVisible()
+  const thumbnail = card.locator('.preview-thumbnail img')
+  await expect(thumbnail).toHaveAttribute('src', '/practice-thumbnails/gsap-basic-tween.png')
+  await expect
+    .poll(() => thumbnail.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0)
+  await card.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveCount(0)
+  await page.getByRole('tab', { name: 'JS' }).click()
+  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveValue(/gsap\.to/)
+})
+
 test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 같은 버전을 유지한다', async ({
   page,
 }) => {

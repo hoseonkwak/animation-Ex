@@ -53,9 +53,11 @@ Kwak Motion Lab은 다음 경험을 한곳에서 제공하는 것을 목표로 �
 
 - HTML, CSS와 JavaScript 편집
 - 격리된 Preview에서 보호된 자동 실행
-- 자유 연습과 단계별 미션
+- 자유 연습과 자체 제작 Practice Kit. 단계별 미션은 Phase 3 범위
 - 브라우저 임시 저장과 오류 복구
 - CodePen으로 내보내기
+
+Phase 2 Kit 10개와 연습 목록은 [Preview의 자유 연습 화면](https://kwak-motion-lab-preview.kwak-motion-lab.workers.dev/practice)에서 확인할 수 있습니다. Production에는 아직 Kit을 공개하지 않았습니다.
 
 ### Learn
 

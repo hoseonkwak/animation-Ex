@@ -24,6 +24,7 @@ export interface ExampleFilters {
   difficulty?: Difficulty[] | undefined
   origin?: ContentOrigin | undefined
   featured?: boolean | undefined
+  practiceReady?: boolean | undefined
   sort: Sort
   limit: number
   cursor?: Cursor | undefined
@@ -70,6 +71,7 @@ const allowedParameters = new Set([
   'difficulty',
   'origin',
   'featured',
+  'practiceReady',
   'sort',
   'limit',
   'cursor',
@@ -120,6 +122,11 @@ export function parseExampleFilters(url: URL): ExampleFilters {
     throw new ApiInputError('INVALID_FILTER', 'featured는 true 또는 false여야 합니다.')
   }
 
+  const practiceReadyValue = url.searchParams.get('practiceReady')
+  if (practiceReadyValue !== null && practiceReadyValue !== 'true') {
+    throw new ApiInputError('INVALID_FILTER', 'practiceReady는 true만 지원합니다.')
+  }
+
   const sort = (url.searchParams.get('sort') ?? 'latest') as Sort
   if (!['latest', 'featured', 'difficulty'].includes(sort)) {
     throw new ApiInputError('INVALID_FILTER', '지원하지 않는 정렬입니다.')
@@ -148,6 +155,7 @@ export function parseExampleFilters(url: URL): ExampleFilters {
     difficulty,
     origin: origin ?? undefined,
     featured: featuredValue === null ? undefined : featuredValue === 'true',
+    practiceReady: practiceReadyValue === 'true' ? true : undefined,
     sort,
     limit,
     cursor,
@@ -256,6 +264,12 @@ export class ExamplesRepository {
     if (filters.featured !== undefined) {
       conditions.push('e.featured = ?')
       bindings.push(filters.featured ? 1 : 0)
+    }
+    if (filters.practiceReady) {
+      conditions.push(`EXISTS (
+        SELECT 1 FROM practice_kits ready_kit
+        WHERE ready_kit.animation_entry_id = e.id AND ready_kit.status = 'ready'
+      )`)
     }
     for (const [axis, values] of Object.entries(filters.tags)) {
       if (!values?.length) continue

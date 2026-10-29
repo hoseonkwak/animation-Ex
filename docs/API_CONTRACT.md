@@ -43,22 +43,25 @@
 
 공개 예제 목록을 조회한다.
 
-| 매개변수     | 형식                             | 기본값   |
-| ------------ | -------------------------------- | -------- |
-| `q`          | 2~80자 문자열                    | 없음     |
-| `technology` | 쉼표로 구분한 tag key            | 없음     |
-| `trigger`    | 쉼표로 구분한 tag key            | 없음     |
-| `motion`     | 쉼표로 구분한 tag key            | 없음     |
-| `section`    | 쉼표로 구분한 tag key            | 없음     |
-| `technique`  | 쉼표로 구분한 tag key            | 없음     |
-| `difficulty` | `beginner,intermediate,advanced` | 없음     |
-| `origin`     | `original-pen,lab-created`       | 없음     |
-| `featured`   | `true,false`                     | 없음     |
-| `sort`       | `latest,featured,difficulty`     | `latest` |
-| `limit`      | 1~24                             | 24       |
-| `cursor`     | 이전 응답의 opaque cursor        | 없음     |
+| 매개변수        | 형식                             | 기본값   |
+| --------------- | -------------------------------- | -------- |
+| `q`             | 2~80자 문자열                    | 없음     |
+| `technology`    | 쉼표로 구분한 tag key            | 없음     |
+| `trigger`       | 쉼표로 구분한 tag key            | 없음     |
+| `motion`        | 쉼표로 구분한 tag key            | 없음     |
+| `section`       | 쉼표로 구분한 tag key            | 없음     |
+| `technique`     | 쉼표로 구분한 tag key            | 없음     |
+| `difficulty`    | `beginner,intermediate,advanced` | 없음     |
+| `origin`        | `original-pen,lab-created`       | 없음     |
+| `featured`      | `true,false`                     | 없음     |
+| `practiceReady` | `true`                           | 없음     |
+| `sort`          | `latest,featured,difficulty`     | `latest` |
+| `limit`         | 1~24                             | 24       |
+| `cursor`        | 이전 응답의 opaque cursor        | 없음     |
 
 같은 축의 값은 OR, 서로 다른 축은 AND로 결합한다. 예를 들어 `technology=gsap,css&trigger=scroll`은 GSAP 또는 CSS이면서 Scroll인 예제를 찾는다.
+
+`practiceReady=true`는 공개된 Entry 가운데 상태가 `ready`인 자체 제작 Practice Kit이 연결된 항목만 반환한다. `/practice` 홈은 이 필터와 cursor를 사용해 Kit을 탐색한다. 다른 값은 `INVALID_FILTER`로 거절한다.
 
 목록 항목에는 카드에 필요한 값만 포함한다.
 

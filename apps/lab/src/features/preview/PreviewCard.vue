@@ -7,6 +7,7 @@ import type { ExampleCard } from '@/shared/examples'
 const props = defineProps<{
   example: ExampleCard
   active: boolean
+  practice?: boolean
 }>()
 const library = useLibraryLists()
 const saved = computed(() => library.has('saved', props.example.slug))
@@ -19,12 +20,25 @@ const emit = defineEmits<{
 const root = ref<HTMLElement>()
 const frameState = ref<'idle' | 'loading' | 'running' | 'paused' | 'error'>('idle')
 const thumbnailFailed = ref(false)
+const thumbnailFromCodePen = ref(false)
 let observer: IntersectionObserver | undefined
 
 const codePenUrl = computed(
   () => props.example.preview.embedUrl.replace('/embed/', '/pen/').split('?')[0],
 )
-const thumbnailUrl = computed(() => `${codePenUrl.value}/image/large.png`)
+const thumbnailUrl = computed(() =>
+  props.practice && !thumbnailFromCodePen.value
+    ? `/practice-thumbnails/${props.example.slug}.png`
+    : `${codePenUrl.value}/image/large.png`,
+)
+
+function onThumbnailError(): void {
+  if (props.practice && !thumbnailFromCodePen.value) {
+    thumbnailFromCodePen.value = true
+    return
+  }
+  thumbnailFailed.value = true
+}
 
 watch(
   () => props.active,
@@ -101,7 +115,7 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
           alt=""
           loading="lazy"
           decoding="async"
-          @error="thumbnailFailed = true"
+          @error="onThumbnailError"
         />
         <span v-else class="thumbnail-fallback">{{ example.title }}</span>
         <span class="thumbnail-label">예제 썸네일</span>
@@ -130,7 +144,14 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         <a :href="`/examples/${example.slug}`">{{ example.title }}</a>
       </h3>
       <p>{{ example.summary }}</p>
+      <RouterLink
+        v-if="practice"
+        class="practice-card-action"
+        :to="{ path: '/practice/new', query: { reference: example.slug } }"
+        >시작 코드로 연습하기</RouterLink
+      >
       <button
+        v-if="!practice"
         class="save-button"
         type="button"
         :aria-pressed="saved"

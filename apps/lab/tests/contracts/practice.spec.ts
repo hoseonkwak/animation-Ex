@@ -9,6 +9,29 @@ import { createMigratedDatabase } from './database'
 const context = { waitUntil() {}, passThroughOnException() {} } as ExecutionContext
 
 describe('Phase 2 Practice Kit contract', () => {
+  it('Practice 홈 목록은 공개된 ready Kit만 반환한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
+    const list = async (filter: string) =>
+      worker.fetch(
+        new Request(`https://example.test/api/v1/examples?${filter}`),
+        { DB: d1 },
+        context,
+      )
+    const response = await list('practiceReady=true&limit=12')
+    const body = (await response.json()) as { data: { items: { slug: string }[] } }
+    expect(response.status).toBe(200)
+    expect(body.data.items).toHaveLength(10)
+    expect(body.data.items.map((item) => item.slug)).toContain('gsap-scrolltrigger')
+    sqlite.exec("UPDATE practice_kits SET status='paused' WHERE id='practice-basic-tween'")
+    const paused = (await (await list('practiceReady=true&limit=12')).json()) as {
+      data: { items: { slug: string }[] }
+    }
+    expect(paused.data.items).toHaveLength(9)
+    expect(paused.data.items.map((item) => item.slug)).not.toContain('gsap-basic-tween')
+    expect((await list('practiceReady=false')).status).toBe(400)
+    sqlite.close()
+  })
+
   it('공개 예제의 검증된 자체 제작 시작 코드와 고정 버전만 반환한다', async () => {
     const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
     const response = await worker.fetch(
