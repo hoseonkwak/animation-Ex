@@ -52,6 +52,7 @@ export function buildPracticeDocument(
   const data = ${payload};
   const send = (type, message) => parent.postMessage({ source: 'kwak-practice', runId: data.runId, type, message }, '*');
   const text = (value) => {
+    if (value instanceof Error) return value.message.slice(0, 500);
     try { return typeof value === 'string' ? value.slice(0, 500) : JSON.stringify(value).slice(0, 500); }
     catch { return String(value).slice(0, 500); }
   };
@@ -62,7 +63,12 @@ export function buildPracticeDocument(
       original(...values);
     };
   }
-  addEventListener('error', (event) => send('error', event.message || '실행 오류'));
+  addEventListener('error', (event) => {
+    const detail = event.error instanceof Error ? event.error.message : event.message;
+    send('error', detail === 'Script error.'
+      ? 'JavaScript 문법 또는 실행 오류가 발생했습니다. 코드를 확인해 주세요.'
+      : detail || '실행 오류');
+  });
   addEventListener('unhandledrejection', (event) => send('error', text(event.reason)));
   const style = document.createElement('style');
   style.textContent = data.css;

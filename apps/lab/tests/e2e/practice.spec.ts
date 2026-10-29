@@ -676,6 +676,28 @@ test('코드 오류를 Console에 표시하고 고친 코드를 다시 실행한
   await expect(page.getByRole('log')).not.toContainText('practice failure')
 })
 
+test('비동기 오류의 메시지를 Console에 표시한다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await page.getByRole('tab', { name: 'JS' }).click()
+  await page
+    .getByRole('textbox', { name: 'JavaScript 코드' })
+    .fill("Promise.reject(new Error('async practice failure'))")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(page.getByText('코드 오류')).toBeVisible()
+  await expect(page.getByRole('log')).toContainText('async practice failure')
+})
+
+test('구문 오류를 코드 오류로 표시한다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await page.getByRole('tab', { name: 'JS' }).click()
+  await page.getByRole('textbox', { name: 'JavaScript 코드' }).fill('const broken = ;')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(page.getByText('코드 오류')).toBeVisible()
+  await expect(page.getByRole('log')).not.toContainText('Script error.')
+})
+
 test('HTML 이벤트 속성에서 사용자 JavaScript 함수를 호출할 수 있다', async ({ page }) => {
   await page.goto('/practice/new')
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
