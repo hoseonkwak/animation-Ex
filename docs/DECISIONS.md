@@ -365,8 +365,8 @@
 
 ### D-055 master 자동 배포
 
-- 상태: 구성 중
+- 상태: 설정 완료, 첫 자동 배포 확인 대기
 - 확인일: 2026-10-29
 - 결정: `master` push의 CI가 통과하면 같은 commit을 Preview에 배포하고 공개·관리자 경계 smoke를 통과한 뒤 Production Worker를 배포하고 다시 smoke를 실행한다. 실패하면 다음 배포 단계로 넘어가지 않는다. 이전 commit이 대기 중 최신 `master`로 교체되면 오래된 commit은 배포하지 않는다.
-- 인증: GitHub Actions의 `production` 환경에 계정 범위를 제한한 Cloudflare 배포 API token을 secret으로 두고, 공개 Turnstile site key는 저장소 Actions 변수로 분리한다. Worker의 OAuth·Turnstile·수집 secret은 Cloudflare에 그대로 둔다.
+- 인증: GitHub Actions의 `production` 환경을 `master`로 제한하고, Cloudflare 계정의 `Workers Scripts Write`만 가진 1년 만료 API token을 secret으로 둔다. 공개 Turnstile site key는 저장소 Actions 변수로 분리한다. Worker의 OAuth·Turnstile·수집 secret은 Cloudflare에 그대로 둔다.
 - 데이터 경계: Worker 자동 배포는 D1 migration이나 Practice Kit seed를 자동 적용하지 않는다. 스키마 변경은 운영 D1 백업과 별도 migration 확인 뒤 `master` 배포 전에 적용한다. D-052~D-054의 Kit fixture는 소유자 검수와 공개 게이트 전까지 Production에 입력하지 않는다.
