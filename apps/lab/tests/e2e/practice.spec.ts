@@ -570,7 +570,8 @@ test('연습 코드가 부모 앱에 접근하지 못하고 네트워크 요청�
       "try { parent.document.title = 'unsafe' } catch { console.log('parent blocked') }; try { localStorage.getItem('kwak-motion:theme') } catch { console.log('storage blocked') }; try { top.location.href = '/api/v1/health' } catch { console.log('top blocked') }; console.log(window.open('/api/v1/health') ? 'popup opened' : 'popup blocked'); const form = document.createElement('form'); form.action = '/api/v1/health'; document.body.append(form); form.submit(); fetch('/api/v1/health').catch(() => console.log('network blocked'))",
     )
   await page.getByRole('button', { name: 'Run', exact: true }).click()
-  await page.getByRole('button', { name: /^Console/ }).click()
+  const consoleButton = page.getByRole('button', { name: /^Console/ })
+  if ((await consoleButton.getAttribute('aria-expanded')) === 'false') await consoleButton.click()
   await expect(page.getByRole('log')).toContainText('parent blocked')
   await expect(page.getByRole('log')).toContainText('storage blocked')
   await expect(page.getByRole('log')).toContainText('top blocked')

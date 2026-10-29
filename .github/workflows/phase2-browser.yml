@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - codex/phase2-practice
+    paths:
+      - apps/lab/**
+      - .github/workflows/phase2-browser.yml
   pull_request:
     paths:
       - apps/lab/**
