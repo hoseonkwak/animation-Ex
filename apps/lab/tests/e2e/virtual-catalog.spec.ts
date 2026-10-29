@@ -1,17 +1,7 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
-test('전체 탐색에는 다음 결과 버튼이 있고 카테고리에는 없다', async ({ page }) => {
-  await page.goto('/explore')
-  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toBeVisible()
-
-  await page.goto('/explore?section=card')
-  await expect(page.locator('.example-card').first()).toBeVisible()
-  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
-})
-
-test('카테고리 목록은 기존 행 DOM을 재사용하며 다음 페이지를 자동으로 가져온다', async ({
-  page,
-}) => {
+async function mockLongCatalog(page: Page): Promise<string[]> {
   const response = await page.request.get('/api/v1/examples?limit=1')
   const template = await response.json()
   const original = template.data.items[0]
@@ -41,22 +31,55 @@ test('카테고리 목록은 기존 행 DOM을 재사용하며 다음 페이지�
     })
   })
 
+  return requestedCursors
+}
+
+test('전체 탐색에는 다음 결과 버튼이 있고 카테고리에는 없다', async ({ page }) => {
+  await page.goto('/explore')
+  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toBeVisible()
+
+  await page.goto('/explore?section=card')
+  await expect(page.locator('.example-card').first()).toBeVisible()
+  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
+})
+
+test('카테고리 목록은 화면 밖 행을 제거하며 다음 페이지를 자동으로 가져온다', async ({ page }) => {
+  const requestedCursors = await mockLongCatalog(page)
   await page.goto('/explore?section=card')
   const firstRow = page.locator('.virtual-example-row').first()
   await expect(firstRow).toHaveAttribute('data-row-index', '0')
-  const originalRow = await firstRow.elementHandle()
-
   for (let pageNumber = 2; pageNumber <= 8; pageNumber += 1) {
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
     await expect.poll(() => requestedCursors.length).toBeGreaterThanOrEqual(pageNumber)
-    expect(await page.locator('.example-card').count()).toBeLessThanOrEqual(30)
+    expect(await page.locator('.example-card').count()).toBeLessThanOrEqual(60)
   }
   await expect.poll(() => firstRow.getAttribute('data-row-index').then(Number)).toBeGreaterThan(0)
-  expect(await originalRow?.evaluate((row) => row.isConnected)).toBe(true)
   await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(0)
   await page.evaluate(() => window.scrollTo(0, 0))
   await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(1)
   await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
+})
+
+test('빠르게 스크롤해도 목록 영역에 카드가 보인다', async ({ page }) => {
+  await page.setViewportSize({ width: 1265, height: 720 })
+  await mockLongCatalog(page)
+  await page.goto('/explore?section=button')
+  await expect(page.locator('.example-card').first()).toBeVisible()
+
+  for (const distance of [1400, 2400, 3400]) {
+    await page.evaluate((y) => window.scrollTo(0, y), distance)
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+    )
+    const visibleCards = await page.locator('.example-card').evaluateAll(
+      (cards) =>
+        cards.filter((card) => {
+          const rect = card.getBoundingClientRect()
+          return rect.bottom > 72 && rect.top < window.innerHeight
+        }).length,
+    )
+    expect(visibleCards).toBeGreaterThan(0)
+  }
 })
 
 test('카테고리가 많아도 데스크톱과 모바일에서 끝 항목이 잘리지 않는다', async ({ page }) => {

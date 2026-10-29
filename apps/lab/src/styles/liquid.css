@@ -252,18 +252,6 @@
   gap: 22px;
 }
 
-.virtual-example-row {
-  margin-bottom: 20px;
-}
-
-.virtual-example-row.home-example-grid {
-  margin-bottom: 22px;
-}
-
-.virtual-example-spacer {
-  width: 100%;
-}
-
 .feed-error {
   margin-top: 24px;
   color: var(--color-text-muted);
