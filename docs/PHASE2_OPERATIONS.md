@@ -16,6 +16,13 @@
 - Preview의 CSP 위반, 실행 중단·시간 초과와 CodePen 전송 실패를 재현 가능한 URL·브라우저·Kit 버전으로 기록한다. 사용자 작성 코드는 문제 제보에 자동 첨부하지 않는다.
 - 기본 브라우저 검사는 Chromium이며, `KWAK_CROSS_BROWSER=1`을 켜면 Firefox·WebKit 연습 시나리오를 실행한다. 브라우저 실행 환경 오류와 제품 실패를 구분해 남긴다.
 
+## CodePen 실제 수신 확인
+
+1. 일반 브라우저에서 Preview의 `/practice`를 열어 새 연습을 시작하고 HTML에 `<main>CodePen prefill check</main>`를 입력한다.
+2. `CodePen으로 보내기`를 한 번 누른다. 새 창이 막히면 화면의 복사 안내를 확인하고 브라우저의 팝업 차단 상태를 점검한다.
+3. CodePen이 추가 확인 화면을 요구하면 사람이 직접 완료한다. 열린 편집기의 HTML에 위 샘플 문구가 있고 CSS·JS도 현재 연습 코드와 같은지 확인한다. Pen을 저장하거나 공개할 필요는 없다.
+4. 결과 화면, 브라우저, 확인 시각을 `docs/evidence/`에 기록한다. 자동화가 CodePen의 확인 화면이나 403에 막혔다면 수신 성공으로 표시하지 않는다.
+
 ## 중지와 복구
 
 - 특정 Kit에 권리·실행·보안 문제가 생기면 해당 `practice_kits.status`를 `paused`로 변경한다. 공개 API는 중지된 Kit을 반환하지 않는다. 해당 Entry의 빈 코드 연습은 계속 제공한다.
