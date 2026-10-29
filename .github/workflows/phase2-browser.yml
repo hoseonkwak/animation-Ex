@@ -1,0 +1,36 @@
+name: Phase 2 browser
+
+on:
+  push:
+    branches:
+      - codex/phase2-practice
+  pull_request:
+    paths:
+      - apps/lab/**
+      - .github/workflows/phase2-browser.yml
+
+permissions:
+  contents: read
+
+jobs:
+  practice-firefox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Firefox
+        run: npx playwright install --with-deps firefox
+
+      - name: Verify Practice in Firefox
+        run: KWAK_CROSS_BROWSER=1 node apps/lab/tests/e2e/run.mjs --project=firefox
