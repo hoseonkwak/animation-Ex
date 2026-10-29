@@ -676,6 +676,22 @@ test('코드 오류를 Console에 표시하고 고친 코드를 다시 실행한
   await expect(page.getByRole('log')).not.toContainText('practice failure')
 })
 
+test('HTML 이벤트 속성에서 사용자 JavaScript 함수를 호출할 수 있다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await page
+    .getByRole('textbox', { name: 'HTML 코드' })
+    .fill('<button onclick="changeText()">누르기</button><p>기다림</p>')
+  await page.getByRole('tab', { name: 'JS' }).click()
+  await page
+    .getByRole('textbox', { name: 'JavaScript 코드' })
+    .fill("function changeText() { document.querySelector('p').textContent = '실행됨' }")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  await preview.getByRole('button', { name: '누르기' }).click()
+  await expect(preview.locator('p')).toHaveText('실행됨')
+})
+
 test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
   await page.goto('/examples/gsap-scrollsmoother')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
