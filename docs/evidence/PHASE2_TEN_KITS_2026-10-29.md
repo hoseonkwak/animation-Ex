@@ -25,6 +25,7 @@
 | `npm run test:e2e` | Chromium 50개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기, 기존 초안 보호/새 버전 선택, Practice 홈의 Kit 목록·모바일 진입 포함 |
 | WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 31개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
 | WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
+| Linux Firefox CI | [Actions 실행 #5](https://github.com/hoseonkwak/animation-Ex/actions/runs/40807168639)에서 연습 32개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
 | `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수
@@ -38,12 +39,13 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 - Preview D1을 `.wrangler/preview-before-phase2-2026-10-29.sql`로 백업했다. 이 파일은 Git에서 제외된 로컬 운영 백업이다.
 - 첫 원격 query는 Cloudflare API 7403이었지만, 재조회에서 실제 상태인 `no such table: practice_kits`를 확인했다. 미적용 0013·0014 migration을 적용했고, 대상 공개 Entry 10건의 ID·상태를 읽기 전용으로 확인했다.
 - `practice_phase2.sql`을 Preview D1에 적용했다. 22개 SQL 명령이 성공했고 `practice_kits.status='ready'` 10건을 재조회했다.
-- Preview Worker 최종 버전 `f71b374f-41ed-4d57-8acf-a3e0295e549a`를 배포했다. 공개 Practice Kit API 10건의 버전·라이브러리, `practiceReady=true` 목록 10건과 로컬 썸네일 10개의 HTTP 200을 확인했다.
+- Preview Worker 최초 검증 버전 `f71b374f-41ed-4d57-8acf-a3e0295e549a`에서 공개 Practice Kit API 10건의 버전·라이브러리, `practiceReady=true` 목록 10건과 로컬 썸네일 10개의 HTTP 200을 확인했다.
+- Firefox 회귀 검사에서 초안 로드 직후 예약된 불필요한 재실행을 찾아 Vue 반응성 갱신이 끝난 뒤 실행 준비 상태로 전환했다. 차단된 팝업에 Firefox가 예외를 던지는 동작도 테스트에 반영했다. 수정본 Preview Worker `e91344a2-da67-4e06-b438-d6510ef58745`를 배포하고 smoke 5개와 배포 URL의 색상 멈추기·격리 브라우저 검사 2개를 통과했다.
 - `smoke:preview`의 health, 공개 목록, robots 차단, 비로그인 홈, 관리자 비인증 차단 5개가 통과했다. 배포된 URL의 Chromium 연습 검사 31개와, 홈 목록·모바일 진입 대상 1개가 통과했다.
 - Preview의 `practice-basic-tween` Kit을 잠시 `paused`로 바꿨을 때 공개 API는 404를 반환했다. 즉시 `ready`로 복구하니 200을 반환했다. Production D1은 변경하지 않았다.
 
 ## 남은 공개 게이트
 
 - 이번 10건의 화면·키보드·축소·권리 정보를 사람이 검수하고 결과를 기록한다. 자동 검사는 미적 유사성과 권리 판단을 대신하지 않는다.
-- Firefox, 모바일 확대, 저장 용량 한계, 오래된 실행 로그와 CodePen 실제 수신을 검증한다. 이 Windows 환경의 Playwright Firefox 실행 파일은 앱 시작 전에 side-by-side configuration 오류로 종료되어 브라우저 검사가 실행되지 않았다. 제품 실패로 계산하지 않고 다른 실행 환경에서 재검증한다.
+- 모바일 확대, 저장 용량 한계, 오래된 실행 로그와 CodePen 실제 수신을 검증한다.
 - Production에는 아직 seed하지 않는다. Preview의 `ready`와 운영 리허설은 소유자의 콘텐츠 승인 및 Production 출시 근거를 대신하지 않는다.
