@@ -2,6 +2,8 @@ import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
 import path from 'node:path'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const require = createRequire(import.meta.url)
@@ -11,10 +13,12 @@ const viteCli = packageCli('vite', 'bin/vite.js')
 const playwrightCli = packageCli('@playwright/test', 'cli.js')
 const wranglerCli = packageCli('wrangler', 'bin/wrangler.js')
 const baseUrl = 'http://127.0.0.1:5173'
+const e2eStateDir = mkdtempSync(path.join(tmpdir(), 'kwak-motion-e2e-'))
+process.env.KWAK_E2E_STATE_DIR = e2eStateDir
 
 async function runCommand(command, args) {
   const exitCode = await new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+    const child = spawn(command, [...args, '--persist-to', e2eStateDir], {
       cwd: appRoot,
       env: { ...process.env, WRANGLER_LOG: 'none' },
       stdio: 'inherit',
@@ -146,6 +150,18 @@ async function stopServer() {
   process.kill(-server.pid, 'SIGTERM')
 }
 
+function cleanupE2eState() {
+  const resolvedState = path.resolve(e2eStateDir)
+  const resolvedTemp = path.resolve(tmpdir())
+  if (
+    path.dirname(resolvedState) !== resolvedTemp ||
+    !path.basename(resolvedState).startsWith('kwak-motion-e2e-')
+  ) {
+    throw new Error('E2E 임시 상태 경로가 예상한 임시 폴더 밖입니다.')
+  }
+  rmSync(resolvedState, { recursive: true, force: true })
+}
+
 let exitCode
 
 try {
@@ -163,6 +179,7 @@ try {
   })
 } finally {
   await stopServer()
+  cleanupE2eState()
 }
 
 process.exit(exitCode)

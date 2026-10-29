@@ -327,4 +327,4 @@ checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 �
 
 `GET /api/v1/examples/:slug/practice-kit`은 공개 Entry의 `ready` Kit에 한해서 불변 CodePackageVersion의 ID·버전, HTML·CSS·JavaScript 시작 코드, 상호작용 안내와 공개 가능한 제작·라이선스 정보를 반환한다. Kit이 없거나 중지됐거나 Entry가 비공개이면 `404 PRACTICE_KIT_NOT_FOUND`다. 응답 캐시는 최대 60초다.
 
-초기 버전은 외부 스크립트·스타일·에셋을 포함하지 않는다. 내부 provenance 원문과 운영 메모는 API에 노출하지 않는다. Kit의 권리·실행 정책이 계약과 다르면 성공 응답을 만들지 않고 추적 가능한 서버 오류를 남긴다.
+초기 버전은 외부 스크립트·스타일·에셋을 포함하지 않는다. `libraries`는 고정 버전 내부 실행 라이브러리 목록이며, 현재 허용값은 `gsap@3.15.0` 하나다. 일반 Kit은 `[]`를 반환한다. Preview는 이 값에 따라 로컬에 묶인 GSAP 코드를 주입하고 네트워크 연결을 허용하지 않는다. 내부 provenance 원문과 운영 메모는 API에 노출하지 않는다. Kit의 권리·실행 정책이 계약과 다르면 성공 응답을 만들지 않고 추적 가능한 서버 오류를 남긴다.

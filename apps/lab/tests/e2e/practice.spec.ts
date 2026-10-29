@@ -26,6 +26,41 @@ test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 �
   await expect(preview.getByRole('button', { name: /움직이는 카드/ })).toBeVisible()
 })
 
+test('GSAP Kit이 격리 실행 화면에서 움직이고 CodePen에도 같은 버전을 전달한다', async ({
+  page,
+}) => {
+  await page.goto('/examples/gsap-basic-tween')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const box = preview.getByLabel('움직이는 상자')
+  await expect(box).toBeVisible()
+  await expect
+    .poll(() => box.evaluate((element) => (element as HTMLElement).style.transform))
+    .toContain('translate')
+  const exportData = JSON.parse(
+    await page
+      .locator('form[action="https://codepen.io/cpe/pen/define/"] input[name="data"]')
+      .inputValue(),
+  ) as { js_external: string }
+  expect(exportData.js_external).toBe('https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js')
+  await page.reload()
+  await expect(preview.getByLabel('움직이는 상자')).toBeVisible()
+  await page.getByRole('button', { name: '원본 참고' }).click()
+  await expect(page.getByLabel('원본 참고')).toContainText('GSAP 3.15.0')
+})
+
+test('GSAP Kit은 움직임 줄이기 설정에서 최종 상태를 표시한다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/examples/gsap-basic-tween')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const box = page.frameLocator('iframe[title="내 코드 실행 화면"]').getByLabel('움직이는 상자')
+  await expect(box).toBeVisible()
+  await expect
+    .poll(() => box.evaluate((element) => (element as HTMLElement).style.transform))
+    .toContain('180px')
+})
+
 test('Dark 테마와 움직임 줄이기 설정을 작업 공간과 Kit에 적용한다', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.addInitScript(() => localStorage.setItem('kwak-motion:theme', 'dark'))
@@ -55,10 +90,8 @@ test('Kit을 불러오지 못하면 오류를 알리고 같은 예제를 빈 코
   )
 })
 
-test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행·복원된다', async ({ page, request }) => {
-  const response = await request.get('/api/v1/examples?limit=1')
-  const first = (await response.json()).data.items[0] as { slug: string }
-  await page.goto(`/examples/${first.slug}`)
+test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행·복원된다', async ({ page }) => {
+  await page.goto('/examples/gsap-basic-transform')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
 
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
@@ -263,10 +296,8 @@ test('연습 코드가 iframe을 앱 API로 이동시키면 접근을 거절한�
   expect(response.headers()['x-frame-options']).toBe('DENY')
 })
 
-test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page, request }) => {
-  const response = await request.get('/api/v1/examples?limit=1')
-  const first = (await response.json()).data.items[0] as { slug: string }
-  await page.goto(`/examples/${first.slug}`)
+test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
+  await page.goto('/examples/gsap-basic-transform')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
   await page.getByRole('button', { name: '원본 참고' }).click()
   const panel = page.getByLabel('원본 참고')

@@ -1,3 +1,6 @@
+import gsapSource from 'gsap/dist/gsap.min.js?raw'
+import type { PracticeLibrary } from '@/shared/practice'
+
 export interface PracticeCode {
   html: string
   css: string
@@ -22,8 +25,16 @@ const contentPolicy = [
   "base-uri 'none'",
 ].join('; ')
 
-export function buildPracticeDocument(code: PracticeCode, runId: string): string {
-  const payload = JSON.stringify({ ...code, runId }).replace(/</g, '\\u003c')
+export function buildPracticeDocument(
+  code: PracticeCode,
+  runId: string,
+  libraries: PracticeLibrary[] = [],
+): string {
+  const payload = JSON.stringify({
+    ...code,
+    runId,
+    gsapSource: libraries.includes('gsap@3.15.0') ? gsapSource : null,
+  }).replace(/</g, '\\u003c')
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -53,6 +64,11 @@ export function buildPracticeDocument(code: PracticeCode, runId: string): string
   style.textContent = data.css;
   document.head.append(style);
   document.body.innerHTML = data.html;
+  if (data.gsapSource) {
+    const library = document.createElement('script');
+    library.textContent = data.gsapSource;
+    document.body.append(library);
+  }
   const script = document.createElement('script');
   script.textContent = data.javascript;
   document.body.append(script);

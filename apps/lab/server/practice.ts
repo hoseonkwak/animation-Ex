@@ -1,4 +1,4 @@
-import type { PracticeKitPayload } from '../src/shared/practice'
+import type { PracticeKitPayload, PracticeLibrary } from '../src/shared/practice'
 
 interface PracticeKitRow {
   kit_id: string
@@ -41,6 +41,7 @@ export async function findReadyPracticeKit(
   const styles = JSON.parse(row.external_styles_json) as unknown
   const assets = JSON.parse(row.assets_json) as unknown
   const policy = JSON.parse(row.runtime_policy_json) as Record<string, unknown>
+  const libraries = policy.libraries ?? []
   const provenance = JSON.parse(row.provenance_json) as Record<string, unknown>
   if (
     !Array.isArray(scripts) ||
@@ -51,6 +52,8 @@ export async function findReadyPracticeKit(
     assets.length > 0 ||
     policy.sandbox !== 'allow-scripts' ||
     policy.network !== 'blocked' ||
+    !Array.isArray(libraries) ||
+    libraries.some((library) => library !== 'gsap@3.15.0') ||
     provenance.basis !== 'independent-reimplementation' ||
     provenance.sourceCodeCopied !== false ||
     typeof provenance.author !== 'string' ||
@@ -64,6 +67,7 @@ export async function findReadyPracticeKit(
     versionId: row.version_id,
     version: row.version,
     code: { html: row.html, css: row.css, javascript: row.javascript },
+    libraries: libraries as PracticeLibrary[],
     interactionInstructions: row.interaction_instructions,
     provenance: {
       basis: 'independent-reimplementation',

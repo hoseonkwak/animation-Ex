@@ -19,7 +19,13 @@ onMounted(async () => {
   try {
     let title = '새 연습'
     let starter:
-      | { code: PracticeKitPayload['code']; versionId: string; author: string; licenseCode: string }
+      | {
+          code: PracticeKitPayload['code']
+          versionId: string
+          author: string
+          licenseCode: string
+          libraries: PracticeKitPayload['libraries']
+        }
       | undefined
     if (slug) {
       const response = await fetch(`/api/v1/examples/${encodeURIComponent(slug)}`)
@@ -38,6 +44,7 @@ onMounted(async () => {
           versionId: kit.versionId,
           author: kit.provenance.author,
           licenseCode: kit.provenance.licenseCode,
+          libraries: kit.libraries,
         }
       }
     }

@@ -35,4 +35,14 @@ describe('Practice Preview 실행 경계', () => {
       ),
     ).toEqual({ runId: 'new', type: 'error', message: '실행 오류' })
   })
+
+  it('허용된 Kit에만 내장 GSAP 코드를 포함한다', () => {
+    const code = { html: '<div></div>', css: '', javascript: 'gsap.to("div", { x: 10 })' }
+    const blank = buildPracticeDocument(code, 'blank')
+    const gsap = buildPracticeDocument(code, 'gsap', ['gsap@3.15.0'])
+    expect(blank).toContain('"gsapSource":null')
+    expect(gsap).toContain('"gsapSource":"')
+    expect(gsap.length).toBeGreaterThan(blank.length + 50_000)
+    expect(gsap).toContain("connect-src 'none'")
+  })
 })

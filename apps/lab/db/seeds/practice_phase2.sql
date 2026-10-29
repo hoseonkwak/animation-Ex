@@ -23,3 +23,29 @@ INSERT OR IGNORE INTO practice_kits (
   'practice-card-hover', 'entry-card-1', 'practice-card-hover-v1', 'free', 'ready',
   '2026-10-27T07:00:00.000Z', '2026-10-27T07:00:00.000Z'
 );
+
+-- GSAP 기초 트윈을 학습할 수 있는 자체 제작 시작 코드. 원본 Pen 코드는 사용하지 않는다.
+INSERT OR IGNORE INTO code_package_versions (
+  id, animation_entry_id, version, html, css, javascript,
+  external_scripts_json, external_styles_json, assets_json,
+  viewport_json, interaction_instructions, runtime_policy_json,
+  provenance_json, license_code, created_by, created_at
+) VALUES (
+  'practice-basic-tween-v1', 'entry-basic-1', 1,
+  '<main class="kit-stage"><div class="kit-track"><div class="kit-box" aria-label="움직이는 상자">✳</div></div><button class="kit-replay" type="button">다시 실행</button></main>',
+  'body{margin:0;font-family:system-ui,sans-serif;background:#f4f2ff;color:#29245a}.kit-stage{min-height:100vh;display:grid;place-content:center;gap:32px;padding:24px;box-sizing:border-box}.kit-track{width:min(72vw,300px);height:100px;display:flex;align-items:center;border-bottom:2px solid #cec8fa}.kit-box{width:68px;height:68px;display:grid;place-items:center;border-radius:18px;background:#7364e5;color:white;font-size:36px;box-shadow:0 14px 28px #7364e544}.kit-replay{width:max-content;margin:auto;padding:12px 20px;border:0;border-radius:12px;background:#29245a;color:white;font:inherit;cursor:pointer}.kit-replay:focus-visible{outline:3px solid #7364e5;outline-offset:3px}',
+  'const box=document.querySelector(".kit-box");const replay=document.querySelector(".kit-replay");const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;function animate(){gsap.set(box,{x:0,rotation:0});if(reduced){gsap.set(box,{x:180,rotation:360});return}gsap.to(box,{x:180,rotation:360,duration:1.2,ease:"power2.out"})}replay.addEventListener("click",animate);animate();',
+  '[]', '[]', '[]',
+  '{"width":1280,"height":800}',
+  '상자의 이동과 회전을 본 뒤 다시 실행 버튼을 누르세요.',
+  '{"sandbox":"allow-scripts","network":"blocked","libraries":["gsap@3.15.0"]}',
+  '{"basis":"independent-reimplementation","author":"Kwak Motion Lab","sourceCodeCopied":false,"externalAssets":false}',
+  'MIT', 'agent', '2026-10-29T00:00:00.000Z'
+);
+
+INSERT OR IGNORE INTO practice_kits (
+  id, animation_entry_id, starter_code_package_version_id, mode, status, created_at, updated_at
+) VALUES (
+  'practice-basic-tween', 'entry-basic-1', 'practice-basic-tween-v1', 'free', 'ready',
+  '2026-10-29T00:00:00.000Z', '2026-10-29T00:00:00.000Z'
+);

@@ -1,4 +1,5 @@
 import type { PracticeCode } from './runtime'
+import type { PracticeLibrary } from '@/shared/practice'
 
 export interface PracticeDraft {
   id: string
@@ -11,6 +12,7 @@ export interface PracticeDraft {
   kitVersionId?: string | null
   kitAuthor?: string | null
   kitLicenseCode?: string | null
+  libraries?: PracticeLibrary[]
   createdAt: string
   updatedAt: string
 }
@@ -51,6 +53,9 @@ function isDraft(value: unknown): value is PracticeDraft {
     (draft.kitLicenseCode === undefined ||
       draft.kitLicenseCode === null ||
       typeof draft.kitLicenseCode === 'string') &&
+    (draft.libraries === undefined ||
+      (Array.isArray(draft.libraries) &&
+        draft.libraries.every((library) => library === 'gsap@3.15.0'))) &&
     typeof draft.createdAt === 'string' &&
     !Number.isNaN(Date.parse(draft.createdAt)) &&
     typeof draft.updatedAt === 'string' &&
@@ -98,6 +103,7 @@ export async function saveDraft(draft: PracticeDraft): Promise<void> {
     kitVersionId: draft.kitVersionId ?? null,
     kitAuthor: draft.kitAuthor ?? null,
     kitLicenseCode: draft.kitLicenseCode ?? null,
+    libraries: [...(draft.libraries ?? [])],
     createdAt: draft.createdAt,
     updatedAt: draft.updatedAt,
   }
@@ -144,7 +150,13 @@ export async function listDrafts(): Promise<{ drafts: PracticeDraft[]; invalidCo
 export async function createDraft(
   title = '새 연습',
   referenceSlug: string | null = null,
-  starter?: { code: PracticeCode; versionId: string; author: string; licenseCode: string },
+  starter?: {
+    code: PracticeCode
+    versionId: string
+    author: string
+    licenseCode: string
+    libraries: PracticeLibrary[]
+  },
 ) {
   const now = new Date().toISOString()
   const draft: PracticeDraft = {
@@ -158,6 +170,7 @@ export async function createDraft(
     kitVersionId: starter?.versionId ?? null,
     kitAuthor: starter?.author ?? null,
     kitLicenseCode: starter?.licenseCode ?? null,
+    libraries: [...(starter?.libraries ?? [])],
     createdAt: now,
     updatedAt: now,
   }

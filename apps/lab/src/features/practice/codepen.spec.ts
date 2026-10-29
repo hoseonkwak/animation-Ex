@@ -23,4 +23,18 @@ describe('CodePen prefill', () => {
     expect(payload.description).toContain('https://codepen.io/creator/pen/example')
     expect(payload.description).toContain('Kwak Motion Lab · MIT')
   })
+
+  it('GSAP Kit은 CodePen에도 같은 고정 버전을 전달한다', () => {
+    const payload = JSON.parse(
+      codePenPrefillData(
+        { html: '<div></div>', css: '', javascript: 'gsap.to("div", { x: 10 })' },
+        'GSAP 연습',
+        undefined,
+        undefined,
+        ['gsap@3.15.0'],
+      ),
+    ) as Record<string, string>
+    expect(payload.js_external).toBe('https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js')
+    expect(payload.description).toContain('https://gsap.com/community/standard-license/')
+  })
 })

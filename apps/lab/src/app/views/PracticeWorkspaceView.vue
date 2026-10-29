@@ -50,6 +50,7 @@ const codePenPayload = computed(() =>
     draft.value?.kitAuthor && draft.value.kitLicenseCode
       ? { author: draft.value.kitAuthor, licenseCode: draft.value.kitLicenseCode }
       : undefined,
+    draft.value?.libraries ?? [],
   ),
 )
 
@@ -290,7 +291,7 @@ function execute(): void {
   receivedHeartbeat = false
   logs.value = []
   previewStatus.value = 'running'
-  frameDocument.value = buildPracticeDocument(runCode, activeRunId)
+  frameDocument.value = buildPracticeDocument(runCode, activeRunId, draft.value?.libraries ?? [])
   frameKey.value += 1
   watchdog = setInterval(() => {
     if (Date.now() - lastHeartbeat < 5_000) return
@@ -453,7 +454,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
         <div class="practice-heading">
           <RouterLink to="/practice" aria-label="연습 목록으로">←</RouterLink>
           <div>
-            <span>자유 연습</span>
+            <span
+              >자유 연습{{ draft.libraries?.includes('gsap@3.15.0') ? ' · GSAP 3.15.0' : '' }}</span
+            >
             <h1><input v-model="title" aria-label="연습 이름" @blur="normalizeTitle" /></h1>
           </div>
         </div>
@@ -635,6 +638,10 @@ async function copyCode(tab: CodeTab): Promise<void> {
         </p>
         <p v-if="draft.kitAuthor && draft.kitLicenseCode">
           시작 코드: {{ draft.kitAuthor }} · {{ draft.kitLicenseCode }}
+        </p>
+        <p v-if="draft.libraries?.includes('gsap@3.15.0')">
+          이 연습에는 내장된 GSAP 3.15.0이 제공됩니다. CodePen으로 보낼 때는 같은 버전의 외부
+          스크립트를 추가합니다.
         </p>
         <p v-else>원본의 코드는 편집기에 복사하지 않았습니다.</p>
         <button v-if="!referencePreviewLoaded" type="button" @click="referencePreviewLoaded = true">

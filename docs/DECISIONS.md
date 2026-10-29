@@ -345,3 +345,12 @@
 - 결정: 자체 제작 시작 코드는 D1의 불변 CodePackageVersion과 별도 PracticeKit으로 관리한다. Kit이 `ready`이고 연결된 Entry가 `published`일 때만 공개 API로 제공한다. 처음에는 외부 스크립트·스타일·에셋 없이 `allow-scripts` Preview에서 실행 가능한 코드만 허용한다.
 - 초안: 시작 코드와 버전 ID를 브라우저 초안에 함께 고정한다. Kit을 나중에 바꾸더라도 사용자의 기존 코드를 자동 덮어쓰지 않는다. Kit이 없는 예제는 D-047에 따라 빈 코드로 시작한다.
 - 출시 경계: 첫 자체 제작 카드 Kit은 로컬 fixture이며, 권리·화면·실행 게이트와 총 10개 Kit 목표가 끝나기 전에는 Production에 seed하지 않는다.
+
+### D-053 Practice Kit의 고정 GSAP 실행 환경
+
+- 상태: 로컬 구현 검증 중
+- 확인일: 2026-10-29
+- 결정: 자체 제작 GSAP Kit에 한해 `gsap@3.15.0`을 허용한다. 앱에 고정 설치한 라이브러리 코드를 격리 Preview에 넣어 실행하고, 빈 코드 연습이나 다른 Kit에는 주입하지 않는다. 원격 스크립트·스타일·에셋은 계속 금지한다. CodePen 내보내기에는 같은 버전의 외부 스크립트와 [GSAP 라이선스](https://gsap.com/community/standard-license/) 안내를 넣는다.
+- 이유: GSAP 예제의 시작 코드를 실제 GSAP API로 연습하면서 Preview의 네트워크 차단을 유지한다. 사용자가 직접 코드를 편집하는 공간이며, 시각적 애니메이션 제작 도구 기능은 범위에 넣지 않는다.
+- 근거: [GSAP 설치 문서](https://gsap.com/docs/v3/Installation/), [CodePen prefill 계약](https://blog.codepen.io/docs/api/post-to-prefill-pen/).
+- 출시 경계: 현재 GSAP Kit은 로컬 fixture다. 라이브러리 버전 변경은 새 코드 버전과 브라우저 검증 후 진행한다.
