@@ -43,6 +43,8 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 
 공개 API에서 10건의 원본 URL이 모두 `codepen.io/hoseonkwak/pen/…`이고, 자체 Kit 제작자·라이선스가 `Kwak Motion Lab`·`MIT`이며, Kit 코드 본문에 외부 URL이 없는 것을 읽기 전용으로 대조했다. Seed의 `sourceCodeCopied=false`, `externalAssets=false`도 확인했다. [CodePen의 공개 Pen 라이선스 문서](https://blog.codepen.io/docs/pens/licensing/)는 공개 Pen에 MIT가 적용된다고 설명하지만, CodePen이 이 환경에서 403을 반환해 각 원본 Pen의 현재 공개 상태와 코드 유사도를 직접 대조하지는 못했다. 이 결과는 에이전트의 화면·메타데이터 검수이며 소유자의 권리 판단과 구분한다.
 
+[GSAP 표준 라이선스](https://gsap.com/community/standard-license/)는 상용 사용을 허용하고, Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 무코드 빌더에 제한을 둔다. 현재 Practice는 사용자가 HTML·CSS·JavaScript를 직접 편집하는 방식이므로 그 제한에 해당하지 않는다는 해석이지만, 라이선스의 최종 판단으로 기록하지 않는다.
+
 ## Preview 배포와 복구 증거
 
 - Preview D1을 `.wrangler/preview-before-phase2-2026-10-29.sql`로 백업했다. 이 파일은 Git에서 제외된 로컬 운영 백업이다.
@@ -60,5 +62,5 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 
 - 이번 10건의 화면·키보드·축소·권리 정보를 사람이 검수하고 결과를 기록한다. 자동 검사는 미적 유사성과 권리 판단을 대신하지 않는다.
 - 모바일 확대, 저장 용량 한계와 CodePen 실제 수신을 검증한다. 2026-10-29에 Preview에서 샘플 코드를 담아 실제 Chromium으로 전송했을 때 새 창은 열렸으나 CodePen의 Cloudflare `Just a moment...` 확인 화면에서 멈췄다. 직접 HTTP POST도 403을 반환했다. 편집기에 코드가 반영됐다는 증거는 아직 없으며 `PHASE2_OPERATIONS.md`의 일반 브라우저 절차가 필요하다.
-- 같은 날 in-app browser에서 `<main>CodePen prefill check</main>`를 입력하고 `CodePen으로 보내기`를 눌렀을 때 새 탭은 열리지 않았고 앱의 팝업 차단·코드 복사 안내가 표시됐다. 기존 CodePen 탭에는 `Something Went Wrong`이 표시됐다. [CodePen의 최신 prefill 문서](https://blog.codepen.io/docs/api/post-to-prefill-pen/)는 현재 사용 중인 `https://codepen.io/cpe/pen/define/` POST 경로와 `data` JSON 형식을 안내한다. 따라서 payload·경로의 결정적 검사는 통과했지만 CodePen 편집기의 실제 수신은 미확인이다.
+- 같은 날 in-app browser에서 `<main>CodePen prefill check</main>`를 입력하고 `CodePen으로 보내기`를 눌렀다. 앱의 팝업 차단·코드 복사 안내가 표시됐고, 뒤늦게 열린 새 CodePen 탭에는 `Something Went Wrong`이 표시됐다. [CodePen의 최신 prefill 문서](https://blog.codepen.io/docs/api/post-to-prefill-pen/)는 현재 사용 중인 `https://codepen.io/cpe/pen/define/` POST 경로와 `data` JSON 형식을 안내한다. 공식 문서의 현재 경로와 이전 경로에 직접 POST해도 모두 HTTP 403이었다. 따라서 payload·경로의 결정적 검사는 통과했지만 CodePen 편집기의 실제 수신은 미확인이다.
 - Production에는 아직 seed하지 않는다. Preview의 `ready`와 운영 리허설은 소유자의 콘텐츠 승인 및 Production 출시 근거를 대신하지 않는다.
