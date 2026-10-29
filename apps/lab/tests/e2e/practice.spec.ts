@@ -660,6 +660,22 @@ test('이전 실행에서 늦게 발생한 로그가 새 실행 화면에 섞이
   await expect(page.getByRole('log')).not.toContainText('stale run')
 })
 
+test('코드 오류를 Console에 표시하고 고친 코드를 다시 실행한다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await page.getByRole('tab', { name: 'JS' }).click()
+  const editor = page.getByRole('textbox', { name: 'JavaScript 코드' })
+  await editor.fill("throw new Error('practice failure')")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(page.getByText('코드 오류')).toBeVisible()
+  await expect(page.getByRole('log')).toContainText('practice failure')
+  await editor.fill("console.log('practice recovered')")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(page.getByText('정상 실행')).toBeVisible()
+  await expect(page.getByRole('log')).toContainText('practice recovered')
+  await expect(page.getByRole('log')).not.toContainText('practice failure')
+})
+
 test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
   await page.goto('/examples/gsap-scrollsmoother')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()

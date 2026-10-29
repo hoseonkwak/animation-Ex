@@ -22,13 +22,14 @@
 | `npm run test:contracts` | 51개 통과. 로컬 `ready` Kit 10건, 목록 필터, 새 6건의 버전·권리 메타데이터와 변형 Kit v1 보존/v2 연결 확인 |
 | `npm run test` | 119개 통과. 플러그인 허용 목록·CodePen 순서·Preview 주입 순서 확인 |
 | `npm run format:check`, `npm run typecheck`, `npm run lint`, `npm run build:preview` | 통과 |
-| `npm run test:e2e` | 최신 변경에서 Chromium 52개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기, 기존 초안 보호/새 버전 선택, Practice 홈의 Kit 목록·모바일 진입 포함 |
-| WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 31개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
+| `npm run test:e2e` | 최신 변경에서 Chromium 54개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기, 기존 초안 보호/새 버전 선택, Practice 홈의 Kit 목록·모바일 진입 포함 |
+| WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 36개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
 | WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
-| Linux Firefox CI | [Actions 실행 #7](https://github.com/hoseonkwak/animation-Ex/actions/runs/40808666295)에서 최신 코드의 연습 34개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
+| Linux Firefox CI | [Actions 실행 #8](https://github.com/hoseonkwak/animation-Ex/actions/runs/40809782324)에서 이전 실행 로그 폐기를 포함한 연습 35개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
 | 좁은 화면·다운로드 격리 추가 검사 | 320px 작업 공간의 가로 넘침 없음과 sandbox iframe의 다운로드 차단을 로컬 Chromium·WebKit 및 Linux Firefox에서 확인. 320px 검사는 배포된 Preview Chromium에서도 통과 |
 | CodePen 새 창 복구 안내 | 내보내기 클릭 뒤 새 창이 안 열렸을 때 확인할 안내와 복사 가능한 현재 코드 경로를 추가. POST payload·안내·복사 경로는 로컬 Chromium·WebKit에서 확인. CodePen 서비스의 실제 수신은 아직 확인 전 |
 | 이전 실행 로그 폐기 | 700ms 뒤 출력하는 이전 iframe을 새 실행으로 교체하고 800ms 뒤 Console에 이전 로그가 없는지 로컬 Chromium·WebKit 및 배포된 Preview Chromium에서 확인 |
+| 코드 오류 원인·복구 | WebKit에서는 전역 `error` 이벤트가 원인을 `Script error.`로 숨겼다. 동기 사용자 JS를 Preview 내부에서 포착하도록 변경해 오류 문구와 수정 후 정상 실행을 Chromium·WebKit 전체 검사에서 확인 |
 | `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수

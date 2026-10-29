@@ -79,7 +79,11 @@ export function buildPracticeDocument(
     document.body.append(plugin);
   }
   const script = document.createElement('script');
-  script.textContent = data.javascript;
+  script.textContent = [
+    'try {',
+    data.javascript,
+    '} catch (error) { console.error(error instanceof Error ? error.message : String(error)) }'
+  ].join(String.fromCharCode(10));
   document.body.append(script);
   send('ready');
   setInterval(() => send('heartbeat'), 1000);

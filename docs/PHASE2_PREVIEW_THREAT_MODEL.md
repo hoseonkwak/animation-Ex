@@ -14,6 +14,7 @@
 - iframe: `allow-scripts`만 허용. `allow-same-origin`, 폼, 팝업, 다운로드, 상위 페이지 이동 권한은 주지 않는다.
 - CSP: 기본 리소스, 네트워크 연결, 폰트, 미디어, 자식 frame과 폼 전송을 막는다. CSS와 스크립트의 inline 실행, data/blob 이미지만 허용한다.
 - HTML·CSS·JS를 문서 문자열에 그대로 끼워 넣지 않고 JSON의 `<`를 이스케이프해 부트스트랩에 전달한다. HTML은 DOM에 삽입하고 CSS·JS는 각 요소의 `textContent`로 적용한다.
+- 사용자 JS의 동기 실행은 Preview 내부의 `try/catch`로 감싸 Console에 오류 메시지를 보낸다. 일부 브라우저가 sandbox 스크립트의 전역 `error` 이벤트를 `Script error.`로 가리는 경우에도 일반적인 런타임 오류 원인을 볼 수 있다. 구문 오류와 비동기 오류는 브라우저의 전역 이벤트 처리 경로에 남는다.
 - 부모는 iframe의 현재 `contentWindow`, 실행 ID와 허용된 메시지 타입을 모두 검사한다. 메시지는 Preview UI의 로그·상태에만 사용하고 권한 있는 부모 동작을 수행하지 않는다.
 - CSP의 `connect-src`는 `fetch`를 막지만 스크립트가 iframe 자신의 주소로 이동시키는 GET 요청까지 막지는 못한다. Worker는 `Sec-Fetch-Dest: iframe/frame`인 `/api/v1/*` 탐색을 403으로 거절하고 frame 표시도 금지한다. API가 요청을 받지 않는다고 주장하지 않으며, 인증된 데이터가 frame에 표시되지 않는지를 검사한다.
 - iframe을 새 실행마다 교체하고 오래된 메시지를 버린다. 로그 길이와 표시 수를 제한하고 응답이 없으면 iframe을 폐기한다.
