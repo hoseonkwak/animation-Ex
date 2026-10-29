@@ -439,6 +439,18 @@ test('좁은 화면에서는 코드와 실행 화면을 탭으로 전환한다',
   await expect(page.locator('iframe[title="내 코드 실행 화면"]')).toHaveCount(0)
 })
 
+test('320px 화면에서 연습 편집기와 실행 조작이 가로로 잘리지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 })
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Run', exact: true })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320)
+  await page.getByRole('tab', { name: '실행 화면' }).click()
+  await expect(page.locator('iframe[title="내 코드 실행 화면"]')).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320)
+})
+
 test('데스크톱 편집기 폭을 키보드로 조절하고 복원한다', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/practice/new')
@@ -599,6 +611,31 @@ test('연습 코드가 iframe을 앱 API로 이동시키면 접근을 거절한�
   const response = await denied
   expect(response.status()).toBe(403)
   expect(response.headers()['x-frame-options']).toBe('DENY')
+})
+
+test('연습 코드가 파일 다운로드를 시작하지 못한다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  const downloads: string[] = []
+  page.on('download', (download) => downloads.push(download.suggestedFilename()))
+  await page.getByRole('tab', { name: 'JS' }).click()
+  await page
+    .getByRole('textbox', { name: 'JavaScript 코드' })
+    .fill(
+      "const link = document.createElement('a'); link.href = 'data:text/plain,blocked'; link.download = 'blocked.txt'; document.body.append(link); link.click(); console.log('download attempted')",
+    )
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  const consoleButton = page.getByRole('button', { name: /^Console/ })
+  await expect(consoleButton).toContainText(/Console [1-9]/)
+  if ((await consoleButton.getAttribute('aria-expanded')) === 'false') await consoleButton.click()
+  await expect(page.getByRole('log')).toContainText('download attempted')
+  await page.waitForTimeout(300)
+  expect(downloads).toEqual([])
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await expect(page.locator('iframe[title="내 코드 실행 화면"]')).toHaveAttribute(
+    'sandbox',
+    'allow-scripts',
+  )
 })
 
 test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {

@@ -26,6 +26,7 @@
 | WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 31개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
 | WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
 | Linux Firefox CI | [Actions 실행 #5](https://github.com/hoseonkwak/animation-Ex/actions/runs/40807168639)에서 연습 32개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
+| 좁은 화면·다운로드 격리 추가 검사 | 320px 작업 공간의 가로 넘침 없음과 sandbox iframe의 다운로드 차단을 로컬 Chromium·WebKit에서 각각 2개씩 확인. 320px 검사는 배포된 Preview Chromium에서도 통과 |
 | `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수

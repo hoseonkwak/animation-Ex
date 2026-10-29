@@ -20,8 +20,8 @@ P2-1은 빈 기본 코드의 로컬 실행 흐름부터 검증하고 자체 제�
 
 | 단계 | 현재 상태 | 남은 게이트 |
 | --- | --- | --- |
-| P2-0 | `srcdoc` 불투명 출처, CSP, 실행 ID 메시지, API iframe 탐색 403, 상위 이동·폼·팝업 차단을 Chromium·WebKit·Linux Firefox에서 검증 | 다운로드 차단, 긴 실행의 실제 제한 검증 |
-| P2-1 | 빈 코드 초안에서 편집·Run·Preview, 데스크톱 폭 조절과 모바일 탭 구현. 자체 제작 Kit 10건의 로컬 실행, Dark·reduced motion 검증. Kit API 장애 시 오류 안내와 같은 예제의 빈 코드 연습 복구. Practice 홈에서 Kit 목록·썸네일·직접 시작 제공 | 전체 키보드·화면 확대 점검 |
+| P2-0 | `srcdoc` 불투명 출처, CSP, 실행 ID 메시지, API iframe 탐색 403, 상위 이동·폼·팝업 차단을 Chromium·WebKit·Linux Firefox에서 검증. 파일 다운로드 차단을 Chromium·WebKit에서 확인 | Firefox 다운로드 차단과 긴 실행의 실제 제한 검증 |
+| P2-1 | 빈 코드 초안에서 편집·Run·Preview, 데스크톱 폭 조절과 모바일 탭 구현. 자체 제작 Kit 10건의 로컬 실행, Dark·reduced motion 검증. Kit API 장애 시 오류 안내와 같은 예제의 빈 코드 연습 복구. Practice 홈에서 Kit 목록·썸네일·직접 시작 제공. 320px 너비에서 편집기·Run·Preview 가로 잘림 없음 확인 | 전체 키보드·실제 브라우저 확대 점검 |
 | P2-2 | 입력 지연 자동 실행, iframe 교체, Console 상한, heartbeat·시간 초과 구현. 연속 환경 실패 3회 중지·정상 실행 복구와 50개/500자 Console 제한을 Chromium에서 검증 | 오래된 실행 로그와 코드 오류의 브라우저 회귀 검사 |
 | P2-3 | IndexedDB 초안, 이름·새로고침 복원, 최근 목록, 초기화 전 복구 스냅샷과 손상·저장 실패 상태를 Chromium에서 검증. 화면 설정 localStorage가 막혀도 초안 편집·실행 유지. 같은 예제 재진입 때 기존 초안 이어가기/새 초안 생성 선택. Kit 시작 코드와 버전 ID를 초안에 고정 | 실제 용량 한계와 Kit 변경 후 기존 초안 보호의 전체 브라우저 검증 |
 | P2-4 | 원본 참고 Embed를 별도 클릭 때 로드하고 닫으면 제거, 빈 코드 진입, CodePen POST prefill, 수동 코드 복사 제공 | CodePen 실제 수신·팝업 실패 UX 및 권리 고지 점검 |
