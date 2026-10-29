@@ -61,6 +61,26 @@ describe('Phase 2 Practice Kit contract', () => {
     sqlite.close()
   })
 
+  it.each([
+    ['gsap-basic-transform', 'practice-basic-transform-v1', 'gsap.to'],
+    ['gsap-from-fromto-timeline', 'practice-from-fromto-timeline-v1', 'gsap.timeline'],
+  ])('%s Kit을 올바른 Entry의 고정 GSAP 코드로 반환한다', async (slug, versionId, api) => {
+    const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
+    const response = await worker.fetch(
+      new Request(`https://example.test/api/v1/examples/${slug}/practice-kit`),
+      { DB: d1 },
+      context,
+    )
+    const body = (await response.json()) as {
+      data: { versionId: string; libraries: string[]; code: { javascript: string } }
+    }
+    expect(response.status).toBe(200)
+    expect(body.data.versionId).toBe(versionId)
+    expect(body.data.libraries).toEqual(['gsap@3.15.0'])
+    expect(body.data.code.javascript).toContain(api)
+    sqlite.close()
+  })
+
   it('Kit이 없거나 중지되면 시작 코드를 제공하지 않는다', async () => {
     const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
     const missing = await worker.fetch(

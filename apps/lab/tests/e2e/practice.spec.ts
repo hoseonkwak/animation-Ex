@@ -61,6 +61,75 @@ test('GSAP Kit은 움직임 줄이기 설정에서 최종 상태를 표시한다
     .toContain('180px')
 })
 
+test('크기·위치 Kit을 실행하고 다시 재생할 수 있다', async ({ page }) => {
+  await page.goto('/examples/gsap-basic-transform')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const shape = preview.getByLabel('크기와 위치가 바뀌는 원')
+  await expect(shape).toBeVisible()
+  await expect
+    .poll(() => shape.evaluate((element) => (element as HTMLElement).style.transform))
+    .toContain('scale(1.45')
+  await preview.getByRole('button', { name: '다시 실행' }).click()
+  await expect
+    .poll(() => shape.evaluate((element) => (element as HTMLElement).style.transform))
+    .not.toContain('scale(1.45')
+  await expect
+    .poll(() => shape.evaluate((element) => (element as HTMLElement).style.transform))
+    .toContain('scale(1.45')
+  await page.reload()
+  await expect(shape).toBeVisible()
+})
+
+test('from·fromTo·timeline Kit이 실제 코드로 순서대로 등장한다', async ({ page }) => {
+  await page.goto('/examples/gsap-from-fromto-timeline')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  await expect(preview.getByText('fromTo')).toBeVisible()
+  await expect(preview.getByText('timeline', { exact: true })).toBeVisible()
+  await preview.getByRole('button', { name: '순서 다시 보기' }).click()
+  await expect(preview.locator('.timeline-step')).toHaveCount(3)
+  expect(
+    await preview
+      .locator('.timeline-step')
+      .first()
+      .evaluate((element) => {
+        const gsap = (
+          window as unknown as { gsap: { getTweensOf: (target: Element) => unknown[] } }
+        ).gsap
+        return gsap.getTweensOf(element).length
+      }),
+  ).toBeGreaterThan(0)
+  await expect(page.getByText('정상 실행')).toBeVisible()
+  const data = JSON.parse(
+    await page
+      .locator('form[action="https://codepen.io/cpe/pen/define/"] input[name="data"]')
+      .inputValue(),
+  ) as { js: string; js_external: string }
+  expect(data.js).toContain('gsap.timeline')
+  expect(data.js_external).toContain('gsap@3.15.0')
+})
+
+test('새 GSAP Kit들은 움직임 줄이기 설정에서 바로 최종 상태를 표시한다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/examples/gsap-basic-transform')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const shape = preview.getByLabel('크기와 위치가 바뀌는 원')
+  await expect(shape).toBeVisible()
+  expect(await shape.evaluate((element) => (element as HTMLElement).style.transform)).toContain(
+    'scale(1.45',
+  )
+
+  await page.goto('/examples/gsap-from-fromto-timeline')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const steps = page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('.timeline-step')
+  await expect(steps).toHaveCount(3)
+  for (const step of await steps.all()) {
+    expect(await step.evaluate((element) => getComputedStyle(element).opacity)).toBe('1')
+  }
+})
+
 test('Dark 테마와 움직임 줄이기 설정을 작업 공간과 Kit에 적용한다', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.addInitScript(() => localStorage.setItem('kwak-motion:theme', 'dark'))
@@ -91,7 +160,7 @@ test('Kit을 불러오지 못하면 오류를 알리고 같은 예제를 빈 코
 })
 
 test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행·복원된다', async ({ page }) => {
-  await page.goto('/examples/gsap-basic-transform')
+  await page.goto('/examples/gsap-scrollsmoother')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
 
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
@@ -297,7 +366,7 @@ test('연습 코드가 iframe을 앱 API로 이동시키면 접근을 거절한�
 })
 
 test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
-  await page.goto('/examples/gsap-basic-transform')
+  await page.goto('/examples/gsap-scrollsmoother')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
   await page.getByRole('button', { name: '원본 참고' }).click()
   const panel = page.getByLabel('원본 참고')

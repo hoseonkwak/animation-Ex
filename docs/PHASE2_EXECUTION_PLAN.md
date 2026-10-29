@@ -25,9 +25,9 @@ P2-1은 빈 기본 코드의 로컬 실행 흐름부터 검증하고 자체 제�
 | P2-2 | 입력 지연 자동 실행, iframe 교체, Console 상한, heartbeat·시간 초과 구현. 연속 환경 실패 3회 중지·정상 실행 복구와 50개/500자 Console 제한을 Chromium에서 검증 | 오래된 실행 로그와 코드 오류의 브라우저 회귀 검사 |
 | P2-3 | IndexedDB 초안, 이름·새로고침 복원, 최근 목록, 초기화 전 복구 스냅샷과 손상·저장 실패 상태를 Chromium에서 검증. 화면 설정 localStorage가 막혀도 초안 편집·실행 유지. Kit 시작 코드와 버전 ID를 초안에 고정 | 실제 용량 한계와 Kit 교체 후 기존 초안 보호 검증 |
 | P2-4 | 원본 참고 Embed를 별도 클릭 때 로드하고 닫으면 제거, 빈 코드 진입, CodePen POST prefill, 수동 코드 복사 제공 | CodePen 실제 수신·팝업 실패 UX 및 권리 고지 점검 |
-| P2-5 | D1 0014 migration, 공개 읽기 API, 자체 제작 카드와 GSAP 기초 트윈 Kit 로컬 fixture 두 건. 고정 GSAP 실행 정책과 CodePen 내보내기 계약 검사 | 추가 Kit 8개, 권리·시각 검수, 운영·롤백 증거 |
+| P2-5 | D1 0014 migration, 공개 읽기 API, 자체 제작 카드·GSAP 기초 트윈·크기/위치 변형·from/fromTo/Timeline Kit 로컬 fixture 네 건. 고정 GSAP 실행 정책과 CodePen 내보내기 계약 검사 | 추가 Kit 6개, 권리·시각 검수, 운영·롤백 증거 |
 
-첫 구현 증거는 `evidence/PHASE2_PRACTICE_SLICE_2026-10-27.md`에, GSAP 확장 증거는 `evidence/PHASE2_GSAP_KIT_2026-10-29.md`에 기록한다. 위 구현 상태는 Phase 2 완료 판정이 아니다.
+첫 구현 증거는 `evidence/PHASE2_PRACTICE_SLICE_2026-10-27.md`에, GSAP 실행 환경 증거는 `evidence/PHASE2_GSAP_KIT_2026-10-29.md`에, 이번 Kit 묶음은 `evidence/PHASE2_GSAP_KITS_BATCH_2026-10-29.md`에 기록한다. 위 구현 상태는 Phase 2 완료 판정이 아니다.
 
 ## 구현 전 확정할 계약
 
