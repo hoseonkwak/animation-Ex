@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import PreviewCard from '@/features/preview/PreviewCard.vue'
+import VirtualExampleGrid from '@/features/preview/VirtualExampleGrid.vue'
 import { createPreviewScheduler } from '@/features/preview/previewScheduler'
 import type { ApiSuccess, ExampleCard, ExamplesPayload, TagAxis } from '@/shared/examples'
 import { setPageMeta } from '@/app/pageMeta'
@@ -14,6 +14,7 @@ const examples = ref<ExampleCard[]>([])
 const loading = ref(true)
 const loadingMore = ref(false)
 const errorMessage = ref('')
+const loadMoreError = ref('')
 const nextCursor = ref<string | null>(null)
 const searchInput = ref(queryValue('q'))
 const gridColumns = ref<2 | 3 | 4>(3)
@@ -106,6 +107,7 @@ const filterGroups: Array<{
 const activeFilterCount = computed(() =>
   filterGroups.reduce((count, group) => count + selectedValues(group.axis).length, 0),
 )
+const isCategoryView = computed(() => selectedValues('section').length > 0)
 
 watch(
   () => route.fullPath,
@@ -150,10 +152,15 @@ function apiSearchParams(cursor?: string): URLSearchParams {
 }
 
 async function loadExamples(append: boolean): Promise<void> {
+  if (append && (!nextCursor.value || loadingMore.value)) return
   const version = ++requestVersion
   if (append) loadingMore.value = true
   else loading.value = true
-  errorMessage.value = ''
+  if (append) loadMoreError.value = ''
+  else {
+    errorMessage.value = ''
+    loadMoreError.value = ''
+  }
   try {
     const cursor = append ? (nextCursor.value ?? undefined) : undefined
     const response = await fetch(`/api/v1/examples?${apiSearchParams(cursor)}`)
@@ -164,7 +171,8 @@ async function loadExamples(append: boolean): Promise<void> {
     nextCursor.value = body.data.nextCursor
   } catch {
     if (version !== requestVersion) return
-    errorMessage.value = '예제를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+    if (append) loadMoreError.value = '다음 예제를 불러오지 못했습니다.'
+    else errorMessage.value = '예제를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
   } finally {
     if (version === requestVersion) {
       loading.value = false
@@ -324,23 +332,21 @@ function setGridColumns(columns: 2 | 3 | 4): void {
             <p>검색어를 바꾸거나 선택한 필터를 초기화해보세요.</p>
             <button type="button" @click="clearFilters">필터 초기화</button>
           </div>
-          <div
+          <VirtualExampleGrid
             v-else
-            class="example-grid"
-            :data-grid-columns="gridColumns"
-            data-testid="example-grid"
-          >
-            <PreviewCard
-              v-for="example in examples"
-              :key="example.id"
-              :example="example"
-              :active="scheduler.activeIds.value.includes(example.id)"
-              @request="scheduler.request"
-              @release="scheduler.release"
-            />
-          </div>
+            :items="examples"
+            :columns="gridColumns"
+            :active-ids="scheduler.activeIds.value"
+            :has-more="Boolean(nextCursor)"
+            :loading-more="loadingMore"
+            :load-error="loadMoreError"
+            :auto-load="isCategoryView"
+            @load-more="loadExamples(true)"
+            @request="scheduler.request"
+            @release="scheduler.release"
+          />
           <button
-            v-if="nextCursor"
+            v-if="nextCursor && !isCategoryView && !loading && !loadMoreError"
             type="button"
             class="load-more"
             :disabled="loadingMore"
@@ -348,6 +354,10 @@ function setGridColumns(columns: 2 | 3 | 4): void {
           >
             {{ loadingMore ? '불러오는 중' : '다음 결과 불러오기' }}
           </button>
+          <div v-if="loadMoreError" class="feed-error" role="alert">
+            {{ loadMoreError }}
+            <button type="button" @click="loadExamples(true)">다시 시도</button>
+          </div>
         </div>
       </div>
     </section>

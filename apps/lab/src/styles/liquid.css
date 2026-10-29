@@ -173,10 +173,10 @@
 }
 
 .category-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   padding: 8px;
-  overflow-x: auto;
   background: color-mix(in srgb, var(--liquid-surface) 86%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.68);
   border-radius: 26px;
@@ -184,21 +184,16 @@
     var(--liquid-shadow),
     inset 0 0 0 1px var(--color-border);
   backdrop-filter: blur(22px) saturate(145%);
-  scrollbar-width: none;
-}
-
-.category-list::-webkit-scrollbar {
-  display: none;
 }
 
 .category-pill {
   display: flex;
-  flex: 1 0 148px;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 8px;
   min-height: 72px;
-  padding: 0 20px;
+  padding: 0 16px;
   color: var(--color-text);
   background: color-mix(in srgb, var(--liquid-strong) 80%, transparent);
   border: 1px solid var(--color-border);
@@ -211,6 +206,11 @@
     background 160ms ease;
 }
 
+.category-pill span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .category-pill:hover,
 .category-pill:focus-visible {
   z-index: 1;
@@ -221,6 +221,7 @@
 
 .category-pill strong {
   display: grid;
+  flex: 0 0 auto;
   min-width: 30px;
   height: 30px;
   padding-inline: 8px;
@@ -249,6 +250,35 @@
 .home-example-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
+}
+
+.virtual-example-row {
+  margin-bottom: 20px;
+}
+
+.virtual-example-row.home-example-grid {
+  margin-bottom: 22px;
+}
+
+.virtual-example-spacer {
+  width: 100%;
+}
+
+.feed-error {
+  margin-top: 24px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.feed-error button {
+  min-height: 42px;
+  margin-left: 12px;
+  padding-inline: 16px;
+  color: #fff;
+  background: var(--color-brand);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 .home-example-grid .card-body > p,
@@ -442,6 +472,10 @@
 }
 
 @media (max-width: 1023px) {
+  .category-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .home-example-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -494,8 +528,8 @@
   }
 
   .category-list {
-    margin-inline: -16px;
-    padding-inline: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0;
     background: transparent;
     border: 0;
     border-radius: 0;
@@ -504,7 +538,8 @@
   }
 
   .category-pill {
-    flex-basis: 136px;
+    min-height: 64px;
+    padding-inline: 12px;
   }
 
   .home-example-grid {

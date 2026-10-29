@@ -371,3 +371,11 @@
 - 인증: GitHub Actions의 `production` 환경을 `master`로 제한하고, Cloudflare 계정의 `Workers Scripts Write`만 가진 1년 만료 API token을 secret으로 둔다. 공개 Turnstile site key는 저장소 Actions 변수로 분리한다. Worker의 OAuth·Turnstile·수집 secret은 Cloudflare에 그대로 둔다.
 - 데이터 경계: Worker 자동 배포는 D1 migration이나 Practice Kit seed를 자동 적용하지 않는다. 스키마 변경은 운영 D1 백업과 별도 migration 확인 뒤 `master` 배포 전에 적용한다. D-052~D-054의 Kit fixture는 소유자 검수와 공개 게이트 전까지 Production에 입력하지 않는다.
 - 결과: 2026-10-29 `master`의 `bd41e2e`에서 GitHub Actions 검증, Preview 배포·smoke, Production 배포·smoke가 모두 통과했다. Production Worker 새 버전의 100% 활성화와 Practice 페이지 200 응답을 확인했다.
+
+### D-056 카테고리 연속 탐색과 반응형 배치
+
+- 상태: 로컬 검증 완료
+- 확인일: 2026-10-29
+- 결정: Home의 카테고리 목록은 가로로 잘리는 스크롤 띠 대신 데스크톱 6열, 좁은 화면 3열, 모바일 2열로 줄바꿈한다. Home과 카테고리에서 들어간 Explore는 cursor 페이지를 스크롤 끝 전에 자동으로 가져온다. 카드 행은 고정된 DOM 슬롯에 교체해 화면 주변의 카드만 유지한다. 카테고리에서는 `다음 결과 불러오기`를 표시하지 않는다. 전체 Explore에서는 기존 수동 버튼을 유지한다. 실패 시에만 재시도 버튼을 표시한다.
+- 이유: 카테고리 마지막 항목이 보이지 않는 문제와 다량의 카드 DOM이 계속 늘어나는 문제를 해결하면서, 전체 예제와 카테고리의 기존 탐색 동작을 구분한다.
+- 검증: Playwright에서 96개 카테고리 예제를 8페이지까지 순회해 카드 DOM이 30개 이하로 유지되고 기존 행 슬롯이 재사용되며, 위로 돌아오면 첫 카드가 복원되는지 확인했다. 13개 카테고리의 데스크톱·모바일 잘림과 전체 Explore 버튼도 확인했다.
