@@ -25,7 +25,7 @@
 | `npm run test:e2e` | 최신 변경에서 Chromium 57개 통과. 10개 Kit 실제 실행·가로 잘림·동작·움직임 줄이기, 기존 초안 보호/새 버전 선택, Practice 홈의 Kit 목록·모바일 진입 포함 |
 | WebKit 연습 검사 | `KWAK_CROSS_BROWSER=1`에서 연습 39개 전체 통과. 초기 색상 일시 중지 검사의 클릭 직후 측정은 렌더링 갱신 후 측정으로 고쳐 재실행 |
 | WebKit Practice 홈 검사 | Kit 10건·모바일 진입 대상 1개 통과 |
-| Linux Firefox CI | [Actions 실행 #11](https://github.com/hoseonkwak/animation-Ex/actions/runs/40820894966)에서 이전 실행 로그 폐기·동기/비동기 코드 오류·구문 오류 안내·HTML 이벤트 연결을 포함한 연습 39개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
+| Linux Firefox CI | [Actions 실행 #11](https://github.com/hoseonkwak/animation-Ex/actions/runs/40820894966)에서 이전 실행 로그 폐기·동기/비동기 코드 오류·구문 오류 안내·HTML 이벤트 연결을 포함한 연습 39개 전부 통과. CodePen 안내 수정 후 [실행 #12](https://github.com/hoseonkwak/animation-Ex/actions/runs/40823035634)도 성공. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
 | 좁은 화면·다운로드 격리 추가 검사 | 320px 작업 공간의 가로 넘침 없음과 sandbox iframe의 다운로드 차단을 로컬 Chromium·WebKit 및 Linux Firefox에서 확인. 320px 검사는 배포된 Preview Chromium에서도 통과 |
 | CodePen 새 창 복구 안내 | 내보내기 클릭 뒤 새 창이 안 열렸을 때 확인할 안내와 복사 가능한 현재 코드 경로를 추가. POST payload·안내·복사 경로는 로컬 Chromium·WebKit에서 확인. CodePen 서비스의 실제 수신은 아직 확인 전 |
 | 이전 실행 로그 폐기 | 700ms 뒤 출력하는 이전 iframe을 새 실행으로 교체하고 800ms 뒤 Console에 이전 로그가 없는지 로컬 Chromium·WebKit 및 배포된 Preview Chromium에서 확인 |
@@ -54,7 +54,8 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 - Firefox 회귀 검사에서 초안 로드 직후 예약된 불필요한 재실행을 찾아 Vue 반응성 갱신이 끝난 뒤 실행 준비 상태로 전환했다. 차단된 팝업에 Firefox가 예외를 던지는 동작도 테스트에 반영했다. 수정본 Preview Worker `e91344a2-da67-4e06-b438-d6510ef58745`를 배포하고 smoke 5개와 배포 URL의 색상 멈추기·격리 브라우저 검사 2개를 통과했다.
 - CodePen 새 창 복구 안내를 포함한 Preview Worker `a6a2d47f-b5f8-4316-9e55-5454e15e2532`를 배포했다. smoke 5개와 배포 URL의 CodePen POST·안내·코드 복사 브라우저 검사가 통과했다.
 - 동기 코드 오류 표시를 수정한 Preview Worker `7ee5d58d-a913-44a6-9ef0-c5d96d65ead7`를 배포했다. smoke 5개와 배포 URL의 오류 복구·HTML 이벤트 연결 Chromium 검사 2개가 통과했다.
-- 비동기·구문 오류 안내를 반영한 최신 Preview Worker `95972391-96ae-47a3-a754-e29dc62665fe`를 배포했다. health·공개 목록·robots·비로그인 홈·관리자 비인증 차단 smoke 5개와 배포 URL의 비동기·구문 오류 Chromium 검사 2개가 통과했다.
+- 비동기·구문 오류 안내를 반영한 Preview Worker `95972391-96ae-47a3-a754-e29dc62665fe`를 배포했다. health·공개 목록·robots·비로그인 홈·관리자 비인증 차단 smoke 5개와 배포 URL의 비동기·구문 오류 Chromium 검사 2개가 통과했다.
+- CodePen 실패 복사 안내를 반영한 Preview Worker `5bae2a39-1c9f-4cc8-b740-62d365c76851`를 배포했다. smoke 5개와 배포 URL에서 POST payload·오류 안내·코드 복사 Chromium 검사 1개가 통과했다. CodePen 편집기 수신 자체는 여전히 미확인이다.
 - `smoke:preview`의 health, 공개 목록, robots 차단, 비로그인 홈, 관리자 비인증 차단 5개가 통과했다. 배포된 URL의 Chromium 연습 검사 31개와, 홈 목록·모바일 진입 대상 1개가 통과했다.
 - Preview의 `practice-basic-tween` Kit을 잠시 `paused`로 바꿨을 때 공개 API는 404를 반환했다. 즉시 `ready`로 복구하니 200을 반환했다. Production D1은 변경하지 않았다.
 
