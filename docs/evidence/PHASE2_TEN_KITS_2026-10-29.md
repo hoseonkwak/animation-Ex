@@ -39,6 +39,10 @@
 
 Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데스크톱·모바일 전체 화면을 다시 캡처해 비어 보이던 CodePen 원격 썸네일을 로컬 이미지로 교체하고, 연습 행동 버튼을 카드 폭에 맞게 정리했다. 로컬 썸네일이 없는 향후 Kit은 원본 CodePen 이미지와 제목 대체 화면으로 순서대로 내려간다.
 
+2026-10-29 추가 직접 검수에서는 배포된 Preview URL에서 10개 Kit의 실제 iframe을 다시 열고, 움직임 줄이기를 적용한 1280px·390px 화면 20장을 확인했다. 텍스트·버튼·SVG와 배경이 표시됐고 눈에 띄는 잘림·겹침은 발견하지 못했다. 같은 실행의 Playwright 검사에서 10건의 가로 넘침이 없었으며, 개별 상호작용·애니메이션은 위 교차 브라우저 검사로 확인했다. 정지 화면 20장만으로 움직임의 품질을 판정하지는 않는다.
+
+공개 API에서 10건의 원본 URL이 모두 `codepen.io/hoseonkwak/pen/…`이고, 자체 Kit 제작자·라이선스가 `Kwak Motion Lab`·`MIT`이며, Kit 코드 본문에 외부 URL이 없는 것을 읽기 전용으로 대조했다. Seed의 `sourceCodeCopied=false`, `externalAssets=false`도 확인했다. [CodePen의 공개 Pen 라이선스 문서](https://blog.codepen.io/docs/pens/licensing/)는 공개 Pen에 MIT가 적용된다고 설명하지만, CodePen이 이 환경에서 403을 반환해 각 원본 Pen의 현재 공개 상태와 코드 유사도를 직접 대조하지는 못했다. 이 결과는 에이전트의 화면·메타데이터 검수이며 소유자의 권리 판단과 구분한다.
+
 ## Preview 배포와 복구 증거
 
 - Preview D1을 `.wrangler/preview-before-phase2-2026-10-29.sql`로 백업했다. 이 파일은 Git에서 제외된 로컬 운영 백업이다.
@@ -56,4 +60,5 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 
 - 이번 10건의 화면·키보드·축소·권리 정보를 사람이 검수하고 결과를 기록한다. 자동 검사는 미적 유사성과 권리 판단을 대신하지 않는다.
 - 모바일 확대, 저장 용량 한계와 CodePen 실제 수신을 검증한다. 2026-10-29에 Preview에서 샘플 코드를 담아 실제 Chromium으로 전송했을 때 새 창은 열렸으나 CodePen의 Cloudflare `Just a moment...` 확인 화면에서 멈췄다. 직접 HTTP POST도 403을 반환했다. 편집기에 코드가 반영됐다는 증거는 아직 없으며 `PHASE2_OPERATIONS.md`의 일반 브라우저 절차가 필요하다.
+- 같은 날 in-app browser에서 `<main>CodePen prefill check</main>`를 입력하고 `CodePen으로 보내기`를 눌렀을 때 새 탭은 열리지 않았고 앱의 팝업 차단·코드 복사 안내가 표시됐다. 기존 CodePen 탭에는 `Something Went Wrong`이 표시됐다. [CodePen의 최신 prefill 문서](https://blog.codepen.io/docs/api/post-to-prefill-pen/)는 현재 사용 중인 `https://codepen.io/cpe/pen/define/` POST 경로와 `data` JSON 형식을 안내한다. 따라서 payload·경로의 결정적 검사는 통과했지만 CodePen 편집기의 실제 수신은 미확인이다.
 - Production에는 아직 seed하지 않는다. Preview의 `ready`와 운영 리허설은 소유자의 콘텐츠 승인 및 Production 출시 근거를 대신하지 않는다.
