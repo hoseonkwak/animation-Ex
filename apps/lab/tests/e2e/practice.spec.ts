@@ -643,6 +643,23 @@ test('연습 코드가 파일 다운로드를 시작하지 못한다', async ({ 
   )
 })
 
+test('이전 실행에서 늦게 발생한 로그가 새 실행 화면에 섞이지 않는다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  await page.getByRole('tab', { name: 'JS' }).click()
+  const editor = page.getByRole('textbox', { name: 'JavaScript 코드' })
+  await editor.fill("setTimeout(() => console.log('stale run'), 700)")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await editor.fill("console.log('current run')")
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  const consoleButton = page.getByRole('button', { name: /^Console/ })
+  await expect(consoleButton).toContainText(/Console [1-9]/)
+  if ((await consoleButton.getAttribute('aria-expanded')) === 'false') await consoleButton.click()
+  await expect(page.getByRole('log')).toContainText('current run')
+  await page.waitForTimeout(800)
+  await expect(page.getByRole('log')).not.toContainText('stale run')
+})
+
 test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
   await page.goto('/examples/gsap-scrollsmoother')
   await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()

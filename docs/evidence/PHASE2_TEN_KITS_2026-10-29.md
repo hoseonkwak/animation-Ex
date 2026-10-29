@@ -28,6 +28,7 @@
 | Linux Firefox CI | [Actions 실행 #7](https://github.com/hoseonkwak/animation-Ex/actions/runs/40808666295)에서 최신 코드의 연습 34개 전부 통과. Windows의 Firefox 실행 파일 오류를 Linux 실행으로 분리해 검증 |
 | 좁은 화면·다운로드 격리 추가 검사 | 320px 작업 공간의 가로 넘침 없음과 sandbox iframe의 다운로드 차단을 로컬 Chromium·WebKit 및 Linux Firefox에서 확인. 320px 검사는 배포된 Preview Chromium에서도 통과 |
 | CodePen 새 창 복구 안내 | 내보내기 클릭 뒤 새 창이 안 열렸을 때 확인할 안내와 복사 가능한 현재 코드 경로를 추가. POST payload·안내·복사 경로는 로컬 Chromium·WebKit에서 확인. CodePen 서비스의 실제 수신은 아직 확인 전 |
+| 이전 실행 로그 폐기 | 700ms 뒤 출력하는 이전 iframe을 새 실행으로 교체하고 800ms 뒤 Console에 이전 로그가 없는지 로컬 Chromium·WebKit 및 배포된 Preview Chromium에서 확인 |
 | `npm run verify:deploy:preview` | Worker·Client 빌드와 Preview binding dry-run 통과 |
 
 ## 에이전트 화면 검수
@@ -50,5 +51,5 @@ Practice 홈에 10개 실제 코드 실행 화면을 썸네일로 넣었다. 데
 ## 남은 공개 게이트
 
 - 이번 10건의 화면·키보드·축소·권리 정보를 사람이 검수하고 결과를 기록한다. 자동 검사는 미적 유사성과 권리 판단을 대신하지 않는다.
-- 모바일 확대, 저장 용량 한계, 오래된 실행 로그와 CodePen 실제 수신을 검증한다. 2026-10-29에 Preview에서 샘플 코드를 담아 실제 Chromium으로 전송했을 때 새 창은 열렸으나 CodePen의 Cloudflare `Just a moment...` 확인 화면에서 멈췄다. 직접 HTTP POST도 403을 반환했다. 편집기에 코드가 반영됐다는 증거는 아직 없으며 `PHASE2_OPERATIONS.md`의 일반 브라우저 절차가 필요하다.
+- 모바일 확대, 저장 용량 한계와 CodePen 실제 수신을 검증한다. 2026-10-29에 Preview에서 샘플 코드를 담아 실제 Chromium으로 전송했을 때 새 창은 열렸으나 CodePen의 Cloudflare `Just a moment...` 확인 화면에서 멈췄다. 직접 HTTP POST도 403을 반환했다. 편집기에 코드가 반영됐다는 증거는 아직 없으며 `PHASE2_OPERATIONS.md`의 일반 브라우저 절차가 필요하다.
 - Production에는 아직 seed하지 않는다. Preview의 `ready`와 운영 리허설은 소유자의 콘텐츠 승인 및 Production 출시 근거를 대신하지 않는다.
