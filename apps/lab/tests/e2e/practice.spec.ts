@@ -514,7 +514,7 @@ test('CodePen 내보내기는 버튼을 눌렀을 때 현재 코드를 POST한�
   await popup
   await expect.poll(() => submitted).not.toBeNull()
   await expect(
-    page.getByRole('status').filter({ hasText: 'CodePen 새 창이 열리지 않았다면' }),
+    page.getByRole('status').filter({ hasText: 'CodePen 새 창이 열리지 않거나 오류가 보이면' }),
   ).toBeVisible()
   await page.getByRole('button', { name: '복사 가능한 코드 보기' }).click()
   await expect(page.locator('#practice-copy-html')).toHaveValue('<main>내 코드</main>')

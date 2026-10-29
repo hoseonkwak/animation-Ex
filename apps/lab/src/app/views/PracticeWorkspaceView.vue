@@ -512,7 +512,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
         </div>
       </header>
       <div v-if="exportHint" class="practice-export-hint" role="status">
-        <span>CodePen 새 창이 열리지 않았다면 팝업 차단을 확인하거나 코드를 직접 복사하세요.</span>
+        <span
+          >CodePen 새 창이 열리지 않거나 오류가 보이면 현재 코드를 복사해 직접 붙여넣으세요.</span
+        >
         <button type="button" @click="toggleExportCode">복사 가능한 코드 보기</button>
         <button type="button" aria-label="CodePen 안내 닫기" @click="exportHint = false">
           닫기
