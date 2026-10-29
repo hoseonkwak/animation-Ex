@@ -190,7 +190,7 @@ npm run db:setup:local
 
 `npm ci`는 `package-lock.json`에 기록된 버전을 그대로 설치합니다. 의존성을 변경하는 작업이 아니라면 `npm install`보다 `npm ci`를 사용합니다.
 
-`db:setup:local`은 현재 0001~0014 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. `practice_phase2.sql`은 자체 제작 카드 Practice Kit 한 건을 로컬에서만 제공합니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
+`db:setup:local`은 현재 0001~0014 migration을 로컬 D1에 적용하고 공개·검수·수집 fixture를 넣습니다. 0008에는 기존 GSAP 공개 예제 15개가, `wp4.sql`에는 관리자 검수용 실제 CodePen 후보가, `wp5.sql`에는 WSSS 발견 출처와 수집 태그가, `wp6.sql`에는 공개 Pattern과 Collection이 포함됩니다. `practice_phase2.sql`은 자체 제작 Practice Kit 10건을 로컬에서만 제공합니다. 이미 적용한 migration과 seed는 다시 실행해도 중복 데이터를 만들지 않습니다.
 
 처음 한 번 `apps/lab/.dev.vars.example`을 `apps/lab/.dev.vars`로 복사합니다. `.dev.vars`는 Git에서 제외되며 로컬 관리자, GitHub OAuth와 수집 서명 모의 값만 담습니다. 로컬 관리자 화면은 `LOCAL_ADMIN_SIMULATION=true` 설정을 사용하므로 실제 GitHub OAuth App이 없어도 실행됩니다.
 
@@ -326,6 +326,15 @@ E2E 하네스는 Cloudflare 개발 서버를 자동으로 시작하고 테스트
 - 상세 출처와 실제 CodePen 실행
 - Saved·나중에 연습의 브라우저 재시작 복원
 - Sections, URL 제보, 테마 복원과 404 noindex
+- 자유 연습의 브라우저 저장·격리 실행·CodePen 내보내기와 자체 제작 Kit 10건의 실행
+
+기본 E2E는 Chromium을 사용합니다. 연습 화면의 Firefox·WebKit 검증을 추가로 실행하려면 브라우저를 설치한 뒤 PowerShell에서 다음을 실행합니다.
+
+```powershell
+npx playwright install firefox webkit
+$env:KWAK_CROSS_BROWSER = "1"
+node apps/lab/tests/e2e/run.mjs --project=firefox --project=webkit
+```
 
 Windows에 설치된 Chrome을 직접 사용하려면 PowerShell에서 실행 경로를 지정할 수 있습니다.
 
@@ -372,6 +381,7 @@ npx playwright install chromium
 - [Phase 2 자유 연습 상세 설계](docs/PHASE2_PRACTICE_SPEC.md)
 - [Phase 2 실행 계획과 완료 기준](docs/PHASE2_EXECUTION_PLAN.md)
 - [Phase 2 Preview 위협 모델](docs/PHASE2_PREVIEW_THREAT_MODEL.md)
+- [Phase 2 Practice 운영 점검·중지 절차](docs/PHASE2_OPERATIONS.md)
 - [WP0 구현 결과](docs/evidence/WP0_REPORT.md)
 - [WP1 구현 결과](docs/evidence/WP1_REPORT.md)
 - [WP2 구현 결과](docs/evidence/WP2_REPORT.md)

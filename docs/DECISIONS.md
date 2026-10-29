@@ -354,3 +354,11 @@
 - 이유: GSAP 예제의 시작 코드를 실제 GSAP API로 연습하면서 Preview의 네트워크 차단을 유지한다. 사용자가 직접 코드를 편집하는 공간이며, 시각적 애니메이션 제작 도구 기능은 범위에 넣지 않는다.
 - 근거: [GSAP 설치 문서](https://gsap.com/docs/v3/Installation/), [CodePen prefill 계약](https://blog.codepen.io/docs/api/post-to-prefill-pen/).
 - 출시 경계: 현재 GSAP Kit은 로컬 fixture다. 라이브러리 버전 변경은 새 코드 버전과 브라우저 검증 후 진행한다.
+
+### D-054 ScrollTrigger Practice Kit의 플러그인 경계
+
+- 상태: 로컬 구현 검증 중
+- 확인일: 2026-10-29
+- 결정: `gsap-scrolltrigger@3.15.0`은 `gsap@3.15.0`과 함께 지정된 자체 제작 Kit에서만 허용한다. 앱에 고정 설치한 플러그인 파일을 격리 Preview에서 GSAP 코어 다음에 넣는다. CodePen prefill의 `js_external`에도 코어와 플러그인 URL을 세미콜론으로 연결해 같은 순서로 전달한다. 임의 플러그인 URL, 플러그인만 단독 사용, 중복 라이브러리 선언은 거부한다.
+- 근거: [GSAP ScrollTrigger 문서](https://gsap.com/docs/v3/Plugins/ScrollTrigger/), [CodePen prefill 형식](https://blog.codepen.io/docs/api/post-to-prefill-pen/).
+- 출시 경계: 스크롤 Kit은 로컬 fixture다. 실제 스크롤·축소 동작과 공개 권리 게이트를 통과하기 전에는 Production에 seed하지 않는다.

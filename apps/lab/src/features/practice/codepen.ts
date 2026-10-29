@@ -27,7 +27,14 @@ export function codePenPrefillData(
     css_pre_processor: 'none',
     js_pre_processor: 'none',
     ...(libraries.includes('gsap@3.15.0')
-      ? { js_external: 'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js' }
+      ? {
+          js_external: [
+            'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
+            ...(libraries.includes('gsap-scrolltrigger@3.15.0')
+              ? ['https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js']
+              : []),
+          ].join(';'),
+        }
       : {}),
   })
 }

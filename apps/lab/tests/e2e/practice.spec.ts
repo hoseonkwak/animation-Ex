@@ -130,6 +130,171 @@ test('새 GSAP Kit들은 움직임 줄이기 설정에서 바로 최종 상태�
   }
 })
 
+test('포인터 Kit의 원이 입력을 따라가고 버튼으로 중앙에 돌아온다', async ({ page }) => {
+  await page.goto('/examples/gsap-mouse-interaction')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const field = preview.locator('.pointer-field')
+  const orb = preview.getByLabel('포인터를 따라 움직이는 원')
+  await expect(orb).toBeVisible()
+  const start = await orb.evaluate((element) => element.getBoundingClientRect().left)
+  await field.hover({ position: { x: 310, y: 100 } })
+  await expect
+    .poll(() => orb.evaluate((element) => element.getBoundingClientRect().left))
+    .toBeGreaterThan(start + 30)
+  await preview.getByRole('button', { name: '중앙으로' }).click()
+  await expect
+    .poll(() => orb.evaluate((element) => element.getBoundingClientRect().left))
+    .toBeLessThan(start + 5)
+})
+
+test('동적 타임라인 Kit의 세 막대가 순서대로 채워진다', async ({ page }) => {
+  await page.goto('/examples/gsap-dynamic-timeline')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const bars = preview.locator('.rhythm-bar')
+  await expect(bars).toHaveCount(3)
+  await expect
+    .poll(() => bars.nth(2).evaluate((element) => getComputedStyle(element).transform))
+    .not.toContain('matrix(0,')
+  await preview.getByRole('button', { name: '다시 재생' }).click()
+  await expect(page.getByText('정상 실행')).toBeVisible()
+})
+
+test('텍스트 리빌 Kit의 단어가 나타나고 재생 버튼이 동작한다', async ({ page }) => {
+  await page.goto('/examples/gsap-text-reveal')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const words = preview.locator('.reveal-stage h1 span')
+  await expect(words).toHaveCount(4)
+  await expect
+    .poll(() => words.last().evaluate((element) => getComputedStyle(element).opacity))
+    .toBe('1')
+  await preview.getByRole('button', { name: '다시 보기' }).click()
+  await expect
+    .poll(() => words.first().evaluate((element) => getComputedStyle(element).opacity))
+    .toBe('1')
+})
+
+test('컬러 Kit의 배경이 변하고 멈추기 버튼에서 고정된다', async ({ page }) => {
+  await page.goto('/examples/gsap-rainbow-background')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const panel = preview.getByLabel('색상이 바뀌는 배경')
+  await expect(panel).toBeVisible()
+  const initial = await panel.evaluate((element) => getComputedStyle(element).backgroundColor)
+  await expect
+    .poll(() => panel.evaluate((element) => getComputedStyle(element).backgroundColor))
+    .not.toBe(initial)
+  await preview.getByRole('button', { name: '색상 멈추기' }).click()
+  await expect(preview.getByRole('button', { name: '색상 이어보기' })).toBeVisible()
+  await page.waitForTimeout(100)
+  const paused = await panel.evaluate((element) => getComputedStyle(element).backgroundColor)
+  await page.waitForTimeout(350)
+  expect(await panel.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(paused)
+})
+
+test('SVG 선 그리기 Kit은 경로를 실제로 그린 뒤 텍스트를 표시한다', async ({ page }) => {
+  await page.goto('/examples/gsap-text-drawing')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const line = preview.locator('.draw-line')
+  await expect(line).toBeVisible()
+  await expect
+    .poll(() => line.evaluate((element) => parseFloat(getComputedStyle(element).strokeDashoffset)))
+    .toBe(0)
+  await expect(preview.getByRole('heading', { name: '선을 따라, 생각을 잇다' })).toBeVisible()
+  await preview.getByRole('button', { name: '다시 그리기' }).click()
+  await expect
+    .poll(() => line.evaluate((element) => parseFloat(getComputedStyle(element).strokeDashoffset)))
+    .toBe(0)
+})
+
+test('ScrollTrigger Kit은 실행 화면 내부 스크롤 때 카드를 드러낸다', async ({ page }) => {
+  await page.goto('/examples/gsap-scrolltrigger')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  const card = preview.locator('.scroll-card')
+  await expect(card).toHaveCSS('visibility', 'hidden')
+  await preview.locator('body').evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await expect(card).toBeVisible()
+  const data = JSON.parse(
+    await page
+      .locator('form[action="https://codepen.io/cpe/pen/define/"] input[name="data"]')
+      .inputValue(),
+  ) as { js_external: string }
+  expect(data.js_external).toContain(
+    ';https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js',
+  )
+})
+
+test('추가 Kit은 움직임 줄이기 설정에서 핵심 콘텐츠를 바로 표시한다', async ({ page }) => {
+  test.setTimeout(60_000)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  for (const [slug, selector] of [
+    ['gsap-mouse-interaction', '.pointer-orb'],
+    ['gsap-dynamic-timeline', '.rhythm-bar'],
+    ['gsap-text-reveal', '.reveal-stage h1'],
+    ['gsap-rainbow-background', '.color-panel'],
+    ['gsap-text-drawing', '.draw-title'],
+    ['gsap-scrolltrigger', '.scroll-card'],
+  ]) {
+    await page.goto(`/examples/${slug}`)
+    await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+    const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+    await expect(preview.locator(selector).first(), slug).toBeVisible()
+    await expect(page.getByText('정상 실행')).toBeVisible()
+  }
+  await expect(
+    page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('.scroll-card'),
+  ).toHaveCSS('visibility', 'visible')
+})
+
+test('10개 Kit의 데스크톱·모바일 실행 화면에 가로 잘림이 없다', async ({ page }, testInfo) => {
+  test.setTimeout(120_000)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const slugs = [
+    'interactive-card-hover',
+    'gsap-basic-tween',
+    'gsap-basic-transform',
+    'gsap-from-fromto-timeline',
+    'gsap-mouse-interaction',
+    'gsap-dynamic-timeline',
+    'gsap-text-reveal',
+    'gsap-rainbow-background',
+    'gsap-text-drawing',
+    'gsap-scrolltrigger',
+  ]
+  for (const viewport of [
+    { width: 1280, height: 800 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport)
+    for (const slug of slugs) {
+      await page.goto(`/examples/${slug}`)
+      await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+      if (viewport.width < 1024) {
+        await page.getByRole('link', { name: '이어서 연습' }).click()
+        await page.getByRole('tab', { name: '실행 화면' }).click()
+      }
+      const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+      await expect(preview.locator('main'), slug).toBeVisible()
+      const width = await preview.locator('body').evaluate(() => ({
+        document: document.documentElement.scrollWidth,
+        viewport: window.innerWidth,
+      }))
+      expect(width.document, `${slug} @ ${viewport.width}px`).toBeLessThanOrEqual(
+        width.viewport + 1,
+      )
+      if (process.env.KWAK_CAPTURE_KITS === '1') {
+        await page
+          .locator('iframe[title="내 코드 실행 화면"]')
+          .screenshot({ path: testInfo.outputPath(`${slug}-${viewport.width}.png`) })
+      }
+    }
+  }
+})
+
 test('Dark 테마와 움직임 줄이기 설정을 작업 공간과 Kit에 적용한다', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.addInitScript(() => localStorage.setItem('kwak-motion:theme', 'dark'))
@@ -190,6 +355,46 @@ test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행�
     '<main id="result">직접 만든 화면</main>',
   )
   await expect(preview.locator('#result')).toHaveText('직접 만든 화면')
+})
+
+test('같은 예제에 다시 들어오면 기존 초안 보존과 새 초안 생성을 선택한다', async ({ page }) => {
+  await page.goto('/examples/gsap-basic-transform')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  const firstUrl = page.url()
+  await page.getByRole('textbox', { name: 'HTML 코드' }).fill('<main>내가 수정한 버전</main>')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await page.route('**/api/v1/examples/gsap-basic-transform/practice-kit', async (route) => {
+    const response = await route.fetch()
+    const body = (await response.json()) as {
+      data: { versionId: string; code: { html: string } }
+    }
+    body.data.versionId = 'practice-basic-transform-v3'
+    body.data.code.html = body.data.code.html.replace('</main>', '<p>새 버전</p></main>')
+    await route.fulfill({ response, json: body })
+  })
+  await page.goto('/examples/gsap-basic-transform')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await expect(page.getByRole('heading', { name: '이 예제를 연습한 기록이 있어요.' })).toBeVisible()
+  await page.getByRole('link', { name: '이어서 연습' }).click()
+  await expect(page).toHaveURL(firstUrl)
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+    '<main>내가 수정한 버전</main>',
+  )
+  await page.getByRole('button', { name: '원본 참고' }).click()
+  await expect(page.getByLabel('원본 참고')).toContainText('practice-basic-transform-v2')
+  await page.goto('/examples/gsap-basic-transform')
+  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('button', { name: '새로 시작' }).click()
+  await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
+  expect(page.url()).not.toBe(firstUrl)
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(/새 버전/)
+  await page.getByRole('button', { name: '원본 참고' }).click()
+  await expect(page.getByLabel('원본 참고')).toContainText('practice-basic-transform-v3')
+  await page.goto(firstUrl)
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+    '<main>내가 수정한 버전</main>',
+  )
 })
 
 test('좁은 화면에서는 코드와 실행 화면을 탭으로 전환한다', async ({ page }) => {

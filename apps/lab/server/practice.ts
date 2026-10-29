@@ -1,4 +1,4 @@
-import type { PracticeKitPayload, PracticeLibrary } from '../src/shared/practice'
+import { validPracticeLibraries, type PracticeKitPayload } from '../src/shared/practice'
 
 interface PracticeKitRow {
   kit_id: string
@@ -52,8 +52,7 @@ export async function findReadyPracticeKit(
     assets.length > 0 ||
     policy.sandbox !== 'allow-scripts' ||
     policy.network !== 'blocked' ||
-    !Array.isArray(libraries) ||
-    libraries.some((library) => library !== 'gsap@3.15.0') ||
+    !validPracticeLibraries(libraries) ||
     provenance.basis !== 'independent-reimplementation' ||
     provenance.sourceCodeCopied !== false ||
     typeof provenance.author !== 'string' ||
@@ -67,7 +66,7 @@ export async function findReadyPracticeKit(
     versionId: row.version_id,
     version: row.version,
     code: { html: row.html, css: row.css, javascript: row.javascript },
-    libraries: libraries as PracticeLibrary[],
+    libraries,
     interactionInstructions: row.interaction_instructions,
     provenance: {
       basis: 'independent-reimplementation',

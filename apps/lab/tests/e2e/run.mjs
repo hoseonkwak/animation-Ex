@@ -168,7 +168,7 @@ try {
   await waitUntilReady()
 
   exitCode = await new Promise((resolve, reject) => {
-    const tests = spawn(process.execPath, [playwrightCli, 'test'], {
+    const tests = spawn(process.execPath, [playwrightCli, 'test', ...process.argv.slice(2)], {
       cwd: appRoot,
       env: process.env,
       stdio: 'inherit',

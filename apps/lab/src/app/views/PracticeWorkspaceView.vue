@@ -455,7 +455,10 @@ async function copyCode(tab: CodeTab): Promise<void> {
           <RouterLink to="/practice" aria-label="연습 목록으로">←</RouterLink>
           <div>
             <span
-              >자유 연습{{ draft.libraries?.includes('gsap@3.15.0') ? ' · GSAP 3.15.0' : '' }}</span
+              >자유 연습{{ draft.libraries?.includes('gsap@3.15.0') ? ' · GSAP 3.15.0' : ''
+              }}{{
+                draft.libraries?.includes('gsap-scrolltrigger@3.15.0') ? ' · ScrollTrigger' : ''
+              }}</span
             >
             <h1><input v-model="title" aria-label="연습 이름" @blur="normalizeTitle" /></h1>
           </div>
@@ -642,6 +645,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
         <p v-if="draft.libraries?.includes('gsap@3.15.0')">
           이 연습에는 내장된 GSAP 3.15.0이 제공됩니다. CodePen으로 보낼 때는 같은 버전의 외부
           스크립트를 추가합니다.
+        </p>
+        <p v-if="draft.libraries?.includes('gsap-scrolltrigger@3.15.0')">
+          ScrollTrigger 플러그인도 내장되어 있으며 CodePen에는 GSAP 코어 다음에 추가됩니다.
         </p>
         <p v-else>원본의 코드는 편집기에 복사하지 않았습니다.</p>
         <button v-if="!referencePreviewLoaded" type="button" @click="referencePreviewLoaded = true">

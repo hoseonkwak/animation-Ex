@@ -62,7 +62,7 @@ describe('Phase 2 Practice Kit contract', () => {
   })
 
   it.each([
-    ['gsap-basic-transform', 'practice-basic-transform-v1', 'gsap.to'],
+    ['gsap-basic-transform', 'practice-basic-transform-v2', 'gsap.to'],
     ['gsap-from-fromto-timeline', 'practice-from-fromto-timeline-v1', 'gsap.timeline'],
   ])('%s Kit을 올바른 Entry의 고정 GSAP 코드로 반환한다', async (slug, versionId, api) => {
     const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
@@ -78,6 +78,55 @@ describe('Phase 2 Practice Kit contract', () => {
     expect(body.data.versionId).toBe(versionId)
     expect(body.data.libraries).toEqual(['gsap@3.15.0'])
     expect(body.data.code.javascript).toContain(api)
+    sqlite.close()
+  })
+
+  it('추가 Kit 6개의 Entry·권리·실행 정책을 공개 API에서 확인한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
+    const cases = [
+      ['gsap-mouse-interaction', 'practice-mouse-interaction-v1', 1],
+      ['gsap-dynamic-timeline', 'practice-dynamic-timeline-v1', 1],
+      ['gsap-text-reveal', 'practice-text-reveal-v1', 1],
+      ['gsap-rainbow-background', 'practice-rainbow-background-v1', 1],
+      ['gsap-text-drawing', 'practice-text-drawing-v1', 1],
+      ['gsap-scrolltrigger', 'practice-scrolltrigger-v1', 2],
+    ] as const
+    for (const [slug, versionId, libraryCount] of cases) {
+      const response = await worker.fetch(
+        new Request(`https://example.test/api/v1/examples/${slug}/practice-kit`),
+        { DB: d1 },
+        context,
+      )
+      const body = (await response.json()) as {
+        data: {
+          versionId: string
+          libraries: string[]
+          code: { html: string; css: string; javascript: string }
+          provenance: { basis: string; author: string; licenseCode: string }
+        }
+      }
+      expect(response.status, slug).toBe(200)
+      expect(body.data.versionId).toBe(versionId)
+      expect(body.data.libraries).toHaveLength(libraryCount)
+      expect(body.data.libraries).toContain('gsap@3.15.0')
+      expect(
+        body.data.code.html.length + body.data.code.css.length + body.data.code.javascript.length,
+      ).toBeGreaterThan(300)
+      expect(body.data.provenance).toMatchObject({
+        basis: 'independent-reimplementation',
+        author: 'Kwak Motion Lab',
+        licenseCode: 'MIT',
+      })
+    }
+    expect(
+      (
+        sqlite
+          .prepare("SELECT count(*) AS count FROM practice_kits WHERE status='ready'")
+          .get() as {
+          count: number
+        }
+      ).count,
+    ).toBe(10)
     sqlite.close()
   })
 
@@ -112,6 +161,35 @@ describe('Phase 2 Practice Kit contract', () => {
     ).toThrow('entry mismatch')
     sqlite.exec("UPDATE practice_kits SET status = 'draft' WHERE id = 'practice-card-hover'")
     expect(await findReadyPracticeKit(d1, 'interactive-card-hover')).toBeNull()
+    sqlite.close()
+  })
+
+  it('기존 초안용 v1 코드를 보존하고 새 Kit 진입에는 v2를 제공한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase({ includePracticeSeed: true })
+    const versions = sqlite
+      .prepare(
+        "SELECT id, version, css FROM code_package_versions WHERE id IN ('practice-basic-transform-v1', 'practice-basic-transform-v2') ORDER BY version",
+      )
+      .all() as { id: string; version: number; css: string }[]
+    expect(versions.map(({ id, version }) => ({ id, version }))).toEqual([
+      { id: 'practice-basic-transform-v1', version: 1 },
+      { id: 'practice-basic-transform-v2', version: 2 },
+    ])
+    expect(versions[0].css).toContain('.transform-target{right:34px;bottom:18px}')
+    expect(versions[1].css).toContain('.transform-target{right:34px;top:18px}')
+    expect(() =>
+      sqlite.exec(
+        "UPDATE code_package_versions SET css = 'changed' WHERE id = 'practice-basic-transform-v1'",
+      ),
+    ).toThrow('immutable')
+    const response = await worker.fetch(
+      new Request('https://example.test/api/v1/examples/gsap-basic-transform/practice-kit'),
+      { DB: d1 },
+      context,
+    )
+    expect(((await response.json()) as { data: { versionId: string } }).data.versionId).toBe(
+      'practice-basic-transform-v2',
+    )
     sqlite.close()
   })
 

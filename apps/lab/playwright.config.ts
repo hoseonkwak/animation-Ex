@@ -21,5 +21,19 @@ export default defineConfig({
           : {}),
       },
     },
+    ...(process.env.KWAK_CROSS_BROWSER === '1'
+      ? [
+          {
+            name: 'firefox',
+            testMatch: '**/practice.spec.ts',
+            use: { ...devices['Desktop Firefox'] },
+          },
+          {
+            name: 'webkit',
+            testMatch: '**/practice.spec.ts',
+            use: { ...devices['Desktop Safari'] },
+          },
+        ]
+      : []),
   ],
 })

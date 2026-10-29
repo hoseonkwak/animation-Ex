@@ -1,5 +1,5 @@
 import type { PracticeCode } from './runtime'
-import type { PracticeLibrary } from '@/shared/practice'
+import { validPracticeLibraries, type PracticeLibrary } from '@/shared/practice'
 
 export interface PracticeDraft {
   id: string
@@ -53,9 +53,7 @@ function isDraft(value: unknown): value is PracticeDraft {
     (draft.kitLicenseCode === undefined ||
       draft.kitLicenseCode === null ||
       typeof draft.kitLicenseCode === 'string') &&
-    (draft.libraries === undefined ||
-      (Array.isArray(draft.libraries) &&
-        draft.libraries.every((library) => library === 'gsap@3.15.0'))) &&
+    (draft.libraries === undefined || validPracticeLibraries(draft.libraries)) &&
     typeof draft.createdAt === 'string' &&
     !Number.isNaN(Date.parse(draft.createdAt)) &&
     typeof draft.updatedAt === 'string' &&

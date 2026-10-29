@@ -45,4 +45,17 @@ describe('Practice Preview 실행 경계', () => {
     expect(gsap.length).toBeGreaterThan(blank.length + 50_000)
     expect(gsap).toContain("connect-src 'none'")
   })
+
+  it('ScrollTrigger Kit은 플러그인 스크립트를 GSAP 코어 뒤에 포함한다', () => {
+    const document = buildPracticeDocument(
+      { html: '<main></main>', css: '', javascript: 'gsap.registerPlugin(ScrollTrigger)' },
+      'scroll',
+      ['gsap@3.15.0', 'gsap-scrolltrigger@3.15.0'],
+    )
+    expect(document).toContain('"scrollTriggerSource":"')
+    expect(document.indexOf('data.gsapSource')).toBeLessThan(
+      document.indexOf('data.scrollTriggerSource'),
+    )
+    expect(document).toContain("connect-src 'none'")
+  })
 })

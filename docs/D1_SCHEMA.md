@@ -397,4 +397,4 @@ candidate version/status 확인
 
 `0014_practice_kits.sql`은 `code_package_versions`와 `practice_kits`를 추가한다. CodePackageVersion은 Entry별 양의 정수 버전과 실행 코드, 외부 리소스 목록, Preview 정책, 제작 근거와 라이선스를 보관하며 한 번 생성한 버전의 UPDATE를 거부한다. PracticeKit은 Entry 하나에 하나만 연결되고 시작 코드 버전이 같은 Entry에 속해야 한다. 상태는 `draft`, `ready`, `paused`다.
 
-공개 API는 `published` Entry의 `ready` Kit만 읽는다. 초기 실행 정책은 외부 스크립트·스타일·에셋이 모두 빈 배열이고 `allow-scripts`·네트워크 차단일 때만 허용한다. `runtime_policy_json.libraries`는 없거나 `[]` 또는 고정 버전 `gsap@3.15.0`만 허용한다. `db/seeds/practice_phase2.sql`은 자체 제작 카드·GSAP 기초 트윈·크기/위치 변형·from/fromTo/Timeline Kit의 **로컬 전용 fixture**이며 Production seed 명령에 포함하지 않는다.
+공개 API는 `published` Entry의 `ready` Kit만 읽는다. 초기 실행 정책은 외부 스크립트·스타일·에셋이 모두 빈 배열이고 `allow-scripts`·네트워크 차단일 때만 허용한다. `runtime_policy_json.libraries`는 없거나 `[]`, 고정 버전 `gsap@3.15.0`, 또는 코어와 `gsap-scrolltrigger@3.15.0`의 조합만 허용한다. 중복 선언은 허용하지 않는다. `db/seeds/practice_phase2.sql`의 자체 제작 Kit 10개는 **로컬 전용 fixture**이며 Production seed 명령에 포함하지 않는다.

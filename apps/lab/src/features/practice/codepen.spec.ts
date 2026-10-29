@@ -37,4 +37,19 @@ describe('CodePen prefill', () => {
     expect(payload.js_external).toBe('https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js')
     expect(payload.description).toContain('https://gsap.com/community/standard-license/')
   })
+
+  it('ScrollTrigger Kit은 CodePen에 GSAP 코어와 플러그인을 순서대로 전달한다', () => {
+    const payload = JSON.parse(
+      codePenPrefillData(
+        { html: '<main></main>', css: '', javascript: 'gsap.registerPlugin(ScrollTrigger)' },
+        'ScrollTrigger 연습',
+        undefined,
+        undefined,
+        ['gsap@3.15.0', 'gsap-scrolltrigger@3.15.0'],
+      ),
+    ) as Record<string, string>
+    expect(payload.js_external).toBe(
+      'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js;https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js',
+    )
+  })
 })

@@ -1,4 +1,5 @@
 import gsapSource from 'gsap/dist/gsap.min.js?raw'
+import scrollTriggerSource from 'gsap/dist/ScrollTrigger.min.js?raw'
 import type { PracticeLibrary } from '@/shared/practice'
 
 export interface PracticeCode {
@@ -34,6 +35,9 @@ export function buildPracticeDocument(
     ...code,
     runId,
     gsapSource: libraries.includes('gsap@3.15.0') ? gsapSource : null,
+    scrollTriggerSource: libraries.includes('gsap-scrolltrigger@3.15.0')
+      ? scrollTriggerSource
+      : null,
   }).replace(/</g, '\\u003c')
   return `<!doctype html>
 <html lang="ko">
@@ -68,6 +72,11 @@ export function buildPracticeDocument(
     const library = document.createElement('script');
     library.textContent = data.gsapSource;
     document.body.append(library);
+  }
+  if (data.scrollTriggerSource) {
+    const plugin = document.createElement('script');
+    plugin.textContent = data.scrollTriggerSource;
+    document.body.append(plugin);
   }
   const script = document.createElement('script');
   script.textContent = data.javascript;
