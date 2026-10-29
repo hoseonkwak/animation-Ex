@@ -571,19 +571,8 @@ test('연습 코드가 부모 앱에 접근하지 못하고 네트워크 요청�
     )
   await page.getByRole('button', { name: 'Run', exact: true }).click()
   const consoleButton = page.getByRole('button', { name: /^Console/ })
+  await expect(consoleButton).toContainText(/Console [1-9]/)
   if ((await consoleButton.getAttribute('aria-expanded')) === 'false') await consoleButton.click()
-  if (!(await page.getByRole('log').isVisible())) {
-    console.log(
-      'sandbox diagnostics',
-      JSON.stringify({
-        url: page.url(),
-        consoleExpanded: await consoleButton.getAttribute('aria-expanded'),
-        consoleLabel: await consoleButton.textContent(),
-        previewFrameCount: await page.locator('iframe[title="내 코드 실행 화면"]').count(),
-        pageText: (await page.locator('body').innerText()).slice(-1200),
-      }),
-    )
-  }
   await expect(page.getByRole('log')).toContainText('parent blocked')
   await expect(page.getByRole('log')).toContainText('storage blocked')
   await expect(page.getByRole('log')).toContainText('top blocked')
