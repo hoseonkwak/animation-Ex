@@ -2,6 +2,8 @@
 
 웹 애니메이션을 찾고, 실제 코드로 실행하고, 직접 수정하며 학습하는 한국어 애니메이션 라이브러리입니다.
 
+현재 구현·운영 상태와 남은 작업은 [프로젝트 진행 상황](docs/PROJECT_STATUS.md)에 정리했습니다.
+
 기존 정적 HTML 기반 GSAP 예제 모음을 보존한 채, `apps/lab`에서 Vue 기반 **Kwak Motion Lab** 리뉴얼을 구현하고 있습니다.
 
 ## 프로젝트가 해결하려는 문제
@@ -30,7 +32,7 @@ Kwak Motion Lab은 다음 경험을 한곳에서 제공하는 것을 목표로 �
 
 ### Explore
 
-- 키워드 및 자연어 검색
+- 키워드 검색. 문장 입력도 현재는 일반 키워드로 처리
 - Technology, Trigger, Motion, Section과 Technique 필터
 - 실제 코드가 실행되는 미리보기 카드
 - 최신, 추천, 난이도와 학습 상태별 탐색
@@ -75,11 +77,11 @@ Phase 2 Kit 10개와 연습 목록은 [Preview의 자유 연습 화면](https://
 
 ## 콘텐츠 수집
 
-다음 경로에서 애니메이션 후보를 확보합니다.
+다음 경로로 애니메이션 후보를 확보하거나 확보할 계획입니다.
 
 1. 관리자가 URL 직접 등록
 2. WSSS 등 지정 출처 정기 순회
-3. 일반 웹 자동 검색
+3. 일반 웹 자동 검색 (후속 단계)
 4. 사용자의 로그인 없는 URL 제보
 
 초기 핵심 출처에는 [WSSS](https://wsss.tistory.com/), CodePen, GSAP Showcase, Awwwards와 Godly가 포함됩니다.
@@ -93,15 +95,13 @@ Discovery
 → Extraction
 → Deduplication
 → Classification
-→ Code Generation
-→ Static Validation
-→ Runtime Validation
-→ Human Review
+→ 출처·실행 조건 확인
+→ 수동 승인 또는 엄격한 자동 공개
 → Publishing
 → Monitoring
 ```
 
-초기에는 관리자가 승인한 콘텐츠만 공개합니다. 충분한 검증 이력과 운영 데이터가 쌓인 뒤 신뢰할 수 있는 출처와 결과부터 조건부 자동 공개로 발전시킵니다.
+수동 승인과 엄격한 조건을 통과한 GSAP/Loading 후보의 자동 공개를 운영합니다. 2026-10-27의 일회성 대기 후보 공개는 별도 결정이며 실행 미확인 표시를 유지합니다. 현재 정책과 예외는 [프로젝트 진행 상황](docs/PROJECT_STATUS.md)과 [결정 기록](docs/DECISIONS.md)을 참고합니다.
 
 ## 콘텐츠 분류
 
@@ -150,7 +150,7 @@ Discovery
 
 ## 현재 저장소
 
-기존 구현은 HTML, CSS와 JavaScript로 구성된 GSAP 예제 갤러리이며, 개별 상세 화면에서 CodePen을 불러와 실행합니다. 새 Vue 앱과 Cloudflare Worker API의 WP0~WP6 구현은 `apps/lab`에 분리했습니다. Home, Explore, 상세, Sections, Saved, URL 제보, 기존 예제 15개, owner 관리자 검수와 WSSS 후보 수집 흐름이 동작합니다.
+기존 HTML·CSS·JavaScript GSAP 갤러리를 보존하면서, Vue 앱과 Cloudflare Worker API를 `apps/lab`에 구현했습니다. Phase 1은 완료됐고 Home·Explore·상세·Sections·Saved·URL 제보, owner 관리자와 WSSS 예약 수집이 운영 중입니다. Phase 2 Practice 코드와 자체 제작 Kit 10건은 Preview에서 검증 중이며 Production Kit은 아직 공개하지 않았습니다.
 
 ```text
 animation-Ex/
@@ -302,7 +302,7 @@ npm run ingest:wsss:preflight
 npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
 ```
 
-GitHub Actions의 `WSSS ingestion` workflow도 같은 세 비밀값을 사용하며 현재는 수동 실행만 허용합니다. 수동 실행의 구조 변화, 속도 제한과 checkpoint 복구가 안정화된 뒤 하루 1회 일정을 활성화합니다.
+GitHub Actions의 `WSSS ingestion` workflow도 같은 세 비밀값을 사용하며 매일 예약 실행합니다. 필요하면 수동 실행으로 복구할 수 있습니다. 운영 확인 근거는 [Phase 1 마감 검증](docs/evidence/PHASE1_CLOSEOUT_2026-10-21.md)에 있습니다.
 
 Cloudflare 사용량은 `Cloudflare daily usage` workflow 또는 `npm run sync:cloudflare-usage`로 동기화합니다. Worker 요청 수와 D1 읽기·쓰기 행 수를 GraphQL Analytics에서 읽고 HMAC 인증 API를 통해 `daily_metrics`에 저장합니다. 필요한 변수와 비밀값은 [`docs/RUNBOOK.md`](docs/RUNBOOK.md)에 정리되어 있습니다.
 
@@ -367,6 +367,7 @@ npx playwright install chromium
 
 ## 설계 문서
 
+- [프로젝트 진행 상황과 남은 작업](docs/PROJECT_STATUS.md)
 - [Motion Lab 소개](docs/MOTION_LAB.md)
 - [리뉴얼 제품 설계서](docs/RENEWAL_PRODUCT_SPEC.md)
 - [결정 기록](docs/DECISIONS.md)

@@ -2,7 +2,7 @@
 
 문서 상태: Active v0.2
 목적: 설계 문서를 작고 검토 가능한 구현 단위와 검증 증거로 변환한다.
-현재 단계: WP0~WP6 완료, WP7·WP8 운영 마감 검증 중
+현재 단계: Phase 1 완료. WP7·WP8의 최종 판정은 [`PHASE1_ACCEPTANCE.md`](PHASE1_ACCEPTANCE.md)와 [마감 검증](evidence/PHASE1_CLOSEOUT_2026-10-21.md)을 따른다.
 
 ## 진행 현황
 
@@ -15,8 +15,10 @@
 | WP4 · 관리자 검수            | 완료 | [`evidence/WP4_REPORT.md`](evidence/WP4_REPORT.md)                                                                                                                                                   |
 | WP5 · WSSS 수집              | 완료 | [`evidence/WP5_REPORT.md`](evidence/WP5_REPORT.md)                                                                                                                                                   |
 | WP6 · 나머지 공개 화면       | 완료 | [`evidence/WP6_REPORT.md`](evidence/WP6_REPORT.md)                                                                                                                                                   |
-| WP7                          | 진행 | [`evidence/WP7_PROGRESS.md`](evidence/WP7_PROGRESS.md), [`evidence/PHASE1_AUDIT_2026-10-15.md`](evidence/PHASE1_AUDIT_2026-10-15.md)                                                                 |
-| WP8                          | 진행 | [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md), [`evidence/WP8_REVIEW_READINESS.md`](evidence/WP8_REVIEW_READINESS.md), [`evidence/WP8_HERO_GAP.md`](evidence/WP8_HERO_GAP.md) |
+| WP7                          | 완료 | [`evidence/WP7_PROGRESS.md`](evidence/WP7_PROGRESS.md), [마감 검증](evidence/PHASE1_CLOSEOUT_2026-10-21.md) |
+| WP8                          | 마감 · Hero 확대 후속 | [`evidence/WP8_INGESTION_START.md`](evidence/WP8_INGESTION_START.md), [마감 검증](evidence/PHASE1_CLOSEOUT_2026-10-21.md) |
+
+Phase 1의 수용 기준은 통과했다. WP8의 Hero 20건 목표는 완료 조건과 별개의 콘텐츠 확대 작업으로 남아 있다.
 
 ## 1. 완료 결과
 
