@@ -354,8 +354,13 @@
 
 .explore-page > .hero h1 {
   max-width: 650px;
-  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
+  font-size: clamp(2.8rem, 4.4vw, 4rem);
   line-height: 1.08;
+  word-break: keep-all;
+}
+
+.explore-page .explore-copy .description {
+  word-break: keep-all;
 }
 
 .explore-page .hero-search,

@@ -46,6 +46,24 @@ test('작은 화면에서 홈과 탐색 페이지가 가로로 넘치지 않는�
   }
 })
 
+test('넓은 화면에서도 탐색 제목의 조사가 혼자 줄바꿈되지 않는다', async ({ page }) => {
+  for (const width of [1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/explore')
+    const heading = page.locator('.explore-copy h1')
+    const layout = await heading.evaluate((element) => {
+      const style = getComputedStyle(element)
+      return {
+        lines: element.getBoundingClientRect().height / Number.parseFloat(style.lineHeight),
+        contentWidth: document.documentElement.scrollWidth,
+        viewportWidth: document.documentElement.clientWidth,
+      }
+    })
+    expect(layout.lines).toBeCloseTo(2, 1)
+    expect(layout.contentWidth).toBeLessThanOrEqual(layout.viewportWidth + 1)
+  }
+})
+
 test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다', async ({ page }) => {
   await page.goto('/explore')
 
