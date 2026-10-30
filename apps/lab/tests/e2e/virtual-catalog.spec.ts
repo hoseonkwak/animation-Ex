@@ -34,13 +34,54 @@ async function mockLongCatalog(page: Page): Promise<string[]> {
   return requestedCursors
 }
 
-test('전체 탐색에는 다음 결과 버튼이 있고 카테고리에는 없다', async ({ page }) => {
+test('전체 탐색과 카테고리 모두 다음 결과 버튼을 표시하지 않는다', async ({ page }) => {
   await page.goto('/explore')
-  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toBeVisible()
+  await expect(page.locator('.example-card').first()).toBeVisible()
+  await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
 
   await page.goto('/explore?section=card')
   await expect(page.locator('.example-card').first()).toBeVisible()
   await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
+})
+
+test('전체 탐색도 다음 페이지를 자동으로 가져오고 카드 DOM을 제한한다', async ({ page }) => {
+  const requestedCursors = await mockLongCatalog(page)
+  await page.goto('/explore')
+  await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(1)
+
+  for (let pageNumber = 2; pageNumber <= 8; pageNumber += 1) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+    await expect.poll(() => requestedCursors.length).toBeGreaterThanOrEqual(pageNumber)
+    expect(await page.locator('.example-card').count()).toBeLessThanOrEqual(60)
+  }
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await expect(page.locator('[data-example-id="virtual-95"]')).toHaveCount(1)
+  expect(requestedCursors).toHaveLength(8)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(1)
+})
+
+test('전체 탐색의 자동 로드가 실패하면 멈추고 다시 시도할 수 있다', async ({ page }) => {
+  const requestedCursors = await mockLongCatalog(page)
+  let failedRequests = 0
+  await page.route('**/api/v1/examples?**', async (route) => {
+    const cursor = new URL(route.request().url()).searchParams.get('cursor')
+    if (cursor === '12' && failedRequests === 0) {
+      failedRequests += 1
+      await route.fulfill({ status: 503, body: 'Unavailable' })
+      return
+    }
+    await route.fallback()
+  })
+
+  await page.goto('/explore')
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await expect(page.getByRole('alert')).toContainText('다음 예제를 불러오지 못했습니다.')
+  expect(failedRequests).toBe(1)
+  await page.getByRole('button', { name: '다시 시도' }).click()
+  await expect.poll(() => requestedCursors.includes('12')).toBe(true)
+  await expect(page.getByRole('alert')).toHaveCount(0)
 })
 
 test('카테고리 목록은 화면 밖 행을 제거하며 다음 페이지를 자동으로 가져온다', async ({ page }) => {

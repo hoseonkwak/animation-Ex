@@ -107,8 +107,6 @@ const filterGroups: Array<{
 const activeFilterCount = computed(() =>
   filterGroups.reduce((count, group) => count + selectedValues(group.axis).length, 0),
 )
-const isCategoryView = computed(() => selectedValues('section').length > 0)
-
 watch(
   () => route.fullPath,
   async () => {
@@ -340,20 +338,11 @@ function setGridColumns(columns: 2 | 3 | 4): void {
             :has-more="Boolean(nextCursor)"
             :loading-more="loadingMore"
             :load-error="loadMoreError"
-            :auto-load="isCategoryView"
+            auto-load
             @load-more="loadExamples(true)"
             @request="scheduler.request"
             @release="scheduler.release"
           />
-          <button
-            v-if="nextCursor && !isCategoryView && !loading && !loadMoreError"
-            type="button"
-            class="load-more"
-            :disabled="loadingMore"
-            @click="loadExamples(true)"
-          >
-            {{ loadingMore ? '불러오는 중' : '다음 결과 불러오기' }}
-          </button>
           <div v-if="loadMoreError" class="feed-error" role="alert">
             {{ loadMoreError }}
             <button type="button" @click="loadExamples(true)">다시 시도</button>
