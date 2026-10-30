@@ -48,6 +48,20 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => props.example.id,
+  (id, previousId) => {
+    if (id === previousId) return
+    if (root.value?.contains(document.activeElement)) {
+      root.value.closest<HTMLElement>('.virtual-example-viewport')?.focus({ preventScroll: true })
+    }
+    emit('release', previousId)
+    frameState.value = props.active ? 'loading' : 'idle'
+    thumbnailFailed.value = false
+    thumbnailFromCodePen.value = false
+  },
+)
+
 onMounted(() => {
   if (!root.value || typeof IntersectionObserver === 'undefined') return
   observer = new IntersectionObserver(

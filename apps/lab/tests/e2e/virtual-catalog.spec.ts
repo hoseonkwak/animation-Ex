@@ -55,8 +55,22 @@ test('카테고리 목록은 화면 밖 행을 제거하며 다음 페이지를 
   }
   await expect.poll(() => firstRow.getAttribute('data-row-index').then(Number)).toBeGreaterThan(0)
   await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(0)
+  const previousCardId = await page.evaluate(() => {
+    const card = document.querySelector('.example-card')
+    ;(window as Window & { recycledCard?: Element | null }).recycledCard = card
+    return card?.getAttribute('data-example-id')
+  })
+  expect(previousCardId).not.toBe('virtual-0')
   await page.evaluate(() => window.scrollTo(0, 0))
   await expect(page.locator('[data-example-id="virtual-0"]')).toHaveCount(1)
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const card = (window as Window & { recycledCard?: Element | null }).recycledCard
+        return card?.isConnected && card.getAttribute('data-example-id') === 'virtual-0'
+      }),
+    )
+    .toBe(true)
   await expect(page.getByRole('button', { name: '다음 결과 불러오기' })).toHaveCount(0)
 })
 
@@ -80,6 +94,26 @@ test('빠르게 스크롤해도 목록 영역에 카드가 보인다', async ({ 
     )
     expect(visibleCards).toBeGreaterThan(0)
   }
+})
+
+test('재활용 카드에서 이전 예제의 실행 상태가 남지 않는다', async ({ page }) => {
+  const requestedCursors = await mockLongCatalog(page)
+  await page.goto('/explore?section=button')
+  const firstCard = page.locator('[data-example-id="virtual-0"]')
+  await firstCard.getByRole('button', { name: '가상 목록 예제 0 실행 화면 보기' }).click()
+  await expect(firstCard.locator('iframe')).toHaveCount(1)
+  await firstCard.getByRole('button', { name: '저장' }).focus()
+
+  for (let pageNumber = 2; pageNumber <= 4; pageNumber += 1) {
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+    await expect.poll(() => requestedCursors.length).toBeGreaterThanOrEqual(pageNumber)
+  }
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await expect(firstCard).toHaveCount(0)
+  await expect(page.locator('.virtual-example-viewport')).toBeFocused()
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect(firstCard).toHaveAttribute('data-preview-state', 'idle')
+  await expect(firstCard.locator('iframe')).toHaveCount(0)
 })
 
 test('카테고리가 많아도 데스크톱과 모바일에서 끝 항목이 잘리지 않는다', async ({ page }) => {

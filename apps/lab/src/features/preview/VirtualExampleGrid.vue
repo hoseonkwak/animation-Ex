@@ -119,12 +119,14 @@ watch(
   <div
     ref="root"
     class="virtual-example-viewport"
+    tabindex="-1"
+    aria-label="예제 목록"
     data-testid="virtual-example-viewport"
     :style="{ height: `${totalSize}px`, position: 'relative' }"
   >
     <div
-      v-for="row in visibleRows"
-      :key="String(row.key)"
+      v-for="(row, slotIndex) in visibleRows"
+      :key="slotIndex"
       :ref="measureRow"
       class="example-grid virtual-example-row"
       :class="{ 'home-example-grid': home }"
@@ -141,11 +143,11 @@ watch(
       }"
     >
       <PreviewCard
-        v-for="example in items.slice(
+        v-for="(example, cardSlot) in items.slice(
           row.index * effectiveColumns,
           (row.index + 1) * effectiveColumns,
         )"
-        :key="example.id"
+        :key="cardSlot"
         :example="example"
         :active="activeIds.includes(example.id)"
         @request="forwardRequest"

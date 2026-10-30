@@ -159,7 +159,7 @@ function cleanupE2eState() {
   ) {
     throw new Error('E2E 임시 상태 경로가 예상한 임시 폴더 밖입니다.')
   }
-  rmSync(resolvedState, { recursive: true, force: true })
+  rmSync(resolvedState, { recursive: true, force: true, maxRetries: 15, retryDelay: 200 })
 }
 
 let exitCode
