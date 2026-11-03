@@ -252,6 +252,22 @@
   gap: 22px;
 }
 
+.home-explore-link {
+  display: table;
+  margin: 36px auto 0;
+  padding: 14px 24px;
+  color: #fff;
+  background: var(--color-brand);
+  border-radius: 12px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.home-explore-link:hover,
+.home-explore-link:focus-visible {
+  background: var(--color-brand-hover);
+}
+
 .feed-error {
   margin-top: 24px;
   color: var(--color-text-muted);

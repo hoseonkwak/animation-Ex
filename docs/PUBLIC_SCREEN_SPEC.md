@@ -81,7 +81,7 @@ Menu drawer에 Explore, Sections, Saved, About과 Theme을 둔다. 현재 위치
 ### 콘텐츠 섹션
 
 - 카테고리: 공개 예제가 있는 Section과 결과 수
-- 예제: 추천순 썸네일 첫 12개를 표시하고 스크롤 중 다음 페이지를 미리 가져온다. 전체 탐색 링크도 제공한다.
+- 예제: 추천순 썸네일 첫 12개만 표시한다. 마지막 카드 아래에 전체 탐색 링크를 두어 푸터까지 자연스럽게 내려갈 수 있게 한다. 연속 로딩은 Explore에서 제공한다.
 - Collection, Pattern, URL 제보는 전용 화면과 문맥에서 제공한다.
 - Phase 1에는 Practice와 Tutorial 섹션을 표시하지 않는다.
 

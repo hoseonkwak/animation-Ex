@@ -17,6 +17,28 @@ test('P1-UX-01 Vue 애플리케이션이 로드된다', async ({ page }) => {
   )
 })
 
+test('홈은 첫 12개에서 끝나고 푸터까지 내려갈 수 있다', async ({ page }) => {
+  let exampleRequests = 0
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.pathname === '/api/v1/examples' && url.searchParams.get('sort') === 'featured') {
+      exampleRequests += 1
+    }
+  })
+
+  await page.goto('/')
+  await expect(page.locator('.example-card')).toHaveCount(12)
+  await expect(page.getByRole('link', { name: '전체 예제 탐색하기' })).toHaveAttribute(
+    'href',
+    '/explore',
+  )
+
+  await page.locator('.site-footer').scrollIntoViewIfNeeded()
+  await expect(page.locator('.site-footer')).toBeInViewport()
+  await expect(page.locator('.example-card')).toHaveCount(12)
+  expect(exampleRequests).toBe(1)
+})
+
 test('홈 썸네일을 눌렀을 때만 CodePen 실행 화면으로 바뀐다', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 })
   await page.goto('/')

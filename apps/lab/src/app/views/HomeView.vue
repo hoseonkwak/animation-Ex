@@ -17,9 +17,6 @@ const discovery = ref<DiscoveryPayload>({
 })
 const loading = ref(true)
 const error = ref('')
-const nextCursor = ref<string | null>(null)
-const loadingMore = ref(false)
-const loadMoreError = ref('')
 
 onMounted(async () => {
   setPageMeta(
@@ -36,7 +33,6 @@ onMounted(async () => {
     if (!exampleResponse.ok || !discoveryResponse.ok) throw new Error('load failed')
     const page = ((await exampleResponse.json()) as ApiSuccess<ExamplesPayload>).data
     examples.value = page.items
-    nextCursor.value = page.nextCursor
     discovery.value = ((await discoveryResponse.json()) as ApiSuccess<DiscoveryPayload>).data
   } catch {
     error.value = '예제를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
@@ -44,24 +40,6 @@ onMounted(async () => {
     loading.value = false
   }
 })
-
-async function loadMore(): Promise<void> {
-  if (!nextCursor.value || loadingMore.value) return
-  loadingMore.value = true
-  loadMoreError.value = ''
-  try {
-    const params = new URLSearchParams({ sort: 'featured', limit: '12', cursor: nextCursor.value })
-    const response = await fetch(`/api/v1/examples?${params}`)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const page = ((await response.json()) as ApiSuccess<ExamplesPayload>).data
-    examples.value = [...examples.value, ...page.items]
-    nextCursor.value = page.nextCursor
-  } catch {
-    loadMoreError.value = '다음 예제를 불러오지 못했습니다.'
-  } finally {
-    loadingMore.value = false
-  }
-}
 </script>
 
 <template>
@@ -107,19 +85,13 @@ async function loadMore(): Promise<void> {
         <VirtualExampleGrid
           :items="examples"
           :active-ids="scheduler.activeIds.value"
-          :has-more="Boolean(nextCursor)"
-          :loading-more="loadingMore"
-          :load-error="loadMoreError"
+          :has-more="false"
+          :loading-more="false"
           home
-          auto-load
-          @load-more="loadMore"
           @request="scheduler.request"
           @release="scheduler.release"
         />
-        <div v-if="loadMoreError" class="feed-error" role="alert">
-          {{ loadMoreError }}
-          <button type="button" @click="loadMore">다시 시도</button>
-        </div>
+        <RouterLink class="home-explore-link" to="/explore">전체 예제 탐색하기</RouterLink>
       </template>
     </section>
   </main>
