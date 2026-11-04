@@ -679,12 +679,14 @@ export class AdminRepository {
   async ingestionRuns(): Promise<{
     items: Array<{
       id: string
+      sourceName: string
       status: string
       trigger: string
       discoveredCount: number
       acceptedCount: number
       duplicateCount: number
       failedCount: number
+      failureCode: string | null
       checkpointAfter: string | null
       startedAt: string
       finishedAt: string | null
@@ -692,18 +694,23 @@ export class AdminRepository {
   }> {
     const { results } = await this.db
       .prepare(
-        `SELECT id, status, trigger, discovered_count, accepted_count, duplicate_count,
-          failed_count, checkpoint_after, started_at, finished_at
-        FROM ingestion_runs ORDER BY started_at DESC LIMIT 50`,
+        `SELECT r.id, d.name AS source_name, r.status, r.trigger, r.discovered_count,
+          r.accepted_count, r.duplicate_count, r.failed_count, r.failure_code,
+          r.checkpoint_after, r.started_at, r.finished_at
+        FROM ingestion_runs r
+        JOIN discovery_sources d ON d.id = r.discovery_source_id
+        ORDER BY r.started_at DESC LIMIT 50`,
       )
       .all<{
         id: string
+        source_name: string
         status: string
         trigger: string
         discovered_count: number
         accepted_count: number
         duplicate_count: number
         failed_count: number
+        failure_code: string | null
         checkpoint_after: string | null
         started_at: string
         finished_at: string | null
@@ -711,12 +718,14 @@ export class AdminRepository {
     return {
       items: results.map((row) => ({
         id: row.id,
+        sourceName: row.source_name,
         status: row.status,
         trigger: row.trigger,
         discoveredCount: row.discovered_count,
         acceptedCount: row.accepted_count,
         duplicateCount: row.duplicate_count,
         failedCount: row.failed_count,
+        failureCode: row.failure_code,
         checkpointAfter: row.checkpoint_after,
         startedAt: row.started_at,
         finishedAt: row.finished_at,

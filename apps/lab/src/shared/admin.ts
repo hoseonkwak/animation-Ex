@@ -81,3 +81,18 @@ export interface CandidateTriagePayload {
   counts: Record<string, number>
   bucketCounts: Record<TriageBucket | 'hero', number>
 }
+
+export interface IngestionRun {
+  id: string
+  sourceName: string
+  status: 'running' | 'success' | 'partial' | 'failed' | 'paused-limit'
+  trigger: 'schedule' | 'manual'
+  discoveredCount: number
+  acceptedCount: number
+  duplicateCount: number
+  failedCount: number
+  failureCode: string | null
+  checkpointAfter: string | null
+  startedAt: string
+  finishedAt: string | null
+}

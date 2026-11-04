@@ -60,6 +60,54 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect((await request('/api/v1/admin/candidates', {}, '99999999')).status).toBe(403)
   })
 
+  it('예약 수집 0건 성공과 실패 코드를 owner 이력에서 구분한다', async () => {
+    sqlite.exec(`
+      INSERT INTO discovery_sources (id, key, name, base_url, active, config_json)
+      VALUES ('discovery-wsss', 'wsss', 'WSSS', 'https://wsss.tistory.com/', 1, '{}');
+      INSERT INTO ingestion_runs (
+        id, discovery_source_id, status, trigger, discovered_count, accepted_count,
+        duplicate_count, failed_count, started_at, finished_at, failure_code
+      ) VALUES
+        ('run-empty', 'discovery-wsss', 'success', 'schedule', 0, 0, 0, 0,
+          '2026-11-03T08:31:00.000Z', '2026-11-03T08:32:00.000Z', NULL),
+        ('run-failed', 'discovery-wsss', 'failed', 'manual', 2, 0, 0, 2,
+          '2026-11-03T09:00:00.000Z', '2026-11-03T09:01:00.000Z', 'ARTICLE_UNAVAILABLE');
+    `)
+
+    expect((await request('/api/v1/admin/ingestion-runs', {}, '')).status).toBe(401)
+    const response = await request('/api/v1/admin/ingestion-runs')
+    const body = (await response.json()) as {
+      data: {
+        items: Array<{
+          id: string
+          sourceName: string
+          status: string
+          trigger: string
+          acceptedCount: number
+          failedCount: number
+          failureCode: string | null
+        }>
+      }
+    }
+    expect(response.status).toBe(200)
+    expect(body.data.items[0]).toMatchObject({
+      id: 'run-failed',
+      sourceName: 'WSSS',
+      status: 'failed',
+      trigger: 'manual',
+      failedCount: 2,
+      failureCode: 'ARTICLE_UNAVAILABLE',
+    })
+    expect(body.data.items[1]).toMatchObject({
+      id: 'run-empty',
+      sourceName: 'WSSS',
+      status: 'success',
+      trigger: 'schedule',
+      acceptedCount: 0,
+      failureCode: null,
+    })
+  })
+
   it('P1-ADMIN-01 실제 CodePen 후보와 태그를 반환한다', async () => {
     const response = await request('/api/v1/admin/candidates?status=review&sort=oldest')
     const body = (await response.json()) as { data: { items: Array<{ id: string }> } }

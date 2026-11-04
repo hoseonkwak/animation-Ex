@@ -211,7 +211,7 @@ Owner는 최근 공개 예제 100개와 마지막 공개 Preview 점검 결과�
 
 ### `GET /admin/ingestion-runs`
 
-실행별 발견, 신규, 중복, 실패, 승인 대기 수와 마지막 checkpoint를 반환한다.
+Owner 전용으로 최근 수집 실행 최대 50건을 최신순으로 반환한다. 각 항목은 출처 이름, 예약·수동 실행 구분, 상태, 발견·신규·중복·실패 수, 실패 코드, 시작·종료 시각과 마지막 checkpoint를 포함한다. 신규 후보가 없는 정상 실행도 `success`와 0건 수치로 반환한다. GitHub Actions가 D1에 실행 기록을 만들기 전에 실패한 경우는 이 목록에 없을 수 있으므로 관리자 화면은 GitHub 실행 기록 링크도 제공한다.
 
 ### `GET`, `POST /admin/auto-publication`
 

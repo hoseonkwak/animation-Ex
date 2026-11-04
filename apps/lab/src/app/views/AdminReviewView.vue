@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import IngestionRunsPanel from './IngestionRunsPanel.vue'
 import type {
   CandidateDetail,
   CandidateListPayload,
   CandidateStatus,
   CandidateTriagePayload,
+  IngestionRun,
   TriageBucket,
 } from '@/shared/admin'
 import type { ApiSuccess } from '@/shared/examples'
@@ -28,6 +30,9 @@ const busy = ref(false)
 const notice = ref('')
 const error = ref('')
 const approvalFeedback = ref('')
+const ingestionRuns = ref<IngestionRun[]>([])
+const ingestionRunsLoading = ref(false)
+const ingestionRunsError = ref('')
 const operations = ref<{
   environment: string
   ingestionPaused: boolean
@@ -151,7 +156,12 @@ const approvalIssues = computed(() => {
 onMounted(async () => {
   await loadSession()
   if (authState.value === 'authenticated') {
-    await Promise.all([loadOperations(), loadAutoPublication(), loadPublishedExamples()])
+    await Promise.all([
+      loadOperations(),
+      loadAutoPublication(),
+      loadPublishedExamples(),
+      loadIngestionRuns(),
+    ])
     await loadQueue()
   }
 })
@@ -175,6 +185,7 @@ async function logout(): Promise<void> {
   authState.value = 'anonymous'
   queue.value = { items: [], counts: {} }
   selected.value = null
+  ingestionRuns.value = []
 }
 
 async function api<T>(path: string, init: Parameters<typeof fetch>[1] = {}): Promise<T> {
@@ -245,6 +256,20 @@ async function loadOperations(): Promise<void> {
     operations.value = await api('/api/v1/admin/operations')
   } catch (cause) {
     showError(cause)
+  }
+}
+
+async function loadIngestionRuns(): Promise<void> {
+  ingestionRunsLoading.value = true
+  ingestionRunsError.value = ''
+  try {
+    const result = await api<{ items: IngestionRun[] }>('/api/v1/admin/ingestion-runs')
+    ingestionRuns.value = result.items
+  } catch (cause) {
+    ingestionRunsError.value =
+      cause instanceof Error ? cause.message : '수집 기록을 확인하지 못했습니다.'
+  } finally {
+    ingestionRunsLoading.value = false
   }
 }
 
@@ -561,6 +586,13 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         ><strong>{{ queue.counts[item] ?? 0 }}</strong>
       </button>
     </section>
+    <IngestionRunsPanel
+      v-if="authState === 'authenticated'"
+      :runs="ingestionRuns"
+      :loading="ingestionRunsLoading"
+      :error="ingestionRunsError"
+      @refresh="loadIngestionRuns"
+    />
     <section
       v-if="authState === 'authenticated' && status === 'review' && triage"
       class="triage-panel"

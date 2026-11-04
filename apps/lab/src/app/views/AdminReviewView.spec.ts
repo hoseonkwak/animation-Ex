@@ -72,6 +72,8 @@ describe('AdminReviewView', () => {
           ingestionPaused: false,
           usage: { level: 'normal', maximumRatio: 0 },
         }
+      } else if (url.endsWith('/admin/ingestion-runs')) {
+        data = { items: [] }
       } else if (url.endsWith('/admin/auto-publication')) {
         data = { paused: true, batches: [], lastRun: null }
       } else if (url.endsWith('/admin/examples')) {
@@ -151,6 +153,7 @@ describe('AdminReviewView', () => {
           ingestionPaused: false,
           usage: { level: 'normal', maximumRatio: 0 },
         }
+      else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
       else if (url.endsWith('/admin/examples')) data = { items: [] }

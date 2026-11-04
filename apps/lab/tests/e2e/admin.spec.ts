@@ -6,6 +6,9 @@ test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', a
     timeout: 10_000,
   })
   await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('무료 한도 0%')
+  await expect(page.getByRole('region', { name: '수집 결과' })).toContainText(
+    '예약 수집 기록이 아직 없습니다.',
+  )
 
   await expect(page.getByRole('heading', { name: 'Candidate Inbox' })).toBeVisible()
   await expect(page.getByRole('region', { name: '자동 사전 분류' })).toContainText('실행 확인 1')
@@ -28,6 +31,7 @@ test('P1-ADMIN 인증 없는 관리자 API 요청은 401이다', async ({ reques
   const response = await request.get('/api/v1/admin/candidates')
   expect(response.status()).toBe(401)
   expect((await request.get('/api/v1/admin/candidates/triage')).status()).toBe(401)
+  expect((await request.get('/api/v1/admin/ingestion-runs')).status()).toBe(401)
 })
 
 test('P1-OPS-04 owner가 공개 Preview 오류를 기록하고 목록에서 확인한다', async ({ page }) => {

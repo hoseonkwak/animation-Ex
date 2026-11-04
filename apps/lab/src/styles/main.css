@@ -604,6 +604,133 @@ select:focus-visible {
 .admin-stats strong {
   font-size: 1.4rem;
 }
+.ingestion-report {
+  margin-bottom: 18px;
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.ingestion-report-heading,
+.ingestion-report-actions,
+.ingestion-latest,
+.ingestion-counts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ingestion-report-heading h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.ingestion-report-heading p,
+.ingestion-report > p {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+.ingestion-report-actions {
+  flex-wrap: wrap;
+}
+.ingestion-report-actions button {
+  padding: 8px 12px;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.ingestion-report-actions button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.ingestion-report-actions a {
+  color: var(--color-brand);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.ingestion-latest {
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color-bg);
+  border-left: 4px solid var(--color-brand);
+  border-radius: 10px;
+}
+.ingestion-latest[data-status='failed'],
+.ingestion-latest[data-status='partial'],
+.ingestion-latest[data-status='paused-limit'] {
+  border-left-color: #b42318;
+}
+.ingestion-latest > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+.ingestion-latest > div:first-child span,
+.ingestion-latest time {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+.ingestion-latest > div:first-child strong {
+  font-size: 1.05rem;
+}
+.ingestion-latest > p {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+.ingestion-counts {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 16px;
+  font-size: 0.85rem;
+}
+.ingestion-counts strong {
+  margin-left: 4px;
+  font-size: 1.1rem;
+}
+.ingestion-report .ingestion-report-pending,
+.ingestion-report .ingestion-report-error {
+  margin-top: 12px;
+  color: #9a5b00;
+}
+.ingestion-report .ingestion-report-error {
+  color: #b42318;
+}
+.ingestion-history {
+  margin-top: 16px;
+  font-size: 0.85rem;
+}
+.ingestion-history summary {
+  color: var(--color-brand);
+  cursor: pointer;
+  font-weight: 700;
+}
+.ingestion-history-scroll {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.ingestion-history table {
+  width: 100%;
+  min-width: 570px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.ingestion-history th,
+.ingestion-history td {
+  padding: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+.ingestion-history th {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+.ingestion-history td small {
+  display: block;
+  color: var(--color-text-muted);
+}
 .triage-panel {
   margin-bottom: 18px;
   padding: 20px;
