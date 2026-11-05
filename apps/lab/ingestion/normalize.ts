@@ -1,4 +1,5 @@
 import type { NormalizedPen } from './types.ts'
+import { parseCodePenUrl } from '../src/shared/codepenUrl.ts'
 
 export class IngestionParseError extends Error {
   readonly code: string
@@ -10,27 +11,10 @@ export class IngestionParseError extends Error {
 }
 
 export function normalizeCodePenUrl(raw: string): NormalizedPen {
-  let url: URL
-  try {
-    url = new URL(raw)
-  } catch {
-    throw new IngestionParseError('CODEPEN_URL_INVALID', 'CodePen URL 형식이 올바르지 않습니다.')
-  }
-  if (!['http:', 'https:'].includes(url.protocol) || url.hostname.toLowerCase() !== 'codepen.io') {
-    throw new IngestionParseError('CODEPEN_URL_INVALID', 'codepen.io URL만 허용합니다.')
-  }
-  const match = url.pathname.match(/^\/((?:team\/)?[^/]+)\/(?:pen|embed)\/([A-Za-z0-9]+)\/?$/)
-  if (!match?.[1] || !match[2]) {
-    throw new IngestionParseError('CODEPEN_URL_INVALID', 'Pen 또는 embed URL이 아닙니다.')
-  }
-  const creatorSlug = decodeURIComponent(match[1])
-  const penId = match[2]
-  return {
-    canonicalUrl: `https://codepen.io/${creatorSlug}/pen/${penId}`,
-    penKey: `${creatorSlug}/${penId}`,
-    creatorSlug,
-    penId,
-  }
+  const pen = parseCodePenUrl(raw)
+  if (!pen)
+    throw new IngestionParseError('CODEPEN_URL_INVALID', 'CodePen Pen URL이 올바르지 않습니다.')
+  return pen
 }
 
 export function assertAllowedWsssUrl(raw: string): URL {

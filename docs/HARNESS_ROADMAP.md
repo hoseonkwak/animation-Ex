@@ -77,6 +77,8 @@
 
 구현 순서와 각 항목의 증거는 Phase 1은 `PHASE1_EXECUTION_PLAN.md`, Phase 2는 `PHASE2_EXECUTION_PLAN.md`를 따른다.
 
+다중 출처 탐색 확대의 현재 범위와 출처별 선행 검증은 [`DISCOVERY_EXPANSION_PLAN.md`](DISCOVERY_EXPANSION_PLAN.md)를 따른다.
+
 자동 공개 전환의 현재 상태와 남은 실제 Production 표본 확인은 `AUTO_PUBLICATION_PILOT.md`를 따른다.
 
 ## 2. Skill 생성 기준

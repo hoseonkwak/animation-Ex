@@ -8,6 +8,7 @@ import { ingestionSignature } from '../../server/ingestion'
 import worker from '../../server/index'
 import { parseWsssList } from '../../ingestion/parser.ts'
 import { buildCandidates } from '../../ingestion/pipeline.ts'
+import { buildSparkCandidates, parseSparkFeed } from '../../ingestion/spark.ts'
 import { createMigratedDatabase } from '../contracts/database'
 
 let sqlite: DatabaseSync
@@ -289,6 +290,63 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       expect(metadata.summary).toBeTruthy()
       expect(metadata.slug).toMatch(/^pen-/)
     }
+  })
+
+  it('Spark 2.0 Pen을 출처별로 저장하고 재실행에서는 중복으로 처리한다', async () => {
+    const issues = parseSparkFeed(readFileSync(path.resolve('fixtures/spark/feed.xml'), 'utf8'))
+    const items = buildSparkCandidates(issues).items
+    const submit = async (runId: string) =>
+      signedRequest('/api/v1/ingestion/batches', {
+        runId,
+        sourceKey: 'spark',
+        trigger: 'manual',
+        checkpointBefore: null,
+        items,
+      })
+    const first = await submit('spark-fixture-1')
+    expect(first.status).toBe(200)
+    expect((await first.json()) as { data: { accepted: number; failed: number } }).toMatchObject({
+      data: { accepted: 3, failed: 0 },
+    })
+    const second = await submit('spark-fixture-2')
+    expect((await second.json()) as { data: { duplicates: number } }).toMatchObject({
+      data: { duplicates: 3 },
+    })
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-spark'",
+        )
+        .get(),
+    ).toEqual({ count: 3 })
+    const candidate = sqlite
+      .prepare(
+        "SELECT metadata_json FROM candidates WHERE source_category = 'CodePen/Spark' LIMIT 1",
+      )
+      .get() as { metadata_json: string }
+    expect(JSON.parse(candidate.metadata_json)).toMatchObject({
+      slug: expect.stringMatching(/^pen-/),
+    })
+    const checkpoint = {
+      category: 'CodePen/Spark',
+      completedIssueIds: ['532'],
+      processedExternalIds: items.map((item) => item.externalId),
+      lastIssueId: '532',
+    }
+    expect(
+      (
+        await signedRequest('/api/v1/ingestion/runs/spark-fixture-1/complete', {
+          checkpointAfter: checkpoint,
+        })
+      ).status,
+    ).toBe(200)
+    const saved = await signedRequest('/api/v1/ingestion/checkpoint', {
+      sourceKey: 'spark',
+      category: 'CodePen/Spark',
+    })
+    expect((await saved.json()) as { data: { checkpoint: unknown } }).toMatchObject({
+      data: { checkpoint },
+    })
   })
 
   it('팀 계정 CodePen Pen도 후보로 저장한다', async () => {

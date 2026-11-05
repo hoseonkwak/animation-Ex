@@ -1,0 +1,40 @@
+name: CodePen Spark ingestion
+
+on:
+  schedule:
+    - cron: "53 0 * * *"
+  workflow_dispatch:
+    inputs:
+      max_issues:
+        description: Maximum Spark issues from the current feed (1-10)
+        required: true
+        default: "10"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate ingestion fixtures
+        run: npm run test:ingestion
+      - name: Collect Spark motion candidates
+        working-directory: apps/lab
+        env:
+          INGESTION_API_URL: ${{ secrets.INGESTION_API_URL }}
+          INGESTION_KEY_ID: ${{ secrets.INGESTION_KEY_ID }}
+          INGESTION_HMAC_SECRET: ${{ secrets.INGESTION_HMAC_SECRET }}
+          MAX_ISSUES: ${{ inputs.max_issues || '10' }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            set -- --scheduled
+          else
+            set --
+          fi
+          node --experimental-transform-types ingestion/spark-cli.ts --live \
+            --max-issues "$MAX_ISSUES" --remote-checkpoint "$@"

@@ -13,6 +13,11 @@ import {
 } from '../../ingestion/pipeline.ts'
 import { fetchWsss, CollectionStoppedError, robotsAllows } from '../../ingestion/policy.ts'
 import { suggestTags } from '../../ingestion/tags.ts'
+import {
+  advanceSparkCheckpoint,
+  buildSparkCandidates,
+  parseSparkFeed,
+} from '../../ingestion/spark.ts'
 
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 const categoryUrl = 'https://wsss.tistory.com/category/Animation/GSAP'
@@ -74,6 +79,22 @@ describe('WSSS parser fixture', () => {
 })
 
 describe('CodePen canonicalization과 태그', () => {
+  it('2.0 Editor Pen과 embed URL을 같은 UUID Pen으로 정규화한다', () => {
+    const penId = '01a187ae-e212-756d-8f6c-a76c594987bf'
+    expect(normalizeCodePenUrl(`https://codepen.io/editor/cbolson/pen/${penId}`)).toEqual({
+      canonicalUrl: `https://codepen.io/editor/cbolson/pen/${penId}`,
+      penKey: `editor/cbolson/${penId}`,
+      creatorSlug: 'editor/cbolson',
+      penId,
+    })
+    expect(
+      normalizeCodePenUrl(`https://codepen.io/editor/cbolson/embed/${penId}?theme-id=light`)
+        .canonicalUrl,
+    ).toBe(`https://codepen.io/editor/cbolson/pen/${penId}`)
+    expect(() => normalizeCodePenUrl('https://codepen.io/editor/cbolson/pen/not-a-uuid')).toThrow(
+      IngestionParseError,
+    )
+  })
   it('Pen과 embed URL의 query·fragment를 같은 canonical URL로 만든다', () => {
     expect(normalizeCodePenUrl('http://codepen.io/Creator/pen/AbC123/?x=1#result')).toEqual({
       canonicalUrl: 'https://codepen.io/Creator/pen/AbC123',
@@ -138,6 +159,44 @@ describe('CodePen canonicalization과 태그', () => {
     )
     expect(suggestTags('Animation/Animation', 'Untitled animation')).toEqual([])
     expect(suggestTags('Animation/Animation', 'COMICS HEROES IN POLYGONS')).toEqual([])
+  })
+})
+
+describe('CodePen Spark 피드', () => {
+  const xml = readFileSync(path.resolve('fixtures/spark/feed.xml'), 'utf8')
+
+  it('소개된 모션 Pen만 선택하고 광고·정적 예제·중복 링크를 제외한다', () => {
+    const issues = parseSparkFeed(xml)
+    expect(issues.map((issue) => issue.id)).toEqual(['532', '531'])
+    const result = buildSparkCandidates(issues)
+    expect(result.items).toHaveLength(3)
+    expect(result.items[0]).toMatchObject({
+      externalId: 'spark:532:editor~cbolson:01a187ae-e212-756d-8f6c-a76c594987bf',
+      discoveredVia: { key: 'spark', url: 'https://codepen.io/spark/532' },
+      source: { creatorSlug: 'editor/cbolson' },
+    })
+    expect(result.items.some((item) => item.source.title === 'Static random placement')).toBe(false)
+  })
+
+  it('저장 성공한 Pen만 완료 처리하고 같은 피드는 재수집하지 않는다', () => {
+    const issues = parseSparkFeed(xml)
+    const first = buildSparkCandidates(issues)
+    const partial = advanceSparkCheckpoint(issues, undefined, [first.items[0]!.externalId])
+    expect(partial.completedIssueIds).toEqual([])
+    expect(buildSparkCandidates(issues, partial).items).toHaveLength(2)
+    const complete = advanceSparkCheckpoint(
+      issues,
+      partial,
+      first.items.slice(1).map((item) => item.externalId),
+    )
+    expect(complete.completedIssueIds).toEqual(['532', '531'])
+    expect(buildSparkCandidates(issues, complete).items).toHaveLength(0)
+  })
+
+  it('피드 구조가 달라지면 빈 성공으로 처리하지 않는다', () => {
+    expect(() => parseSparkFeed('<rss><channel></channel></rss>')).toThrowError(
+      expect.objectContaining({ code: 'SPARK_FEED_STRUCTURE_CHANGED' }),
+    )
   })
 })
 

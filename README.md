@@ -254,6 +254,9 @@ npm run preview
 | `npm run ingest:wsss:fixture`      | 저장된 최소 HTML로 parser 실행       |
 | `npm run ingest:wsss:preflight`    | 현재 WSSS 한 건을 읽기 전용으로 점검 |
 | `npm run ingest:wsss:live`         | 서명된 batch API로 후보 제출         |
+| `npm run ingest:spark:fixture`     | Spark 피드 fixture 검사              |
+| `npm run ingest:spark:preflight`   | Spark 피드를 읽기 전용으로 점검       |
+| `npm run ingest:spark:live`        | Spark 모션 후보를 batch API로 제출   |
 | `npm run sync:cloudflare-usage`    | Cloudflare 일일 사용량 동기화        |
 | `npm run smoke:preview`            | 배포한 Preview의 핵심 경로 점검      |
 | `npm run smoke:production`         | 배포한 Production의 핵심 경로 점검   |
@@ -303,6 +306,8 @@ npm run ingest:wsss:live -- --max-articles 50 --max-pages 1
 ```
 
 GitHub Actions의 `WSSS ingestion` workflow도 같은 세 비밀값을 사용하며 매일 예약 실행합니다. 필요하면 수동 실행으로 복구할 수 있습니다. 운영 확인 근거는 [Phase 1 마감 검증](docs/evidence/PHASE1_CLOSEOUT_2026-10-21.md)에 있습니다.
+
+CodePen Spark 수집은 먼저 `npm run test:ingestion`과 `npm run ingest:spark:fixture --workspace @kwak-motion/lab`을 통과한 뒤 `npm run ingest:spark:preflight --workspace @kwak-motion/lab`으로 읽기 전용 결과를 확인합니다. 같은 세 환경 변수를 설정하고 `npm run ingest:spark:live --workspace @kwak-motion/lab -- --remote-checkpoint`를 실행하면 `CodePen/Spark` 후보를 제출합니다. 예약 작업은 `.github/workflows/spark-ingestion.yml`에서 실행하며 후보 등록과 공개는 별개입니다.
 
 Cloudflare 사용량은 `Cloudflare daily usage` workflow 또는 `npm run sync:cloudflare-usage`로 동기화합니다. Worker 요청 수와 D1 읽기·쓰기 행 수를 GraphQL Analytics에서 읽고 HMAC 인증 API를 통해 `daily_metrics`에 저장합니다. 필요한 변수와 비밀값은 [`docs/RUNBOOK.md`](docs/RUNBOOK.md)에 정리되어 있습니다.
 
@@ -380,6 +385,7 @@ npx playwright install chromium
 - [Phase 1 D1 스키마 설계](docs/D1_SCHEMA.md)
 - [관리자 검수 화면 명세](docs/ADMIN_REVIEW_SPEC.md)
 - [WSSS 수집 파이프라인 명세](docs/WSSS_INGESTION_SPEC.md)
+- [다중 출처 탐색 확대 계획](docs/DISCOVERY_EXPANSION_PLAN.md)
 - [디자인 시스템](docs/DESIGN_SYSTEM.md)
 - [Phase 1 공개 화면 명세](docs/PUBLIC_SCREEN_SPEC.md)
 - [Phase 1 실행 계획](docs/PHASE1_EXECUTION_PLAN.md)

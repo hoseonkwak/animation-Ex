@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>CodePen Spark Feed</title>
+<item><title><![CDATA[Motion highlights]]></title><link>https://codepen.io/spark/532</link>
+<description><![CDATA[
+<h3><a href="https://example.com/advert">Sponsored course</a></h3><p>Animated course.</p><hr />
+<h3><a href="https://codepen.io/editor/cbolson/pen/01a187ae-e212-756d-8f6c-a76c594987bf">Scroll-Driven Photo Gallery</a></h3>
+<p>A gallery with scroll-driven movement.</p><hr />
+<h3><a href="https://codepen.io/editor/learosema/pen/01a16611-b29f-79f5-885d-a2c317fc92bf">Procedural Landscape</a></h3>
+<p>An interactive WebGL landscape.</p><hr />
+<h3><a href="https://codepen.io/editor/cbolson/pen/01a187ae-e212-756d-8f6c-a76c594987bf">Scroll-Driven Photo Gallery</a></h3>
+]]></description></item>
+<item><title><![CDATA[More examples]]></title><link>https://codepen.io/spark/531</link>
+<description><![CDATA[
+<h3><a href="https://codepen.io/villepreux/pen/azdgZRG">Static random placement</a></h3>
+<p>A fixed arrangement of colored blocks.</p><hr />
+<h3><a href="https://codepen.io/petebarr/pen/JjPKrqg">Hover Card Flip</a></h3>
+<p>A card rotates on hover.</p>
+]]></description></item>
+</channel></rss>

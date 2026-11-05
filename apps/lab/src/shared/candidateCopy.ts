@@ -40,7 +40,7 @@ function summaryFor(title: string, category: string | null): string {
 
 function slugFor(canonicalUrl: string): string {
   const match = canonicalUrl.match(
-    /^https:\/\/codepen\.io\/((?:team\/)?[^/]+)\/pen\/([A-Za-z0-9]+)\/?$/,
+    /^https:\/\/codepen\.io\/((?:team\/)?[^/]+|editor\/[^/]+)\/pen\/([A-Za-z0-9-]+)\/?$/,
   )
   if (!match) return ''
   const creator = match[1]!

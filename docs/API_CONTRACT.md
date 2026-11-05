@@ -238,7 +238,7 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 
 서명 대상은 `method`, `path`, `timestamp`, `request ID`, `SHA-256(body)`를 줄바꿈으로 연결한 문자열이다. Worker는 Web Crypto HMAC-SHA256으로 검증한다. 허용 시간 차이는 5분이며 request ID를 저장해 재전송 공격을 막는다. 본문은 최대 256 KiB, 한 batch는 0~50개다. 새 Pen이 없는 실행에서 빈 batch는 checkpoint 기록을 위한 실행 ID를 만든다.
 
-요청 본문에는 `runId`, `trigger`, `checkpointBefore`, `items`를 전달한다. `items`는 정규화한 CodePen 원본, WSSS 발견 경로와 추천 태그만 포함한다.
+요청 본문에는 `runId`, `trigger`, `checkpointBefore`, `items`와 선택적인 `sourceKey`를 전달한다. `sourceKey` 기본값은 `wsss`이고 Spark 피드는 `spark`를 명시한다. `items`는 정규화한 CodePen 원본, 출처별 발견 URL과 추천 태그만 포함한다. Spark의 `discoveredVia.url`은 `https://codepen.io/spark/{호 번호}`이며 `externalId`는 호·제작자·Pen ID를 포함한다. CodePen 2.0의 UUID Pen은 `/editor/{creator}/pen/{uuid}`를 canonical URL로 보존한다.
 
 각 항목은 독립 결과를 받는다.
 
@@ -263,7 +263,7 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 
 ### `POST /ingestion/checkpoint`
 
-동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면, 해당 카테고리의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. 이 기록이 없으면 `null`이다. 예약 실행은 WSSS를 읽기 전에 이 값을 받아 중복 게시물과 완료 게시물을 건너뛴다.
+동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면 WSSS의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. Spark는 `{"sourceKey":"spark","category":"CodePen/Spark"}`를 사용한다. 기록이 없으면 `null`이다. 예약 실행은 피드를 읽기 전에 이 값을 받아 완료된 게시물 또는 Spark 호를 건너뛴다.
 
 ### `POST /ingestion/usage`
 

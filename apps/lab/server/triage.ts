@@ -33,7 +33,9 @@ const buckets: TriageBucket[] = [
 ]
 
 function penKey(url: string | null): string | null {
-  const match = url?.match(/^https:\/\/codepen\.io\/((?:team\/)?[^/]+)\/pen\/([A-Za-z0-9]+)\/?$/)
+  const match = url?.match(
+    /^https:\/\/codepen\.io\/((?:team\/)?[^/]+|editor\/[^/]+)\/pen\/([A-Za-z0-9-]+)\/?$/,
+  )
   return match?.[1] && match[2] ? `${match[1]}/${match[2]}`.toLowerCase() : null
 }
 

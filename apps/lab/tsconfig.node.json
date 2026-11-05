@@ -5,7 +5,8 @@
     "vitest.config.ts",
     "playwright.config.ts",
     "eslint.config.js",
-    "ingestion/**/*.ts"
+    "ingestion/**/*.ts",
+    "src/shared/codepenUrl.ts"
   ],
   "compilerOptions": {
     "composite": true,

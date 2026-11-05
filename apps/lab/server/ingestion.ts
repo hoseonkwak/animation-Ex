@@ -1,4 +1,5 @@
 import type { IngestionCandidate, SuggestedTag } from '../ingestion/types'
+import { parseCodePenUrl } from '../src/shared/codepenUrl'
 import { suggestCandidateCopy } from '../src/shared/candidateCopy'
 
 interface IngestionEnv {
@@ -9,6 +10,7 @@ interface IngestionEnv {
 
 interface BatchBody {
   runId: string
+  sourceKey?: 'wsss' | 'spark'
   trigger: 'manual' | 'schedule'
   checkpointBefore: string | null
   items: unknown[]
@@ -143,6 +145,8 @@ function parseBatch(rawBody: string): BatchBody {
   const body = value as Partial<BatchBody>
   if (
     typeof body.runId !== 'string' ||
+    (body.sourceKey !== undefined && !['wsss', 'spark'].includes(body.sourceKey)) ||
+    (body.sourceKey === 'spark' && !/^spark-/.test(body.runId)) ||
     !['manual', 'schedule'].includes(body.trigger ?? '') ||
     !Array.isArray(body.items) ||
     body.items.length > 50
@@ -152,20 +156,34 @@ function parseBatch(rawBody: string): BatchBody {
   return body as BatchBody
 }
 
-function validCandidate(item: unknown): item is IngestionCandidate {
+function validCandidate(
+  item: unknown,
+  expectedSourceKey: 'wsss' | 'spark',
+): item is IngestionCandidate {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return false
   const value = item as Partial<IngestionCandidate>
+  const sourceKey = value.discoveredVia?.key
+  const sourceValid =
+    (sourceKey === 'wsss' &&
+      /^wsss:\d+:\d+$/.test(value.externalId ?? '') &&
+      /^https:\/\/wsss\.tistory\.com\/\d+$/.test(value.discoveredVia?.url ?? '')) ||
+    (sourceKey === 'spark' &&
+      /^spark:\d+:[A-Za-z0-9_~-]+:[A-Za-z0-9-]+$/.test(value.externalId ?? '') &&
+      /^https:\/\/codepen\.io\/spark\/\d+$/.test(value.discoveredVia?.url ?? '') &&
+      value.discoveredVia?.category === 'CodePen/Spark')
+  const normalized = parseCodePenUrl(value.source?.canonicalUrl ?? '')
+  const canonicalValid =
+    normalized?.canonicalUrl === value.source?.canonicalUrl &&
+    normalized?.creatorSlug === value.source?.creatorSlug
   return Boolean(
     typeof value.externalId === 'string' &&
-    /^wsss:\d+:\d+$/.test(value.externalId) &&
-    value.discoveredVia?.key === 'wsss' &&
-    typeof value.discoveredVia.url === 'string' &&
-    typeof value.discoveredVia.category === 'string' &&
+    sourceValid &&
+    sourceKey === expectedSourceKey &&
+    typeof value.discoveredVia?.url === 'string' &&
+    typeof value.discoveredVia?.category === 'string' &&
     value.source?.type === 'codepen' &&
     typeof value.source.canonicalUrl === 'string' &&
-    /^https:\/\/codepen\.io\/(?:team\/)?[^/]+\/pen\/[A-Za-z0-9]+$/.test(
-      value.source.canonicalUrl,
-    ) &&
+    canonicalValid &&
     typeof value.source.creatorSlug === 'string' &&
     typeof value.source.title === 'string' &&
     Array.isArray(value.tags),
@@ -189,6 +207,7 @@ async function knownTags(
 
 async function processItem(
   db: D1Database,
+  discoverySourceId: string,
   runId: string,
   requestId: string,
   item: IngestionCandidate,
@@ -199,9 +218,9 @@ async function processItem(
       `SELECT c.id AS candidate_id
       FROM source_discoveries d
       LEFT JOIN candidates c ON c.source_id = d.source_id
-      WHERE d.discovery_source_id = 'discovery-wsss' AND d.external_id = ?`,
+      WHERE d.discovery_source_id = ? AND d.external_id = ?`,
     )
-    .bind(item.externalId)
+    .bind(discoverySourceId, item.externalId)
     .first<{ candidate_id: string | null }>()
   if (previousDiscovery) {
     await db
@@ -241,9 +260,9 @@ async function processItem(
         .prepare(
           `INSERT OR IGNORE INTO source_discoveries (
           source_id, discovery_source_id, discovered_url, external_id, first_seen_at, last_seen_at
-        ) VALUES (?, 'discovery-wsss', ?, ?, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?)`,
         )
-        .bind(existing.id, item.discoveredVia.url, item.externalId, now, now),
+        .bind(existing.id, discoverySourceId, item.discoveredVia.url, item.externalId, now, now),
       db
         .prepare(
           `INSERT INTO ingestion_items (
@@ -304,9 +323,9 @@ async function processItem(
       .prepare(
         `INSERT INTO source_discoveries (
         source_id, discovery_source_id, discovered_url, external_id, first_seen_at, last_seen_at
-      ) VALUES (?, 'discovery-wsss', ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?)`,
       )
-      .bind(sourceId, item.discoveredVia.url, item.externalId, now, now),
+      .bind(sourceId, discoverySourceId, item.discoveredVia.url, item.externalId, now, now),
     db
       .prepare(
         `INSERT INTO candidates (
@@ -398,13 +417,21 @@ export async function handleIngestionBatch(
   env: IngestionEnv,
 ): Promise<{ accepted: number; duplicates: number; failed: number; items: unknown[] }> {
   const body = parseBatch(rawBody)
+  const sourceKey = body.sourceKey ?? 'wsss'
+  const discoverySourceId = `discovery-${sourceKey}`
   const now = new Date().toISOString()
+  if (sourceKey === 'spark') {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
+       VALUES ('discovery-spark', 'spark', 'CodePen Spark', 'https://codepen.io/spark/feed/', 1, '{}')`,
+    ).run()
+  }
   await env.DB.prepare(
     `INSERT OR IGNORE INTO ingestion_runs (
         id, discovery_source_id, status, trigger, checkpoint_before, started_at
-      ) VALUES (?, 'discovery-wsss', 'running', ?, ?, ?)`,
+      ) VALUES (?, ?, 'running', ?, ?, ?)`,
   )
-    .bind(body.runId, body.trigger, body.checkpointBefore, now)
+    .bind(body.runId, discoverySourceId, body.trigger, body.checkpointBefore, now)
     .run()
 
   const items: Array<Record<string, unknown>> = []
@@ -412,7 +439,7 @@ export async function handleIngestionBatch(
   let duplicates = 0
   let failed = 0
   for (const [index, item] of body.items.entries()) {
-    if (!validCandidate(item)) {
+    if (!validCandidate(item, sourceKey)) {
       failed += 1
       const identity = failedItemIdentity(item, index)
       await recordFailedItem(env.DB, body.runId, requestId, identity, 'INVALID_ITEM', index)
@@ -420,7 +447,7 @@ export async function handleIngestionBatch(
       continue
     }
     try {
-      const result = await processItem(env.DB, body.runId, requestId, item)
+      const result = await processItem(env.DB, discoverySourceId, body.runId, requestId, item)
       items.push(result)
       if (result.result === 'accepted') accepted += 1
       else duplicates += 1
@@ -497,12 +524,16 @@ export async function readIngestionCheckpoint(
   env: IngestionEnv,
 ): Promise<unknown | null> {
   let category: unknown
+  let sourceKey: unknown
   try {
-    category = (JSON.parse(rawBody) as { category?: unknown }).category
+    const body = JSON.parse(rawBody) as { category?: unknown; sourceKey?: unknown }
+    category = body.category
+    sourceKey = body.sourceKey ?? 'wsss'
   } catch {
     throw new IngestionApiError(400, 'INVALID_JSON', 'JSON 요청 본문을 확인해주세요.')
   }
   if (
+    (sourceKey !== 'wsss' && sourceKey !== 'spark') ||
     typeof category !== 'string' ||
     category.length > 100 ||
     category.includes('..') ||
@@ -512,7 +543,7 @@ export async function readIngestionCheckpoint(
   }
   const row = await env.DB.prepare(
     `SELECT checkpoint_after FROM ingestion_runs
-     WHERE discovery_source_id = 'discovery-wsss'
+     WHERE discovery_source_id = ?
        AND status IN ('success', 'partial')
        AND json_extract(
          CASE WHEN json_valid(checkpoint_after) THEN checkpoint_after ELSE '{}' END,
@@ -520,7 +551,7 @@ export async function readIngestionCheckpoint(
        ) = ?
      ORDER BY finished_at DESC, id DESC LIMIT 1`,
   )
-    .bind(category)
+    .bind(`discovery-${sourceKey}`, category)
     .first<{ checkpoint_after: string }>()
   return row ? JSON.parse(row.checkpoint_after) : null
 }

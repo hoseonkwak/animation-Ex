@@ -38,6 +38,11 @@ const scheduledRuns = computed(() =>
   props.runs.filter((run) => run.trigger === 'schedule' && run.sourceName === 'WSSS'),
 )
 const latestScheduled = computed(() => scheduledRuns.value[0] ?? null)
+const latestSpark = computed(
+  () =>
+    props.runs.find((run) => run.trigger === 'schedule' && run.sourceName === 'CodePen Spark') ??
+    null,
+)
 const recentRuns = computed(() => props.runs.slice(0, 7))
 const todayHasNoRun = computed(() => {
   if (props.loading || props.error) return false
@@ -59,6 +64,19 @@ function statusLabel(run: IngestionRun): string {
   return '진행 중'
 }
 
+function zeroReasonLabel(run: IngestionRun): string | null {
+  if (run.acceptedCount > 0 || !run.checkpointAfter) return null
+  try {
+    const checkpoint = JSON.parse(run.checkpointAfter) as { zeroReason?: string }
+    if (checkpoint.zeroReason === 'NO_NEW_ISSUES') return '피드에 새 호가 없습니다.'
+    if (checkpoint.zeroReason === 'NO_MOTION_PENS') return '새 호에서 모션 후보를 찾지 못했습니다.'
+    if (checkpoint.zeroReason === 'ALL_DUPLICATES') return '발견한 Pen은 모두 이미 처리했습니다.'
+  } catch {
+    return null
+  }
+  return null
+}
+
 onMounted(() => {
   clockTimer = window.setInterval(() => {
     clock.value = new Date()
@@ -72,7 +90,7 @@ onBeforeUnmount(() => window.clearInterval(clockTimer))
     <div class="ingestion-report-heading">
       <div>
         <h2>수집 결과</h2>
-        <p>WSSS 예약 수집의 마지막 실행과 최근 기록입니다.</p>
+        <p>WSSS와 CodePen Spark 예약 수집의 마지막 실행과 최근 기록입니다.</p>
       </div>
       <div class="ingestion-report-actions">
         <button type="button" :disabled="loading" @click="emit('refresh')">새로고침</button>
@@ -81,6 +99,12 @@ onBeforeUnmount(() => window.clearInterval(clockTimer))
           target="_blank"
           rel="noopener noreferrer"
           >GitHub 실행 기록</a
+        >
+        <a
+          href="https://github.com/hoseonkwak/animation-Ex/actions/workflows/spark-ingestion.yml"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Spark 실행 기록</a
         >
       </div>
     </div>
@@ -113,6 +137,27 @@ onBeforeUnmount(() => window.clearInterval(clockTimer))
       오늘 10:37 이후 예약 실행 기록이 아직 없습니다. GitHub 실행 기록에서 지연·실패 여부를
       확인하세요.
     </p>
+    <div v-if="latestSpark" class="ingestion-latest" :data-status="latestSpark.status">
+      <div>
+        <span>CodePen Spark 최근 예약 실행</span>
+        <strong>{{ statusLabel(latestSpark) }}</strong>
+        <time :datetime="latestSpark.startedAt">{{ formatTime(latestSpark.startedAt) }} KST</time>
+      </div>
+      <div class="ingestion-counts">
+        <span
+          >신규 <strong>{{ latestSpark.acceptedCount }}</strong></span
+        >
+        <span
+          >중복 <strong>{{ latestSpark.duplicateCount }}</strong></span
+        >
+        <span
+          >실패 <strong>{{ latestSpark.failedCount }}</strong></span
+        >
+      </div>
+      <p v-if="latestSpark.failureCode">원인 코드: {{ latestSpark.failureCode }}</p>
+      <p v-if="zeroReasonLabel(latestSpark)">{{ zeroReasonLabel(latestSpark) }}</p>
+    </div>
+    <p v-else-if="!loading && !error">Spark 예약 수집 기록이 아직 없습니다.</p>
 
     <details v-if="recentRuns.length" class="ingestion-history">
       <summary>최근 실행 {{ recentRuns.length }}건 보기</summary>

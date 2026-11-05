@@ -46,4 +46,35 @@ describe('IngestionRunsPanel', () => {
 
     expect(wrapper.text()).not.toContain('예약 실행 기록이 아직 없습니다.')
   })
+
+  it('Spark 실행을 WSSS와 별도 출처로 보고한다', () => {
+    const spark: IngestionRun = {
+      ...emptySuccess,
+      id: 'spark-run',
+      sourceName: 'CodePen Spark',
+      acceptedCount: 38,
+      discoveredCount: 38,
+    }
+    const wrapper = mount(IngestionRunsPanel, {
+      props: { runs: [spark, emptySuccess], loading: false, error: '' },
+    })
+    expect(wrapper.text()).toContain('CodePen Spark 최근 예약 실행')
+    expect(wrapper.text()).toContain('신규 38')
+    expect(
+      wrapper.findAll('a').some((link) => link.attributes('href')?.includes('spark-ingestion.yml')),
+    ).toBe(true)
+  })
+
+  it('Spark 신규 0건의 원인을 checkpoint에서 표시한다', () => {
+    const spark: IngestionRun = {
+      ...emptySuccess,
+      sourceName: 'CodePen Spark',
+      checkpointAfter: JSON.stringify({ zeroReason: 'NO_NEW_ISSUES' }),
+    }
+    const wrapper = mount(IngestionRunsPanel, {
+      props: { runs: [spark], loading: false, error: '' },
+    })
+    expect(wrapper.text()).toContain('정상 완료 · 신규 0건')
+    expect(wrapper.text()).toContain('피드에 새 호가 없습니다.')
+  })
 })
