@@ -207,7 +207,7 @@ Source, 발견 경로, 추출 메타데이터, 중복 후보, 마지막 검증�
 
 ### `GET /admin/examples`, `POST /admin/examples/:id/preview-checks`
 
-Owner는 최근 공개 예제 100개와 마지막 공개 Preview 점검 결과를 조회한다. 실제 실행 화면을 본 뒤 `result`, `viewport`, 실패 사유 코드를 기록한다. 실패 기록은 관리자 화면의 오류 목록에 표시된다. 공개 중지한 자동 게시 항목은 묶음 항목에도 `rolled-back`으로 반영된다.
+Owner는 `filter=unchecked|failed|all`로 상태를 골라 최근 공개 예제 최대 100개와 마지막 공개 Preview 점검 결과를 조회한다. 기본 API 필터는 `all`이고 관리자 점검 화면은 `unchecked`로 시작한다. 응답의 `counts`는 목록 100건이 아닌 전체 공개 CodePen의 `total`, `unchecked`, `passed`, `failed` 수다. 실제 실행 화면을 본 뒤 `result`, `viewport`, 실패 사유 코드를 기록한다. 점검 기록만 추가한 경우 `total`은 그대로이며 `unchecked` 또는 `passed`·`failed`가 바뀐다. 실패 기록은 관리자 화면의 오류 목록에 표시된다. 공개 중지한 자동 게시 항목은 묶음 항목에도 `rolled-back`으로 반영된다.
 
 ### `GET /admin/ingestion-runs`
 

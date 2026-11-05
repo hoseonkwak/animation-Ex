@@ -383,7 +383,17 @@ export default {
           })
         }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/examples') {
-          return json({ data: await repository.publishedEntries(), meta: { requestId } })
+          const filter = url.searchParams.get('filter') ?? 'all'
+          if (filter !== 'all' && filter !== 'unchecked' && filter !== 'failed') {
+            return json(
+              {
+                error: { code: 'INVALID_FILTER', message: '공개 예제 점검 필터를 확인해주세요.' },
+                meta: { requestId },
+              },
+              { status: 400 },
+            )
+          }
+          return json({ data: await repository.publishedEntries(filter), meta: { requestId } })
         }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/candidates') {
           return json({ data: await repository.list(url), meta: { requestId } })

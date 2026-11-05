@@ -40,7 +40,18 @@ describe('AdminReviewView', () => {
       else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
-      else if (url.endsWith('/admin/examples')) data = { items: entries }
+      else if (url.includes('/admin/examples?filter='))
+        data = {
+          items: url.endsWith('filter=unchecked')
+            ? entries.filter((item) => !item.previewCheckedAt)
+            : entries,
+          counts: {
+            total: 2,
+            unchecked: entries.filter((item) => !item.previewCheckedAt).length,
+            passed: entries.filter((item) => item.previewResult === 'pass').length,
+            failed: 0,
+          },
+        }
       else if (url.endsWith('/admin/candidates/triage'))
         data = { items: [], counts: {}, bucketCounts: {} }
       else if (url.endsWith('/admin/examples/entry-basic-1/preview-checks')) {
@@ -56,11 +67,13 @@ describe('AdminReviewView', () => {
     const wrapper = mount(AdminReviewView)
     await flushPromises()
     expect(wrapper.get('.published-review iframe').attributes('src')).toContain('LEVeYQO')
+    expect(wrapper.get('[aria-label="공개 예제 점검"]').text()).toMatch(/미점검\s+2건/)
 
     await wrapper.get('.published-review .preview-decision button').trigger('click')
     await flushPromises()
 
     expect(wrapper.get('.published-review iframe').attributes('src')).toContain('KwpZamO')
+    expect(wrapper.get('[aria-label="공개 예제 점검"]').text()).toMatch(/미점검\s+1건/)
     expect(wrapper.get('[aria-label="점검할 공개 예제"]').element).toHaveProperty(
       'value',
       'entry-basic-2',
@@ -139,8 +152,8 @@ describe('AdminReviewView', () => {
         data = { items: [] }
       } else if (url.endsWith('/admin/auto-publication')) {
         data = { paused: true, batches: [], lastRun: null }
-      } else if (url.endsWith('/admin/examples')) {
-        data = { items: [] }
+      } else if (url.includes('/admin/examples?filter=')) {
+        data = { items: [], counts: { total: 0, unchecked: 0, passed: 0, failed: 0 } }
       } else {
         throw new Error(`예상하지 못한 요청: ${url}`)
       }
@@ -219,7 +232,8 @@ describe('AdminReviewView', () => {
       else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
-      else if (url.endsWith('/admin/examples')) data = { items: [] }
+      else if (url.includes('/admin/examples?filter='))
+        data = { items: [], counts: { total: 0, unchecked: 0, passed: 0, failed: 0 } }
       else if (url.endsWith('/admin/candidates/triage'))
         data = {
           items: published

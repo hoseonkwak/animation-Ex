@@ -394,6 +394,9 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
   })
   it('P1-OPS-04 공개 Preview 실패를 관리자에게 표시하고 P1-ADMIN-06 공개를 중지한다', async () => {
     expect((await request('/api/v1/admin/examples', {}, '')).status).toBe(401)
+    const beforeBody = (await (await request('/api/v1/admin/examples')).json()) as {
+      data: { counts: { total: number; unchecked: number; passed: number; failed: number } }
+    }
     const failed = await request('/api/v1/admin/examples/entry-basic-1/preview-checks', {
       method: 'POST',
       body: JSON.stringify({
@@ -405,12 +408,28 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(failed.status).toBe(200)
     const list = await request('/api/v1/admin/examples')
     const body = (await list.json()) as {
-      data: { items: Array<{ id: string; previewResult: string; failureCodes: string[] }> }
+      data: {
+        counts: { total: number; unchecked: number; passed: number; failed: number }
+        items: Array<{ id: string; previewResult: string; failureCodes: string[] }>
+      }
     }
+    expect(body.data.counts.total).toBe(beforeBody.data.counts.total)
+    expect(body.data.counts.failed).toBe(beforeBody.data.counts.failed + 1)
     expect(body.data.items.find((item) => item.id === 'entry-basic-1')).toMatchObject({
       previewResult: 'fail',
       failureCodes: ['broken-preview'],
     })
+    const failedOnly = (await (await request('/api/v1/admin/examples?filter=failed')).json()) as {
+      data: { items: Array<{ id: string }> }
+    }
+    expect(failedOnly.data.items.some((item) => item.id === 'entry-basic-1')).toBe(true)
+    const uncheckedOnly = (await (
+      await request('/api/v1/admin/examples?filter=unchecked')
+    ).json()) as {
+      data: { items: Array<{ id: string }> }
+    }
+    expect(uncheckedOnly.data.items.some((item) => item.id === 'entry-basic-1')).toBe(false)
+    expect((await request('/api/v1/admin/examples?filter=unknown')).status).toBe(400)
 
     const response = await request('/api/v1/admin/examples/entry-basic-1/unpublish', {
       method: 'POST',
@@ -424,7 +443,11 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     )
     expect(publicResponse.status).toBe(410)
     const after = await request('/api/v1/admin/examples')
-    const afterBody = (await after.json()) as { data: { items: Array<{ id: string }> } }
+    const afterBody = (await after.json()) as {
+      data: { counts: { total: number; failed: number }; items: Array<{ id: string }> }
+    }
     expect(afterBody.data.items.some((item) => item.id === 'entry-basic-1')).toBe(false)
+    expect(afterBody.data.counts.total).toBe(beforeBody.data.counts.total - 1)
+    expect(afterBody.data.counts.failed).toBe(beforeBody.data.counts.failed)
   })
 })

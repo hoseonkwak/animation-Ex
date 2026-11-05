@@ -732,7 +732,8 @@ export class AdminRepository {
       })),
     }
   }
-  async publishedEntries(): Promise<{
+  async publishedEntries(filter: 'all' | 'unchecked' | 'failed' = 'all'): Promise<{
+    counts: { total: number; unchecked: number; passed: number; failed: number }
     items: Array<{
       id: string
       slug: string
@@ -744,6 +745,27 @@ export class AdminRepository {
       failureCodes: string[]
     }>
   }> {
+    const counts = await this.db
+      .prepare(
+        `SELECT COUNT(*) AS total,
+          SUM(CASE WHEN v.result IS NULL OR v.result = 'warning' THEN 1 ELSE 0 END) AS unchecked,
+          SUM(CASE WHEN v.result = 'pass' THEN 1 ELSE 0 END) AS passed,
+          SUM(CASE WHEN v.result = 'fail' THEN 1 ELSE 0 END) AS failed
+        FROM animation_entries e JOIN codepen_refs r ON r.animation_entry_id = e.id
+        LEFT JOIN validation_runs v ON v.id = (
+          SELECT id FROM validation_runs
+          WHERE target_type = 'entry' AND target_id = e.id
+          ORDER BY checked_at DESC, id DESC LIMIT 1
+        )
+        WHERE e.status = 'published'`,
+      )
+      .first<{ total: number; unchecked: number; passed: number; failed: number }>()
+    const filterClause =
+      filter === 'unchecked'
+        ? "AND (v.result IS NULL OR v.result = 'warning')"
+        : filter === 'failed'
+          ? "AND v.result = 'fail'"
+          : ''
     const { results } = await this.db
       .prepare(
         `SELECT e.id, e.slug, e.title, e.published_at, r.embed_url,
@@ -755,7 +777,7 @@ export class AdminRepository {
           WHERE target_type = 'entry' AND target_id = e.id
           ORDER BY checked_at DESC, id DESC LIMIT 1
         )
-        WHERE e.status = 'published'
+        WHERE e.status = 'published' ${filterClause}
         ORDER BY e.published_at DESC, e.id DESC LIMIT 100`,
       )
       .all<{
@@ -769,6 +791,12 @@ export class AdminRepository {
         failure_codes_json: string | null
       }>()
     return {
+      counts: {
+        total: counts?.total ?? 0,
+        unchecked: counts?.unchecked ?? 0,
+        passed: counts?.passed ?? 0,
+        failed: counts?.failed ?? 0,
+      },
       items: results.map((row) => ({
         id: row.id,
         slug: row.slug,

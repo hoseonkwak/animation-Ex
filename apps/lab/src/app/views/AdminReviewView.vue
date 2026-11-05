@@ -70,6 +70,8 @@ interface PublishedExample {
   failureCodes: string[]
 }
 const publishedExamples = ref<PublishedExample[]>([])
+const publishedCounts = ref({ total: 0, unchecked: 0, passed: 0, failed: 0 })
+const publishedFilter = ref<'unchecked' | 'failed' | 'all'>('unchecked')
 const selectedPublishedId = ref('')
 const selectedPublished = computed(() =>
   publishedExamples.value.find((item) => item.id === selectedPublishedId.value),
@@ -283,8 +285,12 @@ async function loadAutoPublication(): Promise<void> {
 
 async function loadPublishedExamples(): Promise<void> {
   try {
-    const result = await api<{ items: PublishedExample[] }>('/api/v1/admin/examples')
+    const result = await api<{
+      items: PublishedExample[]
+      counts: { total: number; unchecked: number; passed: number; failed: number }
+    }>(`/api/v1/admin/examples?filter=${publishedFilter.value}`)
     publishedExamples.value = result.items
+    publishedCounts.value = result.counts
     if (!result.items.some((item) => item.id === selectedPublishedId.value)) {
       selectedPublishedId.value = result.items[0]?.id ?? ''
     }
@@ -308,18 +314,24 @@ async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
         failureCodes: result === 'fail' ? ['broken-preview'] : [],
       }),
     })
+    if (result === 'fail' && publishedFilter.value === 'unchecked') publishedFilter.value = 'failed'
     await loadPublishedExamples()
     const advanced =
       result === 'pass' && !!nextId && publishedExamples.value.some((item) => item.id === nextId)
     if (advanced && nextId) {
       selectedPublishedId.value = nextId
     }
+    if (result === 'fail' && publishedExamples.value.some((item) => item.id === currentId)) {
+      selectedPublishedId.value = currentId
+    }
     notice.value =
       result === 'fail'
-        ? '공개 Preview 오류를 기록했습니다.'
-        : advanced
-          ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
-          : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
+        ? '공개 Preview 오류를 기록했습니다. 공개 중지 여부를 결정해주세요.'
+        : publishedFilter.value === 'unchecked' && publishedCounts.value.unchecked === 0
+          ? '실행 확인을 저장했습니다. 미점검 예제가 없습니다.'
+          : selectedPublishedId.value !== currentId
+            ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
+            : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
   } catch (cause) {
     showError(cause)
   } finally {
@@ -725,16 +737,33 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           공개된 CodePen의 실제 실행 화면을 확인하고, 오류가 있으면 기록하거나 공개를 중지합니다.
         </p>
         <p>
-          기록된 Preview 오류 <strong>{{ failedPublished.length }}건</strong>
+          공개된 CodePen <strong>{{ publishedCounts.total }}건</strong> · 미점검
+          <strong>{{ publishedCounts.unchecked }}건</strong> · 정상 확인
+          <strong>{{ publishedCounts.passed }}건</strong> · 오류
+          <strong>{{ publishedCounts.failed }}건</strong>
         </p>
+        <p>아래 선택 목록에는 선택한 상태의 최근 공개 예제 최대 100건을 표시합니다.</p>
         <div v-if="failedPublished.length" class="decision-panel">
           <a v-for="item in failedPublished" :key="item.id" :href="`/examples/${item.slug}`"
             >{{ item.title }} · {{ item.failureCodes.join(', ') }}</a
           >
         </div>
       </div>
-      <div v-if="publishedExamples.length">
+      <div>
         <label>
+          점검 상태
+          <select
+            v-model="publishedFilter"
+            aria-label="공개 예제 점검 상태"
+            @change="loadPublishedExamples"
+          >
+            <option value="unchecked">미점검</option>
+            <option value="failed">오류</option>
+            <option value="all">전체</option>
+          </select>
+        </label>
+        <p v-if="!publishedExamples.length">이 상태의 공개 예제가 없습니다.</p>
+        <label v-else>
           점검할 공개 예제
           <select v-model="selectedPublishedId" aria-label="점검할 공개 예제">
             <option v-for="item in publishedExamples" :key="item.id" :value="item.id">
