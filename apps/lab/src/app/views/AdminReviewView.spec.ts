@@ -4,6 +4,69 @@ import { describe, expect, it, vi } from 'vitest'
 import AdminReviewView from './AdminReviewView.vue'
 
 describe('AdminReviewView', () => {
+  it('공개 예제 실행 확인을 저장하면 다음 예제를 연다', async () => {
+    const entries = [
+      {
+        id: 'entry-basic-1',
+        slug: 'gsap-basic-tween',
+        title: 'GSAP 기초 1',
+        embedUrl: 'https://codepen.io/hoseonkwak/embed/LEVeYQO?default-tab=result',
+        publishedAt: '2026-10-15T00:00:00.000Z',
+        previewResult: null,
+        previewCheckedAt: null,
+        failureCodes: [],
+      },
+      {
+        id: 'entry-basic-2',
+        slug: 'gsap-basic-transform',
+        title: 'GSAP 기초 2',
+        embedUrl: 'https://codepen.io/hoseonkwak/embed/KwpZamO?default-tab=result',
+        publishedAt: '2026-10-14T00:00:00.000Z',
+        previewResult: null,
+        previewCheckedAt: null,
+        failureCodes: [],
+      },
+    ]
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      let data: unknown
+      if (url.endsWith('/auth/session')) data = { authenticated: true }
+      else if (url.endsWith('/admin/operations'))
+        data = {
+          environment: 'local',
+          ingestionPaused: false,
+          usage: { level: 'normal', maximumRatio: 0 },
+        }
+      else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
+      else if (url.endsWith('/admin/auto-publication'))
+        data = { paused: true, batches: [], lastRun: null }
+      else if (url.endsWith('/admin/examples')) data = { items: entries }
+      else if (url.endsWith('/admin/candidates/triage'))
+        data = { items: [], counts: {}, bucketCounts: {} }
+      else if (url.endsWith('/admin/examples/entry-basic-1/preview-checks')) {
+        expect(init?.method).toBe('POST')
+        expect(JSON.parse(String(init?.body)).result).toBe('pass')
+        entries[0] = { ...entries[0], previewResult: 'pass', previewCheckedAt: '2026-10-16' }
+        data = {}
+      } else throw new Error(`예상하지 못한 요청: ${url}`)
+      return Promise.resolve(Response.json({ data, meta: { requestId: 'test' } }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const wrapper = mount(AdminReviewView)
+    await flushPromises()
+    expect(wrapper.get('.published-review iframe').attributes('src')).toContain('LEVeYQO')
+
+    await wrapper.get('.published-review .preview-decision button').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.get('.published-review iframe').attributes('src')).toContain('KwpZamO')
+    expect(wrapper.get('[aria-label="점검할 공개 예제"]').element).toHaveProperty(
+      'value',
+      'entry-basic-2',
+    )
+  })
+
   it('승인 조건이 부족하면 버튼에서 이유를 안내하고 공개 요청을 보내지 않는다', async () => {
     const fetchMock = vi.fn((input: RequestInfo | URL) => {
       const url = String(input)

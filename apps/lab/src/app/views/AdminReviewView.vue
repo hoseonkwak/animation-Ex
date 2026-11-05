@@ -295,9 +295,12 @@ async function loadPublishedExamples(): Promise<void> {
 
 async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
   if (!selectedPublished.value) return
+  const currentId = selectedPublished.value.id
+  const currentIndex = publishedExamples.value.findIndex((item) => item.id === currentId)
+  const nextId = publishedExamples.value[currentIndex + 1]?.id
   busy.value = true
   try {
-    await api(`/api/v1/admin/examples/${selectedPublished.value.id}/preview-checks`, {
+    await api(`/api/v1/admin/examples/${currentId}/preview-checks`, {
       method: 'POST',
       body: JSON.stringify({
         result,
@@ -306,8 +309,17 @@ async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
       }),
     })
     await loadPublishedExamples()
+    const advanced =
+      result === 'pass' && !!nextId && publishedExamples.value.some((item) => item.id === nextId)
+    if (advanced && nextId) {
+      selectedPublishedId.value = nextId
+    }
     notice.value =
-      result === 'fail' ? '공개 Preview 오류를 기록했습니다.' : '공개 Preview 실행을 확인했습니다.'
+      result === 'fail'
+        ? '공개 Preview 오류를 기록했습니다.'
+        : advanced
+          ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
+          : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
   } catch (cause) {
     showError(cause)
   } finally {
