@@ -77,4 +77,21 @@ describe('IngestionRunsPanel', () => {
     expect(wrapper.text()).toContain('정상 완료 · 신규 0건')
     expect(wrapper.text()).toContain('피드에 새 호가 없습니다.')
   })
+
+  it('첫 예약 전 수동 Spark 실행도 최근 결과와 0건 사유를 표시한다', () => {
+    const spark: IngestionRun = {
+      ...emptySuccess,
+      id: 'spark-manual',
+      sourceName: 'CodePen Spark',
+      trigger: 'manual',
+      checkpointAfter: JSON.stringify({ zeroReason: 'NO_NEW_ISSUES' }),
+    }
+    const wrapper = mount(IngestionRunsPanel, {
+      props: { runs: [spark, emptySuccess], loading: false, error: '' },
+    })
+
+    expect(wrapper.text()).toContain('CodePen Spark 최근 수동 실행')
+    expect(wrapper.text()).toContain('피드에 새 호가 없습니다.')
+    expect(wrapper.text()).not.toContain('Spark 수집 기록이 아직 없습니다.')
+  })
 })

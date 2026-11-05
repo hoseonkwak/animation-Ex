@@ -39,9 +39,7 @@ const scheduledRuns = computed(() =>
 )
 const latestScheduled = computed(() => scheduledRuns.value[0] ?? null)
 const latestSpark = computed(
-  () =>
-    props.runs.find((run) => run.trigger === 'schedule' && run.sourceName === 'CodePen Spark') ??
-    null,
+  () => props.runs.find((run) => run.sourceName === 'CodePen Spark') ?? null,
 )
 const recentRuns = computed(() => props.runs.slice(0, 7))
 const todayHasNoRun = computed(() => {
@@ -139,7 +137,9 @@ onBeforeUnmount(() => window.clearInterval(clockTimer))
     </p>
     <div v-if="latestSpark" class="ingestion-latest" :data-status="latestSpark.status">
       <div>
-        <span>CodePen Spark 최근 예약 실행</span>
+        <span
+          >CodePen Spark 최근 {{ latestSpark.trigger === 'schedule' ? '예약' : '수동' }} 실행</span
+        >
         <strong>{{ statusLabel(latestSpark) }}</strong>
         <time :datetime="latestSpark.startedAt">{{ formatTime(latestSpark.startedAt) }} KST</time>
       </div>
@@ -157,7 +157,7 @@ onBeforeUnmount(() => window.clearInterval(clockTimer))
       <p v-if="latestSpark.failureCode">원인 코드: {{ latestSpark.failureCode }}</p>
       <p v-if="zeroReasonLabel(latestSpark)">{{ zeroReasonLabel(latestSpark) }}</p>
     </div>
-    <p v-else-if="!loading && !error">Spark 예약 수집 기록이 아직 없습니다.</p>
+    <p v-else-if="!loading && !error">Spark 수집 기록이 아직 없습니다.</p>
 
     <details v-if="recentRuns.length" class="ingestion-history">
       <summary>최근 실행 {{ recentRuns.length }}건 보기</summary>

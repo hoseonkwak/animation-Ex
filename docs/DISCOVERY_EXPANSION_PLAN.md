@@ -1,10 +1,10 @@
 # 애니메이션 탐색 범위 확대
 
-상태: Spark 수집 구현 검증 · 운영 등록 확인 전  
+상태: Spark 첫 운영 수집 및 중복 방지 검증 완료 · 첫 예약 실행 대기
 확인일: 2026-11-05  
 목적: WSSS의 오래된 GSAP 목록만 매일 확인하는 상태에서, 새로 올라오는 실행 가능한 예제와 재구성할 웹 사례를 폭넓게 찾는 체계로 바꾼다.
 
-현재 운영 예약은 아직 WSSS GSAP 매일 수집이다. 이 문서의 출처·주기는 구현과 검증을 거쳐 배포할 때 적용한다.
+현재 운영 예약에는 WSSS GSAP 매일 수집과 CodePen Spark 매일 수집이 설정돼 있다. Spark의 첫 예약 실행 결과는 아직 확인 전이며, WSSS의 주간 감시 전환은 별도 작업이다.
 
 ## 1. 현재 문제
 
@@ -51,7 +51,7 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - 같은 Pen이 Spark, 기사, WSSS에 모두 등장하면 후보는 하나로 유지하고 발견 경로를 모두 남긴다.
 - 코드로 실행할 수 있는 자료가 없는 외부 데모를 동영상이나 GIF만으로 공개하지 않는다.
 - 새로운 출처는 GSAP·Loading에 한정된 기존 자동 공개 정책을 확대하지 않는다. 출처별 표본과 실행 검증이 쌓인 뒤 별도로 결정한다.
-- CodePen Spark의 최신 링크는 `codepen.io/editor/{creator}/pen/{UUID}` 형식도 사용한다. 현재 정규화기는 구형 영숫자 Pen ID만 허용하므로 **2.0 URL 정규화와 Embed 실행 검증이 첫 수집 구현의 선행 조건**이다.
+- CodePen Spark의 최신 링크는 `codepen.io/editor/{creator}/pen/{UUID}` 형식도 사용한다. 현재 정규화기는 구형 영숫자 Pen ID와 2.0 UUID를 모두 지원한다. 개별 후보의 Embed 실행 검증은 공개 전에 별도로 거친다.
 
 ## 5. 수집 결과 보고
 
@@ -59,10 +59,11 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 
 ## 6. 적용 순서와 완료 조건
 
-1. Spark RSS 파서, 구형·2.0 Pen URL 정규화와 실제 Embed 실행 검증을 만든다. 피드의 광고·외부 기사 링크는 후보로 넣지 않는다.
-2. 출처별 실행·발견 건수와 0건 사유를 저장하고 관리자 보고에 연결한다.
-3. CSS-Tricks와 Forem의 소규모 읽기 전용 파일럿으로 Pen 링크 수율과 잡음을 측정한 뒤 운영 자동 수집 여부를 정한다.
-4. WSSS 주간 감시와 웹 사례 재구성 대기를 분리한다. Codrops 등 403 출처는 접근 가능한 공식 경로가 확인될 때만 추가한다.
+1. **완료:** Spark RSS 파서와 구형·2.0 Pen URL 정규화를 만들고, 대표 2.0 Pen의 Embed 실행을 확인했다. 피드의 광고·외부 기사 링크는 후보에서 제외한다.
+2. **첫 운영 확인:** 출처별 실행·발견 건수와 0건 사유를 저장하고 관리자 보고에 연결했다. 첫 예약 실행 결과는 다음 실행 뒤 대조한다.
+3. **다음 작업:** 수집된 38건의 실행 화면과 품질을 점검한다. 파일럿에서 이미 404가 확인된 Pen도 후보에 포함돼 있으므로 공개 전 보류하거나 제외해야 한다.
+4. **후속:** CSS-Tricks와 Forem의 소규모 읽기 전용 파일럿으로 Pen 링크 수율과 잡음을 측정한 뒤 운영 자동 수집 여부를 정한다.
+5. **후속:** WSSS 주간 감시와 웹 사례 재구성 대기를 분리한다. Codrops 등 403 출처는 접근 가능한 공식 경로가 확인될 때만 추가한다.
 
 첫 운영 완료 조건은 Spark에서 실제 새 Pen을 발견해 중복 없이 후보에 기록하고, 소유자가 관리자 화면에서 출처·건수·실행 근거를 확인하는 것이다. 새 Pen이 없는 날에도 모든 활성 출처의 성공 또는 실패 원인을 설명할 수 있어야 한다. 공개 예제 증가는 별도 실행 품질 게이트를 통과한 뒤에만 완료로 본다.
 
@@ -83,3 +84,9 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - CodePen 2.0의 `/editor/{creator}/pen/{uuid}`와 Embed URL을 별도로 정규화한다. 원본 코드·이미지·개별 Pen 페이지는 수집기가 내려받지 않는다.
 - fixture와 API 계약 검사를 통과한 뒤 실행한 읽기 전용 preflight에서 최근 10호, 모션 후보 38건을 확인했다. 이는 기존 운영 D1과 대조하거나 실행 화면을 검증한 뒤의 최종 신규 건수가 아니다.
 - 별도 `CodePen Spark ingestion` 예약 workflow는 09:53 KST에 실행한다. HMAC API는 Spark 발견 경로와 실행 checkpoint를 WSSS와 분리해 저장하며 관리자 수집 결과에 출처를 표시한다. 실제 운영 후보 등록과 다음 날 0건 사유 확인을 완료 증거로 남긴다.
+
+## 9. Spark 첫 운영 실행 증거 (2026-11-05)
+
+- [`CodePen Spark ingestion #1`](https://github.com/hoseonkwak/animation-Ex/actions/runs/41974910836)은 14:34 KST에 수동 시작해 성공했다. 최근 10호에서 모션 Pen 38건을 선별했고 운영 API 응답은 `accepted=38`, `duplicates=0`, `failed=0`이었다. 운영 관리자 Inbox의 수집 후보 38건 및 최근 실행 표의 `CodePen Spark · 수동 / 신규 38`과 대조했다.
+- [`CodePen Spark ingestion #2`](https://github.com/hoseonkwak/animation-Ex/actions/runs/41975235961)는 14:38 KST에 같은 입력으로 재실행해 성공했다. checkpoint에 이미 완료한 10호가 기록되어 `newIssues=0`, `accepted=0`, `duplicates=0`, `failed=0`, `zeroReason=NO_NEW_ISSUES`였다. 관리자 후보 수는 38건으로 유지됐고 최근 실행 표에도 신규 0건으로 기록됐다.
+- 첫 예약 실행(09:53 KST) 결과와 관리자 상단의 예약 요약 표시는 다음 실행 뒤 확인한다. 38건은 **수집 후보**이며 공개 예제 수를 늘리지 않았다. 개별 실행 화면과 콘텐츠 품질 게이트는 아직 통과하지 않았다.
