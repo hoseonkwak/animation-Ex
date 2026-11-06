@@ -1,5 +1,6 @@
 import { launch } from "@cloudflare/playwright";
 import { classifyEmbedStatus, controlLoaded } from "./probe-policy.mjs";
+import { isResultDocumentUrl } from "./result-frame.mjs";
 import { CONTROL, toEmbedUrl, validateBatch } from "./urls.mjs";
 
 const MAX_BODY_BYTES = 4_096;
@@ -53,7 +54,10 @@ export async function inspect(browser, candidate) {
   const resultResponses = [];
   const pageErrors = [];
   page.on("response", (response) => {
-    if (response.url().startsWith("https://cdpn.io/")) {
+    if (
+      isResultDocumentUrl(response.url()) &&
+      response.request().resourceType() === "document"
+    ) {
       resultResponses.push(response.status());
     }
   });
@@ -73,11 +77,14 @@ export async function inspect(browser, candidate) {
       };
     }
 
-    const body = page.frameLocator("#result-iframe").locator("body");
-    await body.waitFor({ state: "visible", timeout: 15_000 });
-    const resultFrame = page
-      .frames()
-      .find((frame) => frame.url().startsWith("https://cdpn.io/"));
+    let resultFrame;
+    for (let attempt = 0; attempt < 15; attempt++) {
+      resultFrame = page
+        .frames()
+        .find((frame) => isResultDocumentUrl(frame.url()));
+      if (resultFrame) break;
+      await page.waitForTimeout(1_000);
+    }
     if (!resultFrame || !resultResponses.includes(200)) {
       return {
         id: candidate.id,
@@ -85,6 +92,8 @@ export async function inspect(browser, candidate) {
         reason: "RESULT_NOT_LOADED",
       };
     }
+    const body = resultFrame.locator("body");
+    await body.waitFor({ state: "visible", timeout: 15_000 });
 
     const content = await resultFrame.evaluate(() => ({
       bodyLength: document.body?.innerHTML.length ?? 0,

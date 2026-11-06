@@ -14,11 +14,19 @@ export function toEmbedUrl(canonicalUrl) {
   if (url.protocol !== "https:" || url.hostname !== "codepen.io") return null;
   if (url.search || url.hash || url.port || url.username || url.password)
     return null;
-  const match = /^\/([A-Za-z0-9_-]+)\/pen\/([A-Za-z0-9_-]+)\/?$/.exec(
-    url.pathname,
-  );
+  const match =
+    /^\/((?:team\/)?[A-Za-z0-9_-]+|editor\/[A-Za-z0-9_-]+)\/pen\/([A-Za-z0-9]+|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\/?$/i.exec(
+      url.pathname,
+    );
   if (!match) return null;
+  if (match[1].startsWith("editor/") && !match[2].includes("-")) return null;
   return `https://codepen.io/${match[1]}/embed/${match[2]}?default-tab=result&theme-id=light`;
+}
+
+export function penKeyFromCanonical(canonicalUrl) {
+  if (!toEmbedUrl(canonicalUrl)) return null;
+  const parts = new URL(canonicalUrl).pathname.split("/").filter(Boolean);
+  return `${parts.slice(0, -2).join("/")}/${parts.at(-1)}`;
 }
 
 export function validateBatch(value) {

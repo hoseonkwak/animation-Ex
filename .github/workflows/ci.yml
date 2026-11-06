@@ -41,6 +41,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install automatic review dependencies
+        run: npm ci --prefix tools/browser-run-probe
+
+      - name: Test automatic review policy
+        run: npm test --prefix tools/browser-run-probe
+
   deploy-production:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: verify
@@ -131,3 +137,15 @@ jobs:
         env:
           PRODUCTION_BASE_URL: https://kwak-motion-lab-production.kwak-motion-lab.workers.dev
         run: npm run smoke:production --workspace @kwak-motion/lab
+
+      - name: Install automatic review dependencies
+        if: steps.current.outputs.deploy == 'true'
+        run: npm ci --prefix tools/browser-run-probe
+
+      - name: Verify automatic review Worker
+        if: steps.current.outputs.deploy == 'true'
+        run: npm run verify:auto --prefix tools/browser-run-probe
+
+      - name: Deploy automatic review Worker
+        if: steps.current.outputs.deploy == 'true'
+        run: npm run deploy:auto --prefix tools/browser-run-probe

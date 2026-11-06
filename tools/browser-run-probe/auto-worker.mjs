@@ -8,9 +8,10 @@ import {
   isCandidateEligible,
   passesAutomaticProbe,
   sampleIndex,
+  sparkTitleTag,
 } from "./auto-policy.mjs";
 import { inspect } from "./worker.mjs";
-import { CONTROL } from "./urls.mjs";
+import { CONTROL, penKeyFromCanonical } from "./urls.mjs";
 import { controlLoaded } from "./probe-policy.mjs";
 import { refreshStaleCandidates } from "./auto-refresh.mjs";
 
@@ -19,13 +20,6 @@ const ACTOR = "automatic-publication-browser-run-v1";
 
 function now() {
   return new Date().toISOString();
-}
-
-function penKey(url) {
-  const match = url.match(
-    /^https:\/\/codepen\.io\/((?:team\/)?[^/]+)\/pen\/([A-Za-z0-9]+)\/?$/,
-  );
-  return match ? `${match[1]}/${match[2]}` : null;
 }
 
 function hasStrictEvidence(value) {
@@ -68,6 +62,8 @@ async function eligibleRows(db) {
       `SELECT c.id, c.status, c.version, c.source_id, c.source_title, c.source_category,
       c.metadata_json, s.canonical_url, s.creator_name, s.license_code,
       s.license_evidence_url,
+      (SELECT GROUP_CONCAT(t.axis || ':' || t.key) FROM candidate_tags ct
+        JOIN tags t ON t.id = ct.tag_id WHERE ct.candidate_id = c.id) AS candidate_tag_keys,
       EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
         WHERE ct.candidate_id = c.id AND ct.confirmed = 1
           AND t.axis IN ('technology', 'trigger', 'motion', 'section', 'technique')) AS confirmed_tag,
@@ -76,14 +72,14 @@ async function eligibleRows(db) {
       )) AS duplicate_pen
     FROM candidates c JOIN sources s ON s.id = c.source_id
     WHERE c.status = 'review' AND s.type = 'codepen'
-      AND c.source_category IN ('Animation/GSAP', 'Animation/Loading')
+      AND c.source_category IN ('CodePen/Spark', 'Animation/GSAP', 'Animation/Loading')
       AND NOT EXISTS (SELECT 1 FROM auto_publication_items ai WHERE ai.candidate_id = c.id)
       AND NOT EXISTS (SELECT 1 FROM animation_entries e WHERE e.candidate_id = c.id)
       AND NOT EXISTS (SELECT 1 FROM validation_runs v WHERE v.target_type = 'candidate'
         AND v.target_id = c.id AND v.validator = 'browser-run-auto'
         AND v.checked_at > ?)
     ORDER BY CASE c.source_category
-      WHEN 'Animation/GSAP' THEN 0 ELSE 1 END,
+      WHEN 'CodePen/Spark' THEN 0 WHEN 'Animation/GSAP' THEN 1 ELSE 2 END,
       c.priority_score DESC, c.created_at ASC LIMIT 100`,
     )
     .bind(cutoff)
@@ -93,7 +89,7 @@ async function eligibleRows(db) {
 
 async function recordProbe(db, row, probe) {
   const passed = passesAutomaticProbe(probe);
-  const key = penKey(row.canonical_url);
+  const key = penKeyFromCanonical(row.canonical_url);
   await db
     .prepare(
       `INSERT INTO validation_runs (id, target_type, target_id, validator, validator_version,
@@ -120,6 +116,24 @@ async function recordProbe(db, row, probe) {
       )
       .bind(now(), now(), row.source_id)
       .run();
+  } else if (
+    row.source_category === "CodePen/Spark" &&
+    /^(?:EMBED_HTTP_404|EMBED_HTTP_410)$/.test(probe.reason ?? "")
+  ) {
+    await db.batch([
+      db
+        .prepare(
+          `UPDATE sources SET availability = 'unavailable', last_checked_at = ?,
+          updated_at = ? WHERE id = ?`,
+        )
+        .bind(now(), now(), row.source_id),
+      db
+        .prepare(
+          `UPDATE candidates SET status = 'source-unavailable', failure_code = ?,
+          version = version + 1, updated_at = ? WHERE id = ? AND status = 'review'`,
+        )
+        .bind(probe.reason, now(), row.id),
+    ]);
   }
   return passed;
 }
@@ -254,6 +268,8 @@ async function releaseBatch(env, batch) {
       c.source_title, c.source_category, c.metadata_json, s.id AS source_id,
       s.canonical_url,
       s.creator_name, s.license_code, s.license_evidence_url,
+      (SELECT GROUP_CONCAT(t.axis || ':' || t.key) FROM candidate_tags ct
+        JOIN tags t ON t.id = ct.tag_id WHERE ct.candidate_id = c.id) AS candidate_tag_keys,
       EXISTS (SELECT 1 FROM candidate_tags ct JOIN tags t ON t.id = ct.tag_id
         WHERE ct.candidate_id = c.id AND ct.confirmed = 1
           AND t.axis IN ('technology', 'trigger', 'motion', 'section', 'technique')) AS confirmed_tag,
@@ -285,7 +301,7 @@ async function releaseBatch(env, batch) {
         row.validation_result === "pass" &&
         hasStrictEvidence(row.evidence_json) &&
         row.subject_fingerprint ===
-          `pen:${penKey(row.canonical_url)}|theme:light|tab:result`,
+          `pen:${penKeyFromCanonical(row.canonical_url)}|theme:light|tab:result`,
     );
   if (!valid) {
     await blockBatch("CANDIDATE_CHANGED_OR_VALIDATION_FAILED");
@@ -336,6 +352,20 @@ async function releaseBatch(env, batch) {
         .run();
       if (updated.meta.changes !== 1)
         throw new Error("CANDIDATE_VERSION_CHANGED");
+      const titleTag = sparkTitleTag(row);
+      if (titleTag && row.confirmed_tag !== 1) {
+        const confirmed = await db
+          .prepare(
+            `UPDATE candidate_tags SET confirmed = 1, source = 'inferred', confidence = 1
+            WHERE candidate_id = ? AND tag_id =
+              (SELECT id FROM tags WHERE axis = ? AND key = ?)
+              AND confirmed = 0`,
+          )
+          .bind(row.candidate_id, titleTag[0], titleTag[1])
+          .run();
+        if (confirmed.meta.changes !== 1)
+          throw new Error("SPARK_TITLE_TAG_CHANGED");
+      }
       const entry = await repository.approve(
         row.candidate_id,
         { version: row.version + 1 },
@@ -471,8 +501,10 @@ export async function runAutomaticPublication(env) {
       await releaseBatch(env, {
         id: batchId,
         run_id: runId,
-        sample_candidate_id: successful[sampleIndex(batchId, successful.length)].id,
-        sample_candidate_version: successful[sampleIndex(batchId, successful.length)].version,
+        sample_candidate_id:
+          successful[sampleIndex(batchId, successful.length)].id,
+        sample_candidate_version:
+          successful[sampleIndex(batchId, successful.length)].version,
       });
     } finally {
       if (browser) await browser.close();

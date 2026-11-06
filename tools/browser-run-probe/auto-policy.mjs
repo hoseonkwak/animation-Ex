@@ -1,14 +1,45 @@
 const GENERIC_TITLE =
   /^(?:code\s*view|view\s*code|untitled|source|result|웹 애니메이션 예제\s*[a-z0-9]*)$/i;
 
-export const AUTO_CATEGORIES = ["Animation/GSAP", "Animation/Loading"];
+export const AUTO_CATEGORIES = [
+  "CodePen/Spark",
+  "Animation/GSAP",
+  "Animation/Loading",
+];
 export const MIN_AUTO_BATCH = 3;
+
+const SPARK_TITLE_TAGS = [
+  ["technology", "gsap", /\b(?:gsap|greensock)\b/i],
+  ["technology", "css", /\bcss\b/i],
+  ["technology", "svg", /\bsvg\b/i],
+  ["trigger", "scroll", /\bscroll(?:ing)?\b/i],
+  ["trigger", "hover", /\bhover\b/i],
+  ["motion", "reveal", /\breveal\b/i],
+  ["motion", "slide", /\bslid(?:e|ing)\b/i],
+  ["section", "loading", /\b(?:load(?:er|ing)?|preloader|spinner)\b/i],
+  ["section", "slider", /\b(?:slider|carousel)\b/i],
+  ["section", "button", /\bbuttons?\b/i],
+  ["section", "card", /\bcards?\b/i],
+  ["section", "hero", /\bhero\b/i],
+];
+
+export function sparkTitleTag(row) {
+  if (row.source_category !== "CodePen/Spark") return null;
+  const available = new Set(String(row.candidate_tag_keys ?? "").split(","));
+  return (
+    SPARK_TITLE_TAGS.find(
+      ([axis, key, pattern]) =>
+        pattern.test(row.source_title ?? "") && available.has(`${axis}:${key}`),
+    )?.slice(0, 2) ?? null
+  );
+}
 
 export function isCandidateEligible(row) {
   if (row.status !== "review" || !row.canonical_url || !row.creator_name)
     return false;
   if (row.license_code !== "MIT" || !row.license_evidence_url) return false;
-  if (row.confirmed_tag !== 1 || row.duplicate_pen !== 0) return false;
+  if (row.duplicate_pen !== 0) return false;
+  if (row.confirmed_tag !== 1 && !sparkTitleTag(row)) return false;
   let metadata;
   try {
     metadata = JSON.parse(row.metadata_json);

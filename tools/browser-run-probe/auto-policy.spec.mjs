@@ -5,6 +5,7 @@ import {
   pickAutomaticCandidates,
   passesAutomaticProbe,
   sampleIndex,
+  sparkTitleTag,
 } from "./auto-policy.mjs";
 
 const row = {
@@ -24,7 +25,10 @@ test("불완전하거나 중복된 후보는 자동 검사 대상에서 제외�
   assert.equal(isCandidateEligible(row), true);
   assert.equal(isCandidateEligible({ ...row, confirmed_tag: 0 }), false);
   assert.equal(isCandidateEligible({ ...row, duplicate_pen: 1 }), false);
-  assert.equal(isCandidateEligible({ ...row, source_title: "CODE VIEW" }), false);
+  assert.equal(
+    isCandidateEligible({ ...row, source_title: "CODE VIEW" }),
+    false,
+  );
   assert.equal(
     isCandidateEligible({
       ...row,
@@ -47,7 +51,8 @@ test("Loading은 원본 제목에서 로더임을 확인할 수 있어야 한다
     isCandidateEligible({
       ...row,
       source_category: "Animation/Loading",
-      source_title: "Rotating links/buttons with text placed on a circular path",
+      source_title:
+        "Rotating links/buttons with text placed on a circular path",
     }),
     false,
   );
@@ -65,10 +70,42 @@ test("GSAP이 부족하면 검증 가능한 Loading 묶음을 선택한다", () 
     source_title: "Concentric Circle Loader",
   }));
   assert.deepEqual(
-    pickAutomaticCandidates([...gsap, ...loading], 8).map((candidate) => candidate.id),
+    pickAutomaticCandidates([...gsap, ...loading], 8).map(
+      (candidate) => candidate.id,
+    ),
     loading.map((candidate) => candidate.id),
   );
   assert.deepEqual(pickAutomaticCandidates(gsap, 8), []);
+});
+
+test("Spark는 원본 제목과 기존 후보 태그가 일치해야 자동 검수 대상이다", () => {
+  const spark = {
+    ...row,
+    source_category: "CodePen/Spark",
+    source_title: "Animated CSS Cards",
+    confirmed_tag: 0,
+    candidate_tag_keys: "technology:css,section:card",
+    canonical_url:
+      "https://codepen.io/editor/example/pen/01a187ae-e212-756d-8f6c-a76c594987bf",
+  };
+  assert.deepEqual(sparkTitleTag(spark), ["technology", "css"]);
+  assert.equal(isCandidateEligible(spark), true);
+  assert.equal(
+    isCandidateEligible({ ...spark, candidate_tag_keys: "" }),
+    false,
+  );
+  assert.equal(
+    isCandidateEligible({ ...spark, source_title: "Beautiful abstract art" }),
+    false,
+  );
+  const rows = Array.from({ length: 3 }, (_, index) => ({
+    ...spark,
+    id: `spark-${index}`,
+  }));
+  assert.deepEqual(
+    pickAutomaticCandidates(rows, 8).map((item) => item.id),
+    ["spark-0", "spark-1", "spark-2"],
+  );
 });
 
 test("Result 로드와 두 구간의 움직임 증거가 모두 있어야 통과한다", () => {

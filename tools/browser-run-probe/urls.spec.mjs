@@ -1,11 +1,25 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { toEmbedUrl, validateBatch } from "./urls.mjs";
+import { penKeyFromCanonical, toEmbedUrl, validateBatch } from "./urls.mjs";
 
 test("accepts only canonical CodePen Pen URLs", () => {
   assert.equal(
     toEmbedUrl("https://codepen.io/Sicontis/pen/oNbgjda"),
     "https://codepen.io/Sicontis/embed/oNbgjda?default-tab=result&theme-id=light",
+  );
+  const modern =
+    "https://codepen.io/editor/cbolson/pen/01a187ae-e212-756d-8f6c-a76c594987bf";
+  assert.equal(
+    toEmbedUrl(modern),
+    "https://codepen.io/editor/cbolson/embed/01a187ae-e212-756d-8f6c-a76c594987bf?default-tab=result&theme-id=light",
+  );
+  assert.equal(
+    penKeyFromCanonical(modern),
+    "editor/cbolson/01a187ae-e212-756d-8f6c-a76c594987bf",
+  );
+  assert.equal(
+    toEmbedUrl("https://codepen.io/editor/cbolson/pen/oNbgjda"),
+    null,
   );
   for (const value of [
     "https://evil.example/pen/oNbgjda",
