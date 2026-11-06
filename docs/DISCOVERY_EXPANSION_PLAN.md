@@ -90,3 +90,9 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - [`CodePen Spark ingestion #1`](https://github.com/hoseonkwak/animation-Ex/actions/runs/41974910836)은 14:34 KST에 수동 시작해 성공했다. 최근 10호에서 모션 Pen 38건을 선별했고 운영 API 응답은 `accepted=38`, `duplicates=0`, `failed=0`이었다. 운영 관리자 Inbox의 수집 후보 38건 및 최근 실행 표의 `CodePen Spark · 수동 / 신규 38`과 대조했다.
 - [`CodePen Spark ingestion #2`](https://github.com/hoseonkwak/animation-Ex/actions/runs/41975235961)는 14:38 KST에 같은 입력으로 재실행해 성공했다. checkpoint에 이미 완료한 10호가 기록되어 `newIssues=0`, `accepted=0`, `duplicates=0`, `failed=0`, `zeroReason=NO_NEW_ISSUES`였다. 관리자 후보 수는 38건으로 유지됐고 최근 실행 표에도 신규 0건으로 기록됐다.
 - 첫 예약 실행(09:53 KST) 결과와 관리자 상단의 예약 요약 표시는 다음 실행 뒤 확인한다. 38건은 **수집 후보**이며 공개 예제 수를 늘리지 않았다. 개별 실행 화면과 콘텐츠 품질 게이트는 아직 통과하지 않았다.
+
+## 10. Spark 자동 검수 연결 (2026-11-06)
+
+- [`Spark 수동 실행`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42152353654)에서 최근 10호 중 새 호 1개를 확인해 후보 6건을 추가했다. 운영 Inbox 후보는 38건에서 44건으로 늘었고 공개 예제는 1875건 그대로였다. 수집과 공개가 분리된다는 점을 다시 확인했다.
+- [`CI #31`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42156317155)에서 Spark를 기존 Browser Run 자동 검수 대상에 포함한 Worker를 배포했다. CodePen 2.0 예제의 실제 iframe이 `*.codepen.dev`인 것을 브라우저에서 확인했고, 이 주소의 Result를 검사하도록 했다.
+- 운영 상태는 `예약 검사 허용`이며 배포 전 마지막 검사는 `no-batch (0/0)`이었다. 다음 UTC 02:17 예약에서 실제 검사 수·통과 수·공개 수와 404 보류 여부를 대조해야 한다. 배포 성공을 자동 공개 성공으로 세지 않는다.
