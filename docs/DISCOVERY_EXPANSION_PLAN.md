@@ -102,3 +102,8 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - [`CodePen Spark ingestion #4`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42181145619)은 16:28 KST에 예약 시작해 성공했다. 최근 피드 10호를 확인했으나 새 호가 없어 `newIssues=0`, `motionPens=0`, `accepted=0`, `duplicates=0`, `failed=0`이었다. 운영 관리자 수집 결과의 16:29 KST `정상 완료 · 신규 0건` 및 `피드에 새 호가 없습니다`와 대조했다.
 - [`WSSS ingestion #19`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42187870504)은 17:27 KST에 예약 시작해 성공했고 `accepted=0`, `duplicates=0`, `failed=0`이었다. 운영 관리자에도 17:29 KST `정상 완료 · 신규 0건`으로 나타났다. [`전날 WSSS ingestion #17`](https://github.com/hoseonkwak/animation-Ex/actions/runs/41994557470)도 17:27 KST에 예약 시작해 성공, 신규·중복·실패 각 0건이었다. WSSS의 GSAP 목록은 체크포인트에서 이미 처리한 글뿐이다.
 - 운영 Inbox에는 이미 수집한 Spark 후보 44건이 대기 중이고 공개 CodePen은 1,875건이다. 자동 공개 스위치는 `예약 검사 허용`이다. Spark를 자동 검수 대상으로 배포한 뒤 첫 11:17 KST 예약 시각은 2026-11-07이므로, 현재 화면의 이전 `no-batch (0/0) · INSUFFICIENT_ELIGIBLE`을 Spark 실행 결과로 해석하지 않는다. 첫 실행에서 실제 검사·통과·보류·게시 수를 별도 확인한다.
+
+## 12. Spark 첫 자동 검수와 다음 예약 수집 (2026-11-07)
+
+- Production 관리자 화면에서 첫 Spark 예약 검수가 `published (4/8)`로 기록됐다. 실제 실행 검사를 받은 8건 중 4건이 통과·자동 공개됐고, 후보 대기는 44건에서 40건, 공개 CodePen은 1,875건에서 1,879건으로 바뀌었다. 새 묶음의 표본은 `Solar System using :scroll-markers & advanced attr() functions`이며 공개 상세의 CodePen 2.0 Result 프레임이 실제로 렌더링되는 것을 확인했다. 나머지 4건의 개별 보류 사유는 관리자 요약에 표시되지 않으므로 운영 D1의 `validation_runs` 조회 전에는 추정하지 않는다.
+- [`CodePen Spark ingestion #5`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42348116722)는 15:41 KST 예약 시작·성공, 피드 10호 중 새 호 0건으로 `accepted=0`, `duplicates=0`, `failed=0`이었다. [`WSSS ingestion #20`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42352477169)은 16:43 KST 예약 시작·성공, `accepted=0`, `duplicates=0`, `failed=0`이었다. 수집 후보 수의 4건 감소는 신규 수집 감소가 아니라 자동 공개 전환이다.
