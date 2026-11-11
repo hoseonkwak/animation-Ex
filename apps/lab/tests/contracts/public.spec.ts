@@ -77,6 +77,30 @@ describe('WP6 public API', () => {
     sqlite.close()
   })
 
+  it('미확정 Hero 제안은 Hero 집계와 필터에 포함하지 않는다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase()
+    sqlite.exec(`INSERT OR REPLACE INTO entry_tags
+      (animation_entry_id, tag_id, source, confidence, confirmed)
+      VALUES ('entry-basic-1', 'tag-section-hero', 'inferred', 0.5, 0)`)
+    const discovery = await worker.fetch(
+      new Request('https://example.test/api/v1/discovery'),
+      { DB: d1 },
+      context,
+    )
+    const discoveryBody = (await discovery.json()) as {
+      data: { sections: Array<{ key: string; count: number }> }
+    }
+    expect(discoveryBody.data.sections.find((section) => section.key === 'hero')?.count).toBe(1)
+    const filtered = await worker.fetch(
+      new Request('https://example.test/api/v1/examples?section=hero'),
+      { DB: d1 },
+      context,
+    )
+    const filteredBody = (await filtered.json()) as { data: { items: Array<{ id: string }> } }
+    expect(filteredBody.data.items.some((entry) => entry.id === 'entry-basic-1')).toBe(false)
+    sqlite.close()
+  })
+
   it('동일 URL 제보를 반복해도 같은 202 응답을 주고 한 행만 저장한다', async () => {
     const { sqlite, d1 } = createMigratedDatabase()
     const request = () =>

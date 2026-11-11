@@ -262,7 +262,9 @@ function setGridColumns(columns: 2 | 3 | 4): void {
           <h2 id="examples-heading">실행 가능한 예제</h2>
         </div>
         <div class="result-tools">
-          <p aria-live="polite">{{ examples.length }}개의 결과</p>
+          <p aria-live="polite">
+            {{ loading ? '결과 불러오는 중' : `${examples.length}개 불러옴` }}
+          </p>
           <label for="result-sort">정렬</label>
           <select
             id="result-sort"

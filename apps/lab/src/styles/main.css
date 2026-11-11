@@ -1494,6 +1494,15 @@ select:focus-visible {
   max-width: 1000px;
   font-size: clamp(2.4rem, 6vw, 4.6rem);
 }
+.page-header h1 {
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  word-break: keep-all;
+}
+.section-more-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
 .listing-page {
   min-height: 70vh;
 }

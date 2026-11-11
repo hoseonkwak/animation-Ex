@@ -69,10 +69,14 @@ interface PublishedExample {
   previewResult: 'pass' | 'fail' | null
   previewCheckedAt: string | null
   failureCodes: string[]
+  sourceCategory: string | null
+  heroConfirmed: boolean
+  heroSuggested: boolean
+  heroReview: string | null
 }
 const publishedExamples = ref<PublishedExample[]>([])
 const publishedCounts = ref({ total: 0, unchecked: 0, passed: 0, failed: 0 })
-const publishedFilter = ref<'unchecked' | 'failed' | 'all'>('unchecked')
+const publishedFilter = ref<'unchecked' | 'failed' | 'all' | 'hero'>('unchecked')
 const selectedPublishedId = ref('')
 const selectedPublished = computed(() =>
   publishedExamples.value.find((item) => item.id === selectedPublishedId.value),
@@ -337,6 +341,36 @@ async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
           : selectedPublishedId.value !== currentId
             ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
             : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
+  } catch (cause) {
+    showError(cause)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function reviewPublishedHero(decision: 'confirm' | 'exclude'): Promise<void> {
+  if (!selectedPublished.value) return
+  const currentId = selectedPublished.value.id
+  const currentIndex = publishedExamples.value.findIndex((item) => item.id === currentId)
+  const nextId = publishedExamples.value[currentIndex + 1]?.id
+  busy.value = true
+  try {
+    await api(`/api/v1/admin/examples/${currentId}/hero-review`, {
+      method: 'POST',
+      body: JSON.stringify({
+        decision,
+        note:
+          decision === 'confirm'
+            ? '실행 화면에서 완결된 첫 화면 구성과 주요 움직임을 확인함'
+            : '완결된 Hero 영역이 아닌 부분 효과 또는 다른 주제임',
+      }),
+    })
+    await loadPublishedExamples()
+    if (nextId && publishedExamples.value.some((item) => item.id === nextId)) {
+      selectedPublishedId.value = nextId
+    }
+    notice.value =
+      decision === 'confirm' ? 'Hero 분류를 확정했습니다.' : 'Hero 분류에서 제외했습니다.'
   } catch (cause) {
     showError(cause)
   } finally {
@@ -769,6 +803,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             <option value="unchecked">미점검</option>
             <option value="failed">오류</option>
             <option value="all">전체</option>
+            <option value="hero">Hero 재분류</option>
           </select>
         </label>
         <p v-if="!publishedExamples.length">이 상태의 공개 예제가 없습니다.</p>
@@ -776,11 +811,18 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
           점검할 공개 예제
           <select v-model="selectedPublishedId" aria-label="점검할 공개 예제">
             <option v-for="item in publishedExamples" :key="item.id" :value="item.id">
-              {{ item.title }}{{ item.previewResult === 'fail' ? ' · 오류 기록' : '' }}
+              {{ item.title }}{{ item.heroConfirmed ? ' · Hero 확정' : ''
+              }}{{ item.heroReview === 'hero-excluded' ? ' · Hero 제외' : ''
+              }}{{ item.previewResult === 'fail' ? ' · 오류 기록' : '' }}
             </option>
           </select>
         </label>
         <div v-if="selectedPublished" class="published-review">
+          <p v-if="publishedFilter === 'hero'">
+            출처 분류: {{ selectedPublished.sourceCategory ?? '미분류' }} ·
+            {{ selectedPublished.heroConfirmed ? 'Hero 확정' : 'Hero 미확정' }} ·
+            {{ selectedPublished.heroSuggested ? '후보 태그 있음' : '후보 태그 없음' }}
+          </p>
           <a
             :href="`/examples/${selectedPublished.slug}`"
             target="_blank"
@@ -820,6 +862,21 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
             <button type="button" :disabled="busy" @click="recordPublishedPreview('fail')">
               Preview 오류 기록
             </button>
+          </div>
+          <div v-if="publishedFilter === 'hero'" class="preview-decision">
+            <button
+              type="button"
+              :disabled="busy || selectedPublished.previewResult !== 'pass'"
+              @click="reviewPublishedHero('confirm')"
+            >
+              Hero로 확정
+            </button>
+            <button type="button" :disabled="busy" @click="reviewPublishedHero('exclude')">
+              Hero에서 제외
+            </button>
+            <p>
+              전체 첫 화면 구성과 움직임을 확인한 뒤 확정하세요. 정상 실행 확인 기록이 필요합니다.
+            </p>
           </div>
           <label>
             공개 중지 사유

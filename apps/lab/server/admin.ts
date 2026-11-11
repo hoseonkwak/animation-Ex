@@ -732,7 +732,7 @@ export class AdminRepository {
       })),
     }
   }
-  async publishedEntries(filter: 'all' | 'unchecked' | 'failed' = 'all'): Promise<{
+  async publishedEntries(filter: 'all' | 'unchecked' | 'failed' | 'hero' = 'all'): Promise<{
     counts: { total: number; unchecked: number; passed: number; failed: number }
     items: Array<{
       id: string
@@ -743,6 +743,10 @@ export class AdminRepository {
       previewResult: ValidationResult | null
       previewCheckedAt: string | null
       failureCodes: string[]
+      sourceCategory: string | null
+      heroConfirmed: boolean
+      heroSuggested: boolean
+      heroReview: string | null
     }>
   }> {
     const counts = await this.db
@@ -765,13 +769,29 @@ export class AdminRepository {
         ? "AND (v.result IS NULL OR v.result = 'warning')"
         : filter === 'failed'
           ? "AND v.result = 'fail'"
-          : ''
+          : filter === 'hero'
+            ? `AND (EXISTS (SELECT 1 FROM entry_tags het JOIN tags ht ON ht.id = het.tag_id
+                WHERE het.animation_entry_id = e.id AND ht.axis = 'section' AND ht.key = 'hero')
+              OR EXISTS (SELECT 1 FROM candidate_tags hct JOIN tags ht ON ht.id = hct.tag_id
+                WHERE hct.candidate_id = e.candidate_id AND ht.axis = 'section' AND ht.key = 'hero'))`
+            : ''
     const { results } = await this.db
       .prepare(
         `SELECT e.id, e.slug, e.title, e.published_at, r.embed_url,
+          c.source_category,
+          EXISTS (SELECT 1 FROM entry_tags het JOIN tags ht ON ht.id = het.tag_id
+            WHERE het.animation_entry_id = e.id AND ht.axis = 'section'
+              AND ht.key = 'hero' AND het.confirmed = 1) AS hero_confirmed,
+          EXISTS (SELECT 1 FROM candidate_tags hct JOIN tags ht ON ht.id = hct.tag_id
+            WHERE hct.candidate_id = e.candidate_id AND ht.axis = 'section'
+              AND ht.key = 'hero' AND hct.confirmed = 0) AS hero_suggested,
+          (SELECT reason_code FROM review_decisions rd WHERE rd.target_type = 'entry'
+            AND rd.target_id = e.id AND rd.reason_code IN ('hero-confirmed', 'hero-excluded')
+            ORDER BY rd.created_at DESC, rd.id DESC LIMIT 1) AS hero_review,
           v.result AS preview_result, v.checked_at AS preview_checked_at,
           v.failure_codes_json
         FROM animation_entries e JOIN codepen_refs r ON r.animation_entry_id = e.id
+        LEFT JOIN candidates c ON c.id = e.candidate_id
         LEFT JOIN validation_runs v ON v.id = (
           SELECT id FROM validation_runs
           WHERE target_type = 'entry' AND target_id = e.id
@@ -789,6 +809,10 @@ export class AdminRepository {
         preview_result: ValidationResult | null
         preview_checked_at: string | null
         failure_codes_json: string | null
+        source_category: string | null
+        hero_confirmed: number
+        hero_suggested: number
+        hero_review: string | null
       }>()
     return {
       counts: {
@@ -808,8 +832,86 @@ export class AdminRepository {
         failureCodes: row.failure_codes_json
           ? (JSON.parse(row.failure_codes_json) as string[])
           : [],
+        sourceCategory: row.source_category,
+        heroConfirmed: row.hero_confirmed === 1,
+        heroSuggested: row.hero_suggested === 1,
+        heroReview: row.hero_review,
       })),
     }
+  }
+
+  async reviewPublishedHero(entryId: string, value: unknown, actorHash: string): Promise<void> {
+    const body = object(value)
+    const decision = stringField(body, 'decision')
+    if (decision !== 'confirm' && decision !== 'exclude') {
+      throw new AdminApiError(400, 'INVALID_BODY', 'Hero 분류 결정을 확인해주세요.')
+    }
+    const note = stringField(body, 'note')
+    const entry = await this.db
+      .prepare(
+        `SELECT e.id, r.pen_key FROM animation_entries e JOIN codepen_refs r
+         ON r.animation_entry_id = e.id AND r.active = 1
+         WHERE e.id = ? AND e.status = 'published'`,
+      )
+      .bind(entryId)
+      .first<{ id: string; pen_key: string }>()
+    if (!entry) throw new AdminApiError(404, 'ENTRY_NOT_FOUND', '공개 예제를 찾을 수 없습니다.')
+    if (decision === 'confirm') {
+      const checked = await this.db
+        .prepare(
+          `SELECT result, subject_fingerprint FROM validation_runs
+           WHERE target_type = 'entry' AND target_id = ?
+           ORDER BY checked_at DESC, id DESC LIMIT 1`,
+        )
+        .bind(entryId)
+        .first<{ result: string; subject_fingerprint: string }>()
+      if (
+        checked?.result !== 'pass' ||
+        checked.subject_fingerprint !== fingerprint(entry.pen_key)
+      ) {
+        throw new AdminApiError(
+          409,
+          'PREVIEW_CHECK_REQUIRED',
+          '현재 Pen의 실행 화면을 정상 확인한 뒤 Hero로 확정해주세요.',
+        )
+      }
+    }
+    const heroTag = await this.db
+      .prepare("SELECT id FROM tags WHERE axis = 'section' AND key = 'hero' AND active = 1")
+      .first<{ id: string }>()
+    if (!heroTag) throw new AdminApiError(409, 'HERO_TAG_MISSING', 'Hero 태그가 없습니다.')
+    const now = new Date().toISOString()
+    await this.db.batch([
+      decision === 'confirm'
+        ? this.db
+            .prepare(
+              `INSERT INTO entry_tags (animation_entry_id, tag_id, source, confidence, confirmed)
+               VALUES (?, ?, 'admin', 1, 1)
+               ON CONFLICT(animation_entry_id, tag_id) DO UPDATE SET
+                 source = 'admin', confidence = 1, confirmed = 1`,
+            )
+            .bind(entryId, heroTag.id)
+        : this.db
+            .prepare('DELETE FROM entry_tags WHERE animation_entry_id = ? AND tag_id = ?')
+            .bind(entryId, heroTag.id),
+      this.db
+        .prepare(
+          `INSERT INTO review_decisions (
+             id, target_type, target_id, decision, reason_code, note,
+             changes_json, actor_email_hash, created_at
+           ) VALUES (?, 'entry', ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          newId(),
+          entryId,
+          decision === 'confirm' ? 'approve' : 'needs-edit',
+          decision === 'confirm' ? 'hero-confirmed' : 'hero-excluded',
+          note,
+          JSON.stringify({ section: 'hero', confirmed: decision === 'confirm' }),
+          actorHash,
+          now,
+        ),
+    ])
   }
 
   async publishedPreviewCheck(entryId: string, value: unknown, actorHash: string): Promise<void> {

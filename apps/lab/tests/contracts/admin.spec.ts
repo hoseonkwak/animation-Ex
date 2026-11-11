@@ -450,4 +450,54 @@ describe('P1-ADMIN 관리자 검수 계약', () => {
     expect(afterBody.data.counts.total).toBe(beforeBody.data.counts.total - 1)
     expect(afterBody.data.counts.failed).toBe(beforeBody.data.counts.failed)
   })
+
+  it('공개 Hero 태그는 Owner의 실행 확인 후에만 확정하고 제외 결정도 기록한다', async () => {
+    const path = '/api/v1/admin/examples/entry-legacy-08/hero-review'
+    const exclude = {
+      method: 'POST',
+      body: JSON.stringify({ decision: 'exclude', note: '부분 효과' }),
+    }
+    expect((await request(path, exclude, '')).status).toBe(401)
+    expect((await request(path, exclude)).status).toBe(200)
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM entry_tags WHERE animation_entry_id='entry-legacy-08' AND tag_id='tag-section-hero'",
+        )
+        .get(),
+    ).toEqual({ count: 0 })
+    const confirm = {
+      method: 'POST',
+      body: JSON.stringify({ decision: 'confirm', note: '실행 화면과 전체 Hero 구성 확인' }),
+    }
+    const blocked = await request(path, confirm)
+    expect(blocked.status).toBe(409)
+    const pen = sqlite
+      .prepare("SELECT pen_key FROM codepen_refs WHERE animation_entry_id='entry-legacy-08'")
+      .get() as { pen_key: string }
+    expect(
+      (
+        await request('/api/v1/admin/examples/entry-legacy-08/preview-checks', {
+          method: 'POST',
+          body: JSON.stringify({ result: 'pass', viewport: 'desktop', failureCodes: [] }),
+        })
+      ).status,
+    ).toBe(200)
+    expect(pen.pen_key).toBeTruthy()
+    expect((await request(path, confirm)).status).toBe(200)
+    expect(
+      sqlite
+        .prepare(
+          "SELECT source, confirmed FROM entry_tags WHERE animation_entry_id='entry-legacy-08' AND tag_id='tag-section-hero'",
+        )
+        .get(),
+    ).toEqual({ source: 'admin', confirmed: 1 })
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM review_decisions WHERE target_id='entry-legacy-08' AND reason_code IN ('hero-confirmed', 'hero-excluded')",
+        )
+        .get(),
+    ).toEqual({ count: 2 })
+  })
 })

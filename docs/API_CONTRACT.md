@@ -113,7 +113,7 @@ Phase 1 공개 데이터에는 `codepen`만 사용한다. 카드와 상세 응�
 
 ### `GET /discovery`
 
-Home과 Sections에 필요한 전체 공개 예제 수(`totalCount`), 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개 예제 수가 1개 이상인 경우만 포함한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 5분간 캐시한다.
+Home과 Sections에 필요한 전체 공개 예제 수(`totalCount`), 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개 예제 수가 1개 이상인 경우만 포함한다. Hero 집계와 공개 필터에는 확정된 Hero Entry Tag만 사용한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 1분간 캐시한다.
 
 ### `GET /sitemap.xml`
 
@@ -221,7 +221,11 @@ Source, 발견 경로, 추출 메타데이터, 중복 후보, 마지막 검증�
 
 ### `GET /admin/examples`, `POST /admin/examples/:id/preview-checks`
 
-Owner는 `filter=unchecked|failed|all`로 상태를 골라 최근 공개 예제 최대 100개와 마지막 공개 Preview 점검 결과를 조회한다. 기본 API 필터는 `all`이고 관리자 점검 화면은 `unchecked`로 시작한다. 응답의 `counts`는 목록 100건이 아닌 전체 공개 CodePen의 `total`, `unchecked`, `passed`, `failed` 수다. 실제 실행 화면을 본 뒤 `result`, `viewport`, 실패 사유 코드를 기록한다. 점검 기록만 추가한 경우 `total`은 그대로이며 `unchecked` 또는 `passed`·`failed`가 바뀐다. 실패 기록은 관리자 화면의 오류 목록에 표시된다. 공개 중지한 자동 게시 항목은 묶음 항목에도 `rolled-back`으로 반영된다.
+Owner는 `filter=unchecked|failed|all|hero`로 상태를 골라 최근 공개 예제 최대 100개와 마지막 공개 Preview 점검 결과를 조회한다. `hero`는 후보 또는 공개 Entry에 Hero 신호가 있는 재분류 대상을 보여주며 확정 여부, 제안 여부, 출처 카테고리, 마지막 분류 결정을 함께 반환한다. 기본 API 필터는 `all`이고 관리자 점검 화면은 `unchecked`로 시작한다. 응답의 `counts`는 목록 100건이 아닌 전체 공개 CodePen의 `total`, `unchecked`, `passed`, `failed` 수다. 실제 실행 화면을 본 뒤 `result`, `viewport`, 실패 사유 코드를 기록한다. 점검 기록만 추가한 경우 `total`은 그대로이며 `unchecked` 또는 `passed`·`failed`가 바뀐다. 실패 기록은 관리자 화면의 오류 목록에 표시된다. 공개 중지한 자동 게시 항목은 묶음 항목에도 `rolled-back`으로 반영된다.
+
+### `POST /admin/examples/:id/hero-review`
+
+Owner 전용 Hero 재분류 결정이다. 본문 `decision`은 `confirm|exclude`이며 `note`와 함께 저장한다. `confirm`은 현재 Pen의 마지막 Entry Preview 검사가 `pass`이고 fingerprint가 일치해야 한다. 확정 Hero Entry Tag를 저장하고 감사 결정(`hero-confirmed`)을 남긴다. `exclude`는 Entry Hero Tag를 제거하고 감사 결정(`hero-excluded`)을 남긴다. 제안 태그는 출처 근거로 보존한다.
 
 ### `GET /admin/ingestion-runs`
 

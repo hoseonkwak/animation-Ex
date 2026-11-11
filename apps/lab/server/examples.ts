@@ -248,6 +248,7 @@ export class ExamplesRepository {
         SELECT 1 FROM entry_tags search_et
         JOIN tags search_t ON search_t.id = search_et.tag_id
         WHERE search_et.animation_entry_id = e.id
+          AND (search_t.axis <> 'section' OR search_t.key <> 'hero' OR search_et.confirmed = 1)
           AND (search_t.key LIKE ? OR search_t.label_ko LIKE ? OR search_t.label_en LIKE ?)
       ))`)
       const search = `%${filters.q.toLocaleLowerCase('ko-KR')}%`
@@ -279,6 +280,7 @@ export class ExamplesRepository {
         WHERE filter_et.animation_entry_id = e.id
           AND filter_t.axis = ?
           AND filter_t.key IN (${placeholders(values.length)})
+          AND (filter_t.key <> 'hero' OR filter_et.confirmed = 1)
       )`)
       bindings.push(axis, ...values)
     }
@@ -409,6 +411,7 @@ export class ExamplesRepository {
         FROM entry_tags et
         JOIN tags t ON t.id = et.tag_id AND t.active = 1
         WHERE et.animation_entry_id IN (${placeholders(ids.length)})
+          AND (t.axis <> 'section' OR t.key <> 'hero' OR et.confirmed = 1)
         ORDER BY t.axis, t.key`,
       )
       .bind(...ids)

@@ -172,7 +172,7 @@ export default {
       const data = await new PublicRepository(env.DB).discovery()
       return json(
         { data, meta: { requestId } },
-        { headers: { 'cache-control': 'public, max-age=300' } },
+        { headers: { 'cache-control': 'public, max-age=60' } },
       )
     }
 
@@ -427,7 +427,12 @@ export default {
         }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/examples') {
           const filter = url.searchParams.get('filter') ?? 'all'
-          if (filter !== 'all' && filter !== 'unchecked' && filter !== 'failed') {
+          if (
+            filter !== 'all' &&
+            filter !== 'unchecked' &&
+            filter !== 'failed' &&
+            filter !== 'hero'
+          ) {
             return json(
               {
                 error: { code: 'INVALID_FILTER', message: '공개 예제 점검 필터를 확인해주세요.' },
@@ -499,6 +504,17 @@ export default {
         const publishedPreviewMatch = url.pathname.match(
           /^\/api\/v1\/admin\/examples\/([^/]+)\/preview-checks$/,
         )
+        const publishedHeroMatch = url.pathname.match(
+          /^\/api\/v1\/admin\/examples\/([^/]+)\/hero-review$/,
+        )
+        if (publishedHeroMatch && request.method === 'POST') {
+          await repository.reviewPublishedHero(
+            publishedHeroMatch[1]!,
+            await request.json(),
+            actorHash,
+          )
+          return json({ data: { recorded: true }, meta: { requestId } })
+        }
         if (publishedPreviewMatch && request.method === 'POST') {
           await repository.publishedPreviewCheck(
             publishedPreviewMatch[1]!,

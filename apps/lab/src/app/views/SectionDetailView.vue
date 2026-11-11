@@ -54,7 +54,7 @@ onMounted(async () => {
     </section>
     <template v-else>
       <header class="page-header">
-        <p class="eyebrow">SECTION · {{ examples.length }} EXAMPLES</p>
+        <p class="eyebrow">SECTION · {{ section.count }} EXAMPLES</p>
         <h1>{{ section.label }}</h1>
         <p class="description">{{ section.description }}</p>
       </header>
@@ -67,6 +67,11 @@ onMounted(async () => {
           @request="scheduler.request"
           @release="scheduler.release"
         />
+      </div>
+      <div v-if="section.count > examples.length" class="section-more-action">
+        <RouterLink class="secondary-action" :to="`/explore?section=${encodeURIComponent(key)}`">
+          {{ section.label }} 예제 {{ section.count }}개 모두 보기
+        </RouterLink>
       </div>
     </template>
   </main>

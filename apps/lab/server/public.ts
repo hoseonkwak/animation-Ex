@@ -57,6 +57,7 @@ export class PublicRepository {
            JOIN animation_entries e ON e.id = et.animation_entry_id AND e.status = 'published'
            JOIN codepen_refs p ON p.animation_entry_id = e.id AND p.active = 1
            WHERE t.axis = 'section' AND t.active = 1
+             AND (t.key <> 'hero' OR et.confirmed = 1)
            GROUP BY t.key, t.label_ko
            HAVING COUNT(DISTINCT e.id) > 0
            ORDER BY count DESC, t.label_ko`,

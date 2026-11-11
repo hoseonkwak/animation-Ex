@@ -18,6 +18,8 @@
 
 Phase 1 Header는 `HOME`, `EXPLORE`, `SECTIONS`, `ABOUT`과 검색, 저장, 테마 전환으로 구성한다. `PRACTICE`는 Phase 2, `LEARN`은 Phase 3에 실제 콘텐츠와 함께 추가한다.
 
+Section 상세는 상단에 해당 영역의 전체 공개 수를 표시한다. 첫 24개 카드 뒤에는 해당 Section 필터가 적용된 Explore 링크를 제공해 나머지 예제에 접근할 수 있게 한다. Explore의 결과 라벨은 전체 수와 현재 불러온 수를 혼동하지 않도록 현재 불러온 수임을 밝힌다.
+
 ## 2. 전역 Shell
 
 ### Desktop Header
