@@ -7,7 +7,7 @@ import { createPreviewScheduler } from '@/features/preview/previewScheduler'
 import type { ApiSuccess, ExampleCard, ExamplesPayload } from '@/shared/examples'
 import { setPageMeta } from '@/app/pageMeta'
 
-const scheduler = createPreviewScheduler(2)
+const scheduler = createPreviewScheduler(1)
 const drafts = ref<PracticeDraft[]>([])
 const invalidCount = ref(0)
 const loading = ref(true)

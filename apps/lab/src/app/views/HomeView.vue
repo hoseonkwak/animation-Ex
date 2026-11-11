@@ -7,7 +7,7 @@ import { createPreviewScheduler } from '@/features/preview/previewScheduler'
 import type { DiscoveryPayload } from '@/shared/discovery'
 import type { ApiSuccess, ExampleCard, ExamplesPayload } from '@/shared/examples'
 
-const scheduler = createPreviewScheduler(2)
+const scheduler = createPreviewScheduler(1)
 const examples = ref<ExampleCard[]>([])
 const discovery = ref<DiscoveryPayload>({
   totalCount: 0,
@@ -46,7 +46,7 @@ onMounted(async () => {
   <main id="main-content" class="page liquid-home">
     <header class="home-title">
       <h1>웹 애니메이션 예제</h1>
-      <p>카테고리를 고르고, 썸네일을 눌러 실제 코드 실행 화면을 확인할 수 있어요.</p>
+      <p>카테고리를 고르고, 미리보기를 눌러 실제 코드 실행 화면을 크게 확인할 수 있어요.</p>
     </header>
 
     <section class="category-browser" aria-labelledby="category-title">
@@ -74,7 +74,7 @@ onMounted(async () => {
       <div class="home-section-heading">
         <div>
           <h2 id="examples-title">예제</h2>
-          <p>원하는 예제를 누르면 그 자리에서 실행됩니다.</p>
+          <p>원하는 예제의 미리보기를 누르면 큰 화면에서 실행됩니다.</p>
         </div>
         <RouterLink to="/explore">모든 예제 보기</RouterLink>
       </div>

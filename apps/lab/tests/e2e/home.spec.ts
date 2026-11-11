@@ -39,19 +39,44 @@ test('홈은 첫 12개에서 끝나고 푸터까지 내려갈 수 있다', async
   expect(exampleRequests).toBe(1)
 })
 
-test('홈 썸네일을 눌렀을 때만 CodePen 실행 화면으로 바뀐다', async ({ page }) => {
+test('홈 미리보기를 누르면 큰 모달에서만 CodePen이 실행되고 닫으면 제거된다', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1200 })
   await page.goto('/')
 
   const firstCard = page.getByTestId('home-example-grid').locator('.example-card').first()
-  await firstCard.locator('.preview-thumbnail').click()
-  await expect(firstCard.getByTestId('codepen-preview')).toHaveCount(1)
-  await expect(firstCard.getByTestId('codepen-preview')).toHaveAttribute(
+  const trigger = firstCard.locator('.preview-thumbnail')
+  await trigger.click()
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeVisible()
+  await expect(page.getByTestId('codepen-preview')).toHaveAttribute(
     'src',
     /https:\/\/codepen\.io\/hoseonkwak\/embed\//,
   )
   await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
-  await expect(page.locator('.preview-thumbnail')).toHaveCount(11)
+  await expect(page.locator('.preview-thumbnail')).toHaveCount(12)
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).not.toBeVisible()
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
+  await expect(trigger).toBeFocused()
+})
+
+test('작은 화면에서는 미리보기가 화면 전체를 사용한다', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const trigger = page.locator('.preview-thumbnail').first()
+  await trigger.click()
+  const dialog = page.getByRole('dialog', { name: /미리보기/ })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole('button', { name: '미리보기 닫기' })).toBeVisible()
+  await expect(dialog.getByRole('link', { name: 'CodePen 열기' })).toBeVisible()
+  await expect(dialog.locator('iframe')).toBeVisible()
+  const bounds = await dialog.boundingBox()
+  expect(bounds?.width).toBe(390)
+  expect(bounds?.height).toBe(844)
+
+  await dialog.getByRole('button', { name: '미리보기 닫기' }).click()
+  await expect(dialog).toBeHidden()
+  await expect(trigger).toBeFocused()
 })
 
 test('작은 화면에서 홈과 탐색 페이지가 가로로 넘치지 않는다', async ({ page }) => {
@@ -107,7 +132,7 @@ test('검색·필터 상태를 URL에 저장하고 새로고침 뒤 복원한다
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(400)
 })
 
-test('썸네일을 클릭한 Preview만 실행하고 동시 실행 수를 2개로 유지한다', async ({ page }) => {
+test('다른 예제 미리보기를 열 때 이전 iframe을 제거한다', async ({ page }) => {
   await page.goto('/explore')
   await expect(page.locator('.example-card')).toHaveCount(12)
   await expect(page.locator('.preview-thumbnail img')).toHaveCount(12)
@@ -115,13 +140,12 @@ test('썸네일을 클릭한 Preview만 실행하고 동시 실행 수를 2개�
 
   const cards = page.locator('.example-card')
   await cards.nth(0).locator('.preview-thumbnail').click()
-  await expect(cards.nth(0).getByTestId('codepen-preview')).toHaveCount(1)
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
+  await page.getByRole('button', { name: '미리보기 닫기' }).click()
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
   await cards.nth(1).locator('.preview-thumbnail').click()
-  await cards.nth(2).locator('.preview-thumbnail').click()
-
-  await expect(cards.nth(0).locator('.preview-thumbnail')).toHaveCount(1)
-  await expect(cards.nth(2).getByTestId('codepen-preview')).toHaveCount(1)
-  await expect(page.getByTestId('codepen-preview')).toHaveCount(2)
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeVisible()
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
 })
 
 test('예제 그리드를 2·3·4열로 바꾸고 선택을 기억한다', async ({ page }) => {

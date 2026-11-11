@@ -141,8 +141,13 @@ test('재활용 카드에서 이전 예제의 실행 상태가 남지 않는다'
   const requestedCursors = await mockLongCatalog(page)
   await page.goto('/explore?section=button')
   const firstCard = page.locator('[data-example-id="virtual-0"]')
-  await firstCard.getByRole('button', { name: '가상 목록 예제 0 실행 화면 보기' }).click()
-  await expect(firstCard.locator('iframe')).toHaveCount(1)
+  await firstCard.getByRole('button', { name: '가상 목록 예제 0 미리보기' }).click()
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeVisible()
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(1)
+  await page.getByRole('button', { name: '미리보기 닫기' }).click()
+  await expect(page.getByTestId('codepen-preview')).toHaveCount(0)
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeHidden()
+  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('')
   await firstCard.getByRole('button', { name: '저장' }).focus()
 
   for (let pageNumber = 2; pageNumber <= 4; pageNumber += 1) {

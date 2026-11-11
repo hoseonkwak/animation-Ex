@@ -1,5 +1,22 @@
+<script lang="ts">
+const openDialogs = new Set<HTMLDialogElement>()
+let previousBodyOverflow = ''
+
+function lockScroll(element: HTMLDialogElement): void {
+  if (openDialogs.size === 0) previousBodyOverflow = document.body.style.overflow
+  openDialogs.add(element)
+  document.body.style.overflow = 'hidden'
+}
+
+function unlockScroll(element: HTMLDialogElement): void {
+  if (!openDialogs.has(element)) return
+  openDialogs.delete(element)
+  if (openDialogs.size === 0) document.body.style.overflow = previousBodyOverflow
+}
+</script>
+
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import { useLibraryLists } from '@/features/library/useLibraryLists'
 import type { ExampleCard } from '@/shared/examples'
@@ -11,6 +28,7 @@ const props = defineProps<{
 }>()
 const library = useLibraryLists()
 const saved = computed(() => library.has('saved', props.example.slug))
+const visibleTags = computed(() => [...new Set(Object.values(props.example.tags).flat())])
 
 const emit = defineEmits<{
   request: [id: string, priority: boolean]
@@ -18,11 +36,13 @@ const emit = defineEmits<{
 }>()
 
 const root = ref<HTMLElement>()
+const dialog = ref<HTMLDialogElement>()
+const closeButton = ref<HTMLButtonElement>()
 const frameState = ref<'idle' | 'loading' | 'running' | 'paused' | 'error'>('idle')
+const frameKey = ref(0)
 const thumbnailFailed = ref(false)
 const thumbnailFromCodePen = ref(false)
-let observer: IntersectionObserver | undefined
-
+let trigger: HTMLElement | null = null
 const codePenUrl = computed(
   () => props.example.preview.embedUrl.replace('/embed/', '/pen/').split('?')[0],
 )
@@ -42,10 +62,25 @@ function onThumbnailError(): void {
 
 watch(
   () => props.active,
-  (active) => {
+  async (active) => {
     frameState.value = active ? 'loading' : frameState.value === 'idle' ? 'idle' : 'paused'
+    await nextTick()
+    if (active !== props.active) return
+    const element = dialog.value
+    if (!element) return
+    if (active && !element.open) {
+      lockScroll(element)
+      if (typeof element.showModal === 'function') element.showModal()
+      else element.setAttribute('open', '')
+      closeButton.value?.focus()
+    } else if (!active && element.open) {
+      if (typeof element.close === 'function') element.close()
+      else element.removeAttribute('open')
+      unlockScroll(element)
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true })
+    }
   },
-  { immediate: true },
+  { immediate: true, flush: 'post' },
 )
 
 watch(
@@ -57,38 +92,35 @@ watch(
     }
     emit('release', previousId)
     frameState.value = props.active ? 'loading' : 'idle'
+    frameKey.value = 0
     thumbnailFailed.value = false
     thumbnailFromCodePen.value = false
   },
 )
 
-onMounted(() => {
-  if (!root.value || typeof IntersectionObserver === 'undefined') return
-  observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry && !entry.isIntersecting && props.active) {
-        emit('release', props.example.id)
-        frameState.value = 'paused'
-      }
-    },
-    { threshold: 0.05 },
-  )
-  observer.observe(root.value)
-})
-
 onBeforeUnmount(() => {
-  observer?.disconnect()
+  if (dialog.value) unlockScroll(dialog.value)
   emit('release', props.example.id)
 })
 
-function run(): void {
+function run(event: MouseEvent): void {
+  trigger = event.currentTarget as HTMLElement
   frameState.value = 'loading'
   emit('request', props.example.id, true)
 }
 
-function pause(): void {
+function closePreview(): void {
   emit('release', props.example.id)
   frameState.value = 'paused'
+}
+
+function retry(): void {
+  frameState.value = 'loading'
+  frameKey.value += 1
+}
+
+function onDialogClick(event: MouseEvent): void {
+  if (event.target === dialog.value) closePreview()
 }
 
 function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
@@ -104,23 +136,10 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
     :data-preview-state="frameState"
   >
     <div class="preview-frame">
-      <iframe
-        v-if="active"
-        :title="`${example.title} CodePen 실행 화면`"
-        :src="example.preview.embedUrl"
-        allow="fullscreen"
-        allowfullscreen
-        data-testid="codepen-preview"
-        referrerpolicy="strict-origin-when-cross-origin"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        @load="frameState = 'running'"
-        @error="frameState = 'error'"
-      />
       <button
-        v-else
         class="preview-thumbnail"
         type="button"
-        :aria-label="`${example.title} 실행 화면 보기`"
+        :aria-label="`${example.title} 미리보기`"
         @click="run"
       >
         <img
@@ -133,20 +152,8 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         />
         <span v-else class="thumbnail-fallback">{{ example.title }}</span>
         <span class="thumbnail-label">예제 썸네일</span>
-        <span class="thumbnail-action"><span aria-hidden="true">▶</span> 실행 화면 보기</span>
+        <span class="thumbnail-action"><span aria-hidden="true">⤢</span> 미리보기</span>
       </button>
-      <span v-if="active" class="preview-live-badge">● 실제 코드</span>
-      <div v-if="active && frameState === 'loading'" class="preview-loading" role="status">
-        Preview를 불러오는 중입니다.
-      </div>
-      <div v-if="frameState === 'error'" class="preview-error" role="alert">
-        <p>Preview를 실행하지 못했습니다.</p>
-        <button type="button" @click="run">다시 실행</button>
-      </div>
-      <div class="preview-toolbar">
-        <button v-if="active" type="button" @click="pause">일시정지</button>
-        <a :href="codePenUrl" target="_blank" rel="noopener noreferrer">CodePen 열기</a>
-      </div>
     </div>
     <div class="card-body">
       <div class="card-meta">
@@ -174,8 +181,60 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
         {{ saved ? '저장됨' : '저장' }}
       </button>
       <ul class="tag-list" aria-label="예제 태그">
-        <li v-for="tag in Object.values(example.tags).flat()" :key="tag">{{ tag }}</li>
+        <li v-for="tag in visibleTags" :key="tag">{{ tag }}</li>
       </ul>
     </div>
   </article>
+  <Teleport to="body">
+    <dialog
+      ref="dialog"
+      class="preview-modal"
+      :aria-label="`${example.title} 미리보기`"
+      @cancel.prevent="closePreview"
+      @click="onDialogClick"
+    >
+      <div class="preview-modal-content">
+        <header class="preview-modal-header">
+          <div class="preview-modal-heading">
+            <span>실제 코드 미리보기</span>
+            <h2>{{ example.title }}</h2>
+          </div>
+          <div class="preview-modal-actions">
+            <a :href="`/examples/${example.slug}`">상세 보기</a>
+            <a :href="codePenUrl" target="_blank" rel="noopener noreferrer">CodePen 열기</a>
+            <button
+              ref="closeButton"
+              type="button"
+              aria-label="미리보기 닫기"
+              @click="closePreview"
+            >
+              닫기
+            </button>
+          </div>
+        </header>
+        <div class="preview-modal-stage">
+          <iframe
+            v-if="active"
+            :key="frameKey"
+            :title="`${example.title} CodePen 실행 화면`"
+            :src="example.preview.embedUrl"
+            allow="fullscreen"
+            allowfullscreen
+            data-testid="codepen-preview"
+            referrerpolicy="strict-origin-when-cross-origin"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            @load="frameState = 'running'"
+            @error="frameState = 'error'"
+          />
+          <div v-if="active && frameState === 'loading'" class="preview-loading" role="status">
+            실행 화면을 불러오는 중입니다.
+          </div>
+          <div v-if="active && frameState === 'error'" class="preview-error" role="alert">
+            <p>미리보기를 실행하지 못했습니다.</p>
+            <button type="button" @click="retry">다시 시도</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </Teleport>
 </template>

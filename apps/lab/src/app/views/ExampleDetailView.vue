@@ -10,7 +10,7 @@ import { setPageMeta } from '@/app/pageMeta'
 
 const route = useRoute()
 const library = useLibraryLists()
-const scheduler = createPreviewScheduler(2)
+const scheduler = createPreviewScheduler(1)
 const item = ref<ExampleDetail | null>(null)
 const related = ref<ExampleCard[]>([])
 const loading = ref(true)

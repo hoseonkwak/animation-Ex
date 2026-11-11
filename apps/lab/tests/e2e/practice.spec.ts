@@ -16,12 +16,16 @@ test('Practice 홈에서 준비된 Kit 10개를 보고 바로 연습한다', asy
     await page.screenshot({ path: testInfo.outputPath('practice-home-mobile.png'), fullPage: true })
   }
   const card = page.locator('[data-example-id="entry-basic-1"]')
-  await expect(card.getByRole('button', { name: /실행 화면 보기/ })).toBeVisible()
+  await expect(card.getByRole('button', { name: /미리보기/ })).toBeVisible()
   const thumbnail = card.locator('.preview-thumbnail img')
   await expect(thumbnail).toHaveAttribute('src', '/practice-thumbnails/gsap-basic-tween.png')
   await expect
     .poll(() => thumbnail.evaluate((image: HTMLImageElement) => image.naturalWidth))
     .toBeGreaterThan(0)
+  await card.getByRole('button', { name: /미리보기/ }).click()
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeVisible()
+  await page.getByRole('button', { name: '미리보기 닫기' }).click()
+  await expect(page.getByRole('dialog', { name: /미리보기/ })).toBeHidden()
   await card.getByRole('link', { name: '시작 코드로 연습하기' }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveCount(0)
