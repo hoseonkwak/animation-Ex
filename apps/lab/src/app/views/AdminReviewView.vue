@@ -326,7 +326,10 @@ async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
     if (result === 'fail' && publishedFilter.value === 'unchecked') publishedFilter.value = 'failed'
     await loadPublishedExamples()
     const advanced =
-      result === 'pass' && !!nextId && publishedExamples.value.some((item) => item.id === nextId)
+      result === 'pass' &&
+      publishedFilter.value !== 'hero' &&
+      !!nextId &&
+      publishedExamples.value.some((item) => item.id === nextId)
     if (advanced && nextId) {
       selectedPublishedId.value = nextId
     }
@@ -336,11 +339,13 @@ async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
     notice.value =
       result === 'fail'
         ? '공개 Preview 오류를 기록했습니다. 공개 중지 여부를 결정해주세요.'
-        : publishedFilter.value === 'unchecked' && publishedCounts.value.unchecked === 0
-          ? '실행 확인을 저장했습니다. 미점검 예제가 없습니다.'
-          : selectedPublishedId.value !== currentId
-            ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
-            : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
+        : publishedFilter.value === 'hero'
+          ? '실행 확인을 저장했습니다. Hero 분류를 결정해주세요.'
+          : publishedFilter.value === 'unchecked' && publishedCounts.value.unchecked === 0
+            ? '실행 확인을 저장했습니다. 미점검 예제가 없습니다.'
+            : selectedPublishedId.value !== currentId
+              ? '실행 확인을 저장하고 다음 공개 예제를 열었습니다.'
+              : '실행 확인을 저장했습니다. 현재 목록의 마지막 예제입니다.'
   } catch (cause) {
     showError(cause)
   } finally {
