@@ -109,6 +109,8 @@ Cursor에는 정렬 기준 값과 ID만 넣고 버전을 포함한다. 서버는
 
 Phase 1 공개 데이터에는 `codepen`만 사용한다. 카드와 상세 응답의 `runtimeVerified`는 boolean이며, 실행 검사를 거치지 않은 일회성 공개분은 `false`다. 공개 CodePackage 원문은 Phase 2 API에서 별도로 설계한다.
 
+상세 응답은 `no-store`로 제공해 관리자가 공개 중지한 뒤 같은 브라우저에서 다시 열어도 캐시된 상세가 나타나지 않게 한다. 공개 중지된 slug는 `410 CONTENT_UNPUBLISHED`를 반환한다. 목록과 허브의 기존 캐시는 만료 시 갱신된다.
+
 ### `GET /discovery`
 
 Home과 Sections에 필요한 전체 공개 예제 수(`totalCount`), 공개 Section, Pattern과 추천 Collection을 한 번에 반환한다. Section은 공개 예제 수가 1개 이상인 경우만 포함한다. Collection의 대표 예제와 Pattern 집계에도 `published` Entry만 사용한다. 응답은 5분간 캐시한다.
@@ -142,6 +144,10 @@ Home, Explore, Sections, About, 공개 Section과 실행이 확인된 공개 Ent
 - canonical URL이 같은 기존 Source 또는 Submission이 있으면 새 행을 만들지 않는다.
 - 중복이어도 원본 존재 여부를 노출하지 않고 동일한 `202 Accepted`를 반환한다.
 
+### `POST /examples/:slug/reports`
+
+로그인 없이 공개 예제의 문제를 신고한다. `reasonCode`는 `not-working`, `source-unavailable`, `inappropriate`, `removal-request`, `other` 중 하나다. `note`는 500자 이하이며 삭제 요청에는 10자 이상 필요하다. `turnstileToken`은 필수이며 서버에서 검증한다. 본문은 4KB 이하다. 같은 예제·사유·날짜의 미처리 신고는 하나로 모으고 접수 횟수를 누적한다. 처리한 뒤 같은 문제가 다시 신고되면 새 접수 건을 만든다. 정상 접수는 `202`를 반환하고, 신고만으로 공개 상태를 변경하지 않는다.
+
 ## 3. 관리자 API
 
 모든 `/admin/*` API는 Worker가 발급한 GitHub owner 세션을 확인한다. 세션의 숫자 GitHub 사용자 ID가 `ADMIN_GITHUB_USER_ID`와 일치해야 하며, 쿠키가 포함된 같은 origin JSON 쓰기 요청만 허용한다. 세션 쿠키는 HttpOnly이므로 클라이언트 JavaScript에서 읽지 않는다.
@@ -154,6 +160,14 @@ Home, Explore, Sections, About, 공개 Section과 실행이 확인된 공개 Ent
 - `POST /auth/logout`: same-origin 요청에서 관리자 세션 쿠키를 제거한다.
 
 GitHub access token은 사용자 ID 확인 요청에만 사용하고 DB나 로그에 저장하지 않는다. localhost에서는 `LOCAL_ADMIN_SIMULATION=true`일 때만 로컬 신원 헤더를 허용한다.
+
+### `GET /admin/example-reports?status=open|closed`
+
+소유자 세션에서 미처리 또는 처리한 신고 최근 100건과 각 상태의 총수를 조회한다. 예제 제목, 신고 사유·내용·횟수, 현재 공개 상태와 실행 URL을 포함한다.
+
+### `POST /admin/example-reports/:id/resolve`
+
+소유자 세션의 같은 출처 요청에서 `{ "action": "dismiss|unpublish", "note": "확인 근거" }`를 받는다. 처리 근거는 3~500자다. `unpublish`는 신고 처리, Entry 공개 중지와 감사 이력을 한 D1 batch에서 기록한다. 이미 비공개된 예제는 신고만 처리한다. 두 번 처리한 신고는 `409`를 반환한다.
 
 ### `GET /admin/candidates`
 

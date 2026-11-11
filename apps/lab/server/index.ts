@@ -17,6 +17,7 @@ import {
 import { acceptSubmission, PublicRepository, SubmissionError } from './public'
 import { readUsageStatus, storeUsageSnapshot } from './operations'
 import { findReadyPracticeKit } from './practice'
+import { acceptExampleReport, ExampleReportError, ExampleReportsRepository } from './exampleReports'
 import { loadCandidateTriage } from './triage'
 import {
   readAutoPublicationStatus,
@@ -197,6 +198,27 @@ export default {
       }
     }
 
+    const reportMatch = url.pathname.match(/^\/api\/v1\/examples\/([a-z0-9-]+)\/reports$/)
+    if (request.method === 'POST' && reportMatch) {
+      try {
+        await acceptExampleReport(request, env.DB, reportMatch[1]!, {
+          ...(env.TURNSTILE_SECRET_KEY ? { secret: env.TURNSTILE_SECRET_KEY } : {}),
+          localSimulation:
+            env.LOCAL_ADMIN_SIMULATION === 'true' &&
+            (url.hostname === 'localhost' || url.hostname === '127.0.0.1'),
+        })
+        return json({ data: { received: true }, meta: { requestId } }, { status: 202 })
+      } catch (error) {
+        if (error instanceof ExampleReportError) {
+          return json(
+            { error: { code: error.code, message: error.message, requestId } },
+            { status: error.status },
+          )
+        }
+        throw error
+      }
+    }
+
     if (request.method === 'GET' && url.pathname === '/sitemap.xml') {
       const slugs = await new PublicRepository(env.DB).sitemapSlugs()
       const paths = [
@@ -271,7 +293,7 @@ export default {
       if (item) {
         return json(
           { data: item, meta: { requestId } },
-          { headers: { 'cache-control': 'public, max-age=60' } },
+          { headers: { 'cache-control': 'no-store' } },
         )
       }
       if ((await repository.statusBySlug(exampleMatch[1]!)) === 'unpublished') {
@@ -372,6 +394,27 @@ export default {
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
           return json({ data: await repository.ingestionRuns(), meta: { requestId } })
         }
+        if (url.pathname === '/api/v1/admin/example-reports' && request.method === 'GET') {
+          const status = url.searchParams.get('status') ?? 'open'
+          if (status !== 'open' && status !== 'closed') {
+            throw new ExampleReportError(400, 'INVALID_FILTER', '신고 상태를 확인해주세요.')
+          }
+          return json({
+            data: await new ExampleReportsRepository(env.DB).list(status),
+            meta: { requestId },
+          })
+        }
+        const reportResolution = url.pathname.match(
+          /^\/api\/v1\/admin\/example-reports\/([^/]+)\/resolve$/,
+        )
+        if (reportResolution && request.method === 'POST') {
+          await new ExampleReportsRepository(env.DB).resolve(
+            reportResolution[1]!,
+            await request.json(),
+            actorHash,
+          )
+          return json({ data: { resolved: true }, meta: { requestId } })
+        }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/operations') {
           return json({
             data: {
@@ -469,10 +512,15 @@ export default {
           return json({ data: { unpublished: true }, meta: { requestId } })
         }
       } catch (error) {
-        if (error instanceof AdminApiError) {
+        if (error instanceof AdminApiError || error instanceof ExampleReportError) {
           return json(
             {
-              error: { code: error.code, message: error.message, fields: error.fields, requestId },
+              error: {
+                code: error.code,
+                message: error.message,
+                fields: error instanceof AdminApiError ? error.fields : undefined,
+                requestId,
+              },
             },
             { status: error.status },
           )

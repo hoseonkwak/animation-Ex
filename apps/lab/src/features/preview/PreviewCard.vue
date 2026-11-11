@@ -201,6 +201,7 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
           </div>
           <div class="preview-modal-actions">
             <a :href="`/examples/${example.slug}`">상세 보기</a>
+            <a :href="`/examples/${example.slug}#report-example`">문제 신고</a>
             <a :href="codePenUrl" target="_blank" rel="noopener noreferrer">CodePen 열기</a>
             <button
               ref="closeButton"

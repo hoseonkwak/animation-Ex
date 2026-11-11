@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import IngestionRunsPanel from './IngestionRunsPanel.vue'
+import ExampleReportsPanel from './ExampleReportsPanel.vue'
 import type {
   CandidateDetail,
   CandidateListPayload,
@@ -297,6 +298,10 @@ async function loadPublishedExamples(): Promise<void> {
   } catch (cause) {
     showError(cause)
   }
+}
+
+async function refreshAfterReportUnpublish(): Promise<void> {
+  await Promise.all([loadPublishedExamples(), loadAutoPublication()])
 }
 
 async function recordPublishedPreview(result: 'pass' | 'fail'): Promise<void> {
@@ -616,6 +621,10 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       :loading="ingestionRunsLoading"
       :error="ingestionRunsError"
       @refresh="loadIngestionRuns"
+    />
+    <ExampleReportsPanel
+      v-if="authState === 'authenticated'"
+      @unpublished="refreshAfterReportUnpublish"
     />
     <section
       v-if="authState === 'authenticated' && status === 'review' && triage"

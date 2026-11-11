@@ -38,6 +38,8 @@ describe('AdminReviewView', () => {
           usage: { level: 'normal', maximumRatio: 0 },
         }
       else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
+      else if (url.includes('/admin/example-reports?'))
+        data = { items: [], counts: { open: 0, closed: 0 } }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
       else if (url.includes('/admin/examples?filter='))
@@ -150,6 +152,8 @@ describe('AdminReviewView', () => {
         }
       } else if (url.endsWith('/admin/ingestion-runs')) {
         data = { items: [] }
+      } else if (url.includes('/admin/example-reports?')) {
+        data = { items: [], counts: { open: 0, closed: 0 } }
       } else if (url.endsWith('/admin/auto-publication')) {
         data = { paused: true, batches: [], lastRun: null }
       } else if (url.includes('/admin/examples?filter=')) {
@@ -230,6 +234,8 @@ describe('AdminReviewView', () => {
           usage: { level: 'normal', maximumRatio: 0 },
         }
       else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
+      else if (url.includes('/admin/example-reports?'))
+        data = { items: [], counts: { open: 0, closed: 0 } }
       else if (url.endsWith('/admin/auto-publication'))
         data = { paused: true, batches: [], lastRun: null }
       else if (url.includes('/admin/examples?filter='))

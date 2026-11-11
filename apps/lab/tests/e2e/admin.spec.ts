@@ -38,9 +38,10 @@ test('P1-OPS-04 owner가 공개 Preview 오류를 기록하고 목록에서 확�
   await page.goto('/admin/review')
   const section = page.getByRole('region', { name: '공개 예제 점검' })
   await expect(section.getByRole('heading', { name: '공개 예제 점검' })).toBeVisible()
+  await section.getByLabel('공개 예제 점검 상태').selectOption('all')
   await expect(section.locator('iframe')).toHaveAttribute('src', /codepen\.io\/.*\/embed\//)
   await section.getByRole('button', { name: 'Preview 오류 기록' }).click()
-  await expect(section).toContainText('기록된 Preview 오류 1건')
+  await expect(section).toContainText(/오류\s+1건/)
 })
 
 test('공개 화면 푸터에서 관리자 검수 화면으로 이동한다', async ({ page }) => {

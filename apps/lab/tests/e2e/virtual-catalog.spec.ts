@@ -151,8 +151,12 @@ test('재활용 카드에서 이전 예제의 실행 상태가 남지 않는다'
   await firstCard.getByRole('button', { name: '저장' }).focus()
 
   for (let pageNumber = 2; pageNumber <= 4; pageNumber += 1) {
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
-    await expect.poll(() => requestedCursors.length).toBeGreaterThanOrEqual(pageNumber)
+    await expect
+      .poll(async () => {
+        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        return requestedCursors.length
+      })
+      .toBeGreaterThanOrEqual(pageNumber)
   }
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
   await expect(firstCard).toHaveCount(0)

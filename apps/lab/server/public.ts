@@ -184,7 +184,7 @@ async function sha256(value: string): Promise<string> {
   return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
-async function verifyTurnstile(
+export async function verifyTurnstile(
   token: string,
   secret: string,
   remoteIp: string | null,

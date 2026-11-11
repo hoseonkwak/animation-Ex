@@ -303,6 +303,10 @@ curated 컬렉션만 이 테이블을 사용한다. dynamic 컬렉션은 `filter
 
 IP, Turnstile 토큰과 브라우저 fingerprint는 저장하지 않는다.
 
+### `example_reports`
+
+`0015_example_reports.sql`은 공개 예제에 대한 익명 문제 신고를 저장한다. Entry 외래 키, 사유, 최대 500자 설명, 상태(`open`, `resolved`, `dismissed`), 접수 날짜·횟수, 관리자 처리 근거·시각을 보관한다. 같은 Entry·사유·날짜의 미처리 신고는 한 행으로 묶고 횟수를 누적한다. 처리 후 재신고는 새 행을 만든다. 이메일이나 IP 주소는 저장하지 않는다. 관리자 공개 중지는 기존 Entry 상태와 review_decisions 이력으로 추적한다.
+
 ### `daily_metrics`
 
 - `metric_date` TEXT

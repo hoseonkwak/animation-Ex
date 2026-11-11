@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import PreviewCard from '@/features/preview/PreviewCard.vue'
+import ExampleReportForm from '@/features/reports/ExampleReportForm.vue'
 import { useLibraryLists } from '@/features/library/useLibraryLists'
 import { createPreviewScheduler } from '@/features/preview/previewScheduler'
 import type { ApiSuccess, ExampleCard, ExampleDetail, ExamplesPayload } from '@/shared/examples'
@@ -53,6 +54,10 @@ async function load(): Promise<void> {
     error.value = '예제를 불러오지 못했습니다.'
   } finally {
     loading.value = false
+    if (route.hash === '#report-example') {
+      await nextTick()
+      document.getElementById('report-example')?.scrollIntoView()
+    }
   }
 }
 
@@ -114,6 +119,7 @@ function openFullscreen(): void {
           >
             {{ item.practiceKitReady ? '시작 코드로 연습하기' : '빈 코드로 연습하기' }}
           </RouterLink>
+          <a class="secondary-action" href="#report-example">문제 신고</a>
         </div>
       </header>
       <ul class="tag-list detail-tags">
@@ -182,6 +188,7 @@ function openFullscreen(): void {
           />
         </div>
       </section>
+      <ExampleReportForm :slug="slug" />
     </template>
   </main>
 </template>
