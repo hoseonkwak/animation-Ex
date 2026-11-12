@@ -63,7 +63,7 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 
 1. **완료:** Spark RSS 파서와 구형·2.0 Pen URL 정규화를 만들고, 대표 2.0 Pen의 Embed 실행을 확인했다. 피드의 광고·외부 기사 링크는 후보에서 제외한다.
 2. **완료:** 출처별 실행·발견 건수와 0건 사유를 저장하고 관리자 보고에 연결했다. Spark 첫 예약 실행 결과는 2026-11-07에 대조했다.
-3. **완료:** Spark 후보를 Browser Run의 조건부 자동 검수에 연결했다. Production 첫 예약 검수에서 8건 중 4건이 통과·공개됐고, 표본의 실행 화면을 확인했다. 나머지 4건의 개별 보류 사유는 운영 D1 기록으로 추가 대조해야 한다.
+3. **완료:** Spark 후보를 Browser Run의 조건부 자동 검수에 연결했다. Production 첫 예약 검수에서 8건 중 4건이 통과·공개됐고, 표본의 실행 화면을 확인했다. 보류된 4건은 시각적 변화가 확인되지 않아 `NO_VISUAL_CHANGE_OBSERVED` 경고가 기록됐다.
 4. **후속:** CSS-Tricks와 Forem의 소규모 읽기 전용 파일럿으로 Pen 링크 수율과 잡음을 측정한 뒤 운영 자동 수집 여부를 정한다.
 5. **후속:** WSSS 주간 감시와 웹 사례 재구성 대기를 분리한다. Codrops 등 403 출처는 접근 가능한 공식 경로가 확인될 때만 추가한다.
 
@@ -107,5 +107,5 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 
 ## 12. Spark 첫 자동 검수와 다음 예약 수집 (2026-11-07)
 
-- Production 관리자 화면에서 첫 Spark 예약 검수가 `published (4/8)`로 기록됐다. 실제 실행 검사를 받은 8건 중 4건이 통과·자동 공개됐고, 후보 대기는 44건에서 40건, 공개 CodePen은 1,875건에서 1,879건으로 바뀌었다. 새 묶음의 표본은 `Solar System using :scroll-markers & advanced attr() functions`이며 공개 상세의 CodePen 2.0 Result 프레임이 실제로 렌더링되는 것을 확인했다. 나머지 4건의 개별 보류 사유는 관리자 요약에 표시되지 않으므로 운영 D1의 `validation_runs` 조회 전에는 추정하지 않는다.
+- Production 관리자 화면에서 첫 Spark 예약 검수가 `published (4/8)`로 기록됐다. 실제 실행 검사를 받은 8건 중 4건이 통과·자동 공개됐고, 후보 대기는 44건에서 40건, 공개 CodePen은 1,875건에서 1,879건으로 바뀌었다. 새 묶음의 표본은 `Solar System using :scroll-markers & advanced attr() functions`이며 공개 상세의 CodePen 2.0 Result 프레임이 실제로 렌더링되는 것을 확인했다. 2026-11-12 운영 D1 읽기 전용 대조에서 `auto_publication_runs`는 `examined_count=8`, `passed_count=4`, `published_count=4`였고 `auto_publication_items`의 4건은 모두 현재 공개 Entry에 연결됐다. 같은 실행 시각의 `validation_runs`는 pass 4건, `NO_VISUAL_CHANGE_OBSERVED` warning 4건이었다. 따라서 보류 4건은 시각적 변화 증거 부족이며 자동 공개로 세지 않는다.
 - [`CodePen Spark ingestion #5`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42348116722)는 15:41 KST 예약 시작·성공, 피드 10호 중 새 호 0건으로 `accepted=0`, `duplicates=0`, `failed=0`이었다. [`WSSS ingestion #20`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42352477169)은 16:43 KST 예약 시작·성공, `accepted=0`, `duplicates=0`, `failed=0`이었다. 수집 후보 수의 4건 감소는 신규 수집 감소가 아니라 자동 공개 전환이다.
