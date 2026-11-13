@@ -24,9 +24,36 @@ import {
   parseFreeFrontendPage,
 } from '../../ingestion/freefrontend.ts'
 import { advanceAnimatedWebCheckpoint, parseAnimatedWebPage } from '../../ingestion/animatedweb.ts'
+import { advanceCodeMyUiCheckpoint, parseCodeMyUiPosts } from '../../ingestion/codemyui.ts'
 
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 const categoryUrl = 'https://wsss.tistory.com/category/Animation/GSAP'
+
+describe('CodeMyUI 공개 API', () => {
+  const posts = JSON.parse(readFileSync(path.resolve('fixtures/codemyui.json'), 'utf8'))
+
+  it('임베드 Pen ID와 제작자를 정규화하고 원본 글을 발견 경로로 남긴다', () => {
+    const result = parseCodeMyUiPosts(posts)
+    expect(result).toMatchObject({ examined: 3, withoutPen: 1, invalidPostIds: [] })
+    expect(result.items).toHaveLength(2)
+    expect(result.items[0]).toMatchObject({
+      externalId: 'codemyui:101:alice:AbC123',
+      discoveredVia: { url: 'https://codemyui.com/animated-button/', category: 'CodeMyUI/All' },
+      source: { canonicalUrl: 'https://codepen.io/alice/pen/AbC123' },
+    })
+  })
+
+  it('저장된 외부 ID만 checkpoint에 반영하고 빈 응답은 실패시킨다', () => {
+    const result = parseCodeMyUiPosts(posts)
+    const checkpoint = advanceCodeMyUiCheckpoint(undefined, [result.items[0]!.externalId])
+    expect(parseCodeMyUiPosts(posts, checkpoint).items.map((item) => item.externalId)).toEqual([
+      result.items[1]!.externalId,
+    ])
+    expect(() => parseCodeMyUiPosts([])).toThrowError(
+      expect.objectContaining({ code: 'CODEMYUI_STRUCTURE_CHANGED' }),
+    )
+  })
+})
 
 describe('WSSS parser fixture', () => {
   it('목록의 숫자 게시물과 pagination만 발견한다', () => {

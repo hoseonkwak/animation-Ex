@@ -4,7 +4,7 @@
 기준 경로: `/api/v1`
 목적: Vue 화면, 관리자 검수, GitHub Actions 수집기가 같은 요청과 응답 규칙을 사용하게 한다.
 
-수집 서명 API의 `sourceKey`는 `wsss`, `spark`, `freefrontend`, `animatedweb`을 허용한다. FreeFrontend 후보는 지정한 여섯 공개 목록의 CodePen URL과 `freefrontend.com` 개별 글 URL만 받아들인다. The Animated Web 후보는 CodePen 원본과 `theanimatedweb.com/inspiration/{slug}/` 발견 URL만 받아들인다. 출처별 checkpoint와 실행 기록은 분리한다.
+수집 서명 API의 `sourceKey`는 `wsss`, `spark`, `freefrontend`, `animatedweb`, `codemyui`를 허용한다. FreeFrontend 후보는 지정한 여섯 공개 목록의 CodePen URL과 `freefrontend.com` 개별 글 URL만 받아들인다. The Animated Web 후보는 CodePen 원본과 `theanimatedweb.com/inspiration/{slug}/` 발견 URL만 받아들인다. CodeMyUI 후보는 개별 `codemyui.com/{slug}/` 글 URL과 원본 CodePen URL을 받는다. 출처별 checkpoint와 실행 기록은 분리한다.
 
 ## 1. 공통 규칙
 
@@ -283,7 +283,7 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 
 ### `POST /ingestion/checkpoint`
 
-동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면 WSSS의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. Spark는 `{"sourceKey":"spark","category":"CodePen/Spark"}`, The Animated Web은 `{"sourceKey":"animatedweb","category":"TheAnimatedWeb/CodePen"}`을 사용한다. 기록이 없으면 `null`이다. 예약 실행은 목록을 읽은 뒤 이 값을 받아 이미 저장한 원본을 건너뛴다.
+동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면 WSSS의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. Spark는 `{"sourceKey":"spark","category":"CodePen/Spark"}`, The Animated Web은 `{"sourceKey":"animatedweb","category":"TheAnimatedWeb/CodePen"}`, CodeMyUI는 `{"sourceKey":"codemyui","category":"CodeMyUI/All"}`을 사용한다. 기록이 없으면 `null`이다. 예약 실행은 목록을 읽은 뒤 이 값을 받아 이미 저장한 원본을 건너뛴다.
 
 ### `POST /ingestion/usage`
 
@@ -303,6 +303,8 @@ Cloudflare GraphQL Analytics에서 조회한 UTC 날짜별 사용량을 저장�
 ### `POST /ingestion/runs/:id/complete`
 
 checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 상태는 `partial`, 전체 실패는 `failed`로 저장한다.
+
+CodeMyUI는 게시물에서 원본 Pen 메타데이터를 파싱하지 못한 경우 완료 요청에 `sourceInvalidPostIds`(최대 50개)를 함께 보낸다. Worker는 이 ID들을 `failed_count`, `discovered_count`, `failure_code=SOURCE_ITEM_PARSE_FAILED`, `failure_detail`에 남기며 성공으로 숨기지 않는다. Pen이 애초에 없는 글은 실패가 아닌 제외 대상으로 수집기 로그에 따로 기록한다.
 
 ## 5. 상태 코드
 

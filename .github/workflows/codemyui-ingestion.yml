@@ -1,0 +1,38 @@
+name: CodeMyUI ingestion
+
+on:
+  schedule:
+    - cron: "37 1 * * 2"
+  workflow_dispatch:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+
+jobs:
+  ingest:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate ingestion fixtures
+        run: npm run test:ingestion
+      - name: Collect CodeMyUI Pen candidates
+        working-directory: apps/lab
+        env:
+          INGESTION_API_URL: ${{ secrets.INGESTION_API_URL }}
+          INGESTION_KEY_ID: ${{ secrets.INGESTION_KEY_ID }}
+          INGESTION_HMAC_SECRET: ${{ secrets.INGESTION_HMAC_SECRET }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            set -- --scheduled
+          else
+            set --
+          fi
+          node --experimental-transform-types ingestion/codemyui-cli.ts --live --remote-checkpoint "$@"

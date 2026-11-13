@@ -41,7 +41,7 @@ export interface SuggestedTag {
 export interface IngestionCandidate {
   externalId: string
   discoveredVia: {
-    key: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb'
+    key: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb' | 'codemyui'
     url: string
     category: string
   }

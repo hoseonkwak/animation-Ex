@@ -11,6 +11,7 @@ import { buildCandidates } from '../../ingestion/pipeline.ts'
 import { buildSparkCandidates, parseSparkFeed } from '../../ingestion/spark.ts'
 import { FREEFRONTEND_PAGES, parseFreeFrontendPage } from '../../ingestion/freefrontend.ts'
 import { parseAnimatedWebPage } from '../../ingestion/animatedweb.ts'
+import { parseCodeMyUiPosts } from '../../ingestion/codemyui.ts'
 import { createMigratedDatabase } from '../contracts/database'
 
 let sqlite: DatabaseSync
@@ -425,6 +426,63 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       sqlite
         .prepare(
           "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-animatedweb'",
+        )
+        .get(),
+    ).toEqual({ count: 2 })
+  })
+
+  it('CodeMyUI Pen을 출처별로 저장하고 잘못된 발견 URL은 거절한다', async () => {
+    const posts = JSON.parse(readFileSync(path.resolve('fixtures/codemyui.json'), 'utf8'))
+    const items = parseCodeMyUiPosts(posts).items
+    const request = (runId: string, candidates: typeof items) =>
+      signedRequest('/api/v1/ingestion/batches', {
+        runId,
+        sourceKey: 'codemyui',
+        trigger: 'manual',
+        checkpointBefore: null,
+        items: candidates,
+      })
+    const first = await request('codemyui-fixture-1', items)
+    expect((await first.json()) as object).toMatchObject({
+      data: { accepted: 2, duplicates: 0, failed: 0 },
+    })
+    const second = await request('codemyui-fixture-2', items)
+    expect((await second.json()) as object).toMatchObject({
+      data: { accepted: 0, duplicates: 2, failed: 0 },
+    })
+    const invalid = await request('codemyui-fixture-3', [
+      {
+        ...items[0]!,
+        discoveredVia: { ...items[0]!.discoveredVia, url: 'https://example.com/other/' },
+      },
+    ])
+    expect((await invalid.json()) as object).toMatchObject({ data: { accepted: 0, failed: 1 } })
+    const complete = await signedRequest('/api/v1/ingestion/runs/codemyui-fixture-1/complete', {
+      checkpointAfter: {
+        category: 'CodeMyUI/All',
+        processedExternalIds: items.map((item) => item.externalId),
+      },
+      sourceInvalidPostIds: [999],
+    })
+    expect(complete.status).toBe(200)
+    expect(
+      sqlite
+        .prepare(
+          "SELECT status, discovered_count, accepted_count, failed_count, failure_code, failure_detail FROM ingestion_runs WHERE id='codemyui-fixture-1'",
+        )
+        .get(),
+    ).toEqual({
+      status: 'partial',
+      discovered_count: 3,
+      accepted_count: 2,
+      failed_count: 1,
+      failure_code: 'SOURCE_ITEM_PARSE_FAILED',
+      failure_detail: 'CodeMyUI post IDs: 999',
+    })
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-codemyui'",
         )
         .get(),
     ).toEqual({ count: 2 })

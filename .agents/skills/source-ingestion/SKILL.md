@@ -48,3 +48,9 @@ npm run ingest:wsss:fixture --workspace @kwak-motion/lab
 - 공개 `/collection/codepen/` 목록과 robots만 읽고 개별 CodePen URL, 제목, `/inspiration/{slug}/` 발견 경로만 후보화한다. 목록의 이미지·영상·원본 코드는 가져오지 않는다.
 - `full`, `details` 링크는 `pen` canonical URL로 정규화한다. 출처·제목에서 추론한 태그는 미확정으로 둔다.
 - fixture와 `npm run test:ingestion`을 통과한 뒤 `npm run ingest:animatedweb:preflight --workspace @kwak-motion/lab`로 실제 카드 구조를 읽기 전용 확인한다. 403·429에서는 즉시 멈춘다.
+
+## CodeMyUI 발견 경로
+
+- 공개 WordPress API의 게시물 100개 단위, 최대 15페이지만 읽는다. robots를 확인하고 요청 간 1초를 둔다. 403·429는 즉시 중지한다.
+- 원본 Pen ID와 제작자가 함께 있는 `codepen` 임베드만 수집한다. Pen 없는 글은 별도 제외 수로 기록하고, 구조가 잘못된 글이 5개 또는 10%를 초과하면 중지한다.
+- 글 본문은 파싱 중에만 사용하고 저장하지 않는다. 출처 글 URL·제목·원본 CodePen URL만 후보에 넣는다. Section 태그는 미확정 제안이다.

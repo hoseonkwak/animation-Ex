@@ -10,7 +10,7 @@ interface IngestionEnv {
 
 interface BatchBody {
   runId: string
-  sourceKey?: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb'
+  sourceKey?: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb' | 'codemyui'
   trigger: 'manual' | 'schedule'
   checkpointBefore: string | null
   items: unknown[]
@@ -155,10 +155,11 @@ function parseBatch(rawBody: string): BatchBody {
   if (
     typeof body.runId !== 'string' ||
     (body.sourceKey !== undefined &&
-      !['wsss', 'spark', 'freefrontend', 'animatedweb'].includes(body.sourceKey)) ||
+      !['wsss', 'spark', 'freefrontend', 'animatedweb', 'codemyui'].includes(body.sourceKey)) ||
     (body.sourceKey === 'spark' && !/^spark-/.test(body.runId)) ||
     (body.sourceKey === 'freefrontend' && !/^freefrontend-/.test(body.runId)) ||
     (body.sourceKey === 'animatedweb' && !/^animatedweb-/.test(body.runId)) ||
+    (body.sourceKey === 'codemyui' && !/^codemyui-/.test(body.runId)) ||
     !['manual', 'schedule'].includes(body.trigger ?? '') ||
     !Array.isArray(body.items) ||
     body.items.length > 50
@@ -170,7 +171,7 @@ function parseBatch(rawBody: string): BatchBody {
 
 function validCandidate(
   item: unknown,
-  expectedSourceKey: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb',
+  expectedSourceKey: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb' | 'codemyui',
 ): item is IngestionCandidate {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return false
   const value = item as Partial<IngestionCandidate>
@@ -197,7 +198,11 @@ function validCandidate(
       /^https:\/\/theanimatedweb\.com\/inspiration\/[a-z0-9-]+\/$/.test(
         value.discoveredVia?.url ?? '',
       ) &&
-      value.discoveredVia?.category === 'TheAnimatedWeb/CodePen')
+      value.discoveredVia?.category === 'TheAnimatedWeb/CodePen') ||
+    (sourceKey === 'codemyui' &&
+      /^codemyui:\d+:[A-Za-z0-9_-]+:[A-Za-z0-9]+$/.test(value.externalId ?? '') &&
+      /^https:\/\/codemyui\.com\/[a-z0-9-]+\/$/i.test(value.discoveredVia?.url ?? '') &&
+      value.discoveredVia?.category === 'CodeMyUI/All')
   const normalized = parseCodePenUrl(value.source?.canonicalUrl ?? '')
   const canonicalValid =
     normalized?.canonicalUrl === value.source?.canonicalUrl &&
@@ -462,6 +467,11 @@ export async function handleIngestionBatch(
       `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
        VALUES ('discovery-animatedweb', 'animatedweb', 'The Animated Web', 'https://theanimatedweb.com/collection/codepen/', 1, '{}')`,
     ).run()
+  } else if (sourceKey === 'codemyui') {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
+       VALUES ('discovery-codemyui', 'codemyui', 'CodeMyUI', 'https://codemyui.com/wp-json/wp/v2/posts', 1, '{}')`,
+    ).run()
   }
   await env.DB.prepare(
     `INSERT OR IGNORE INTO ingestion_runs (
@@ -507,17 +517,35 @@ export async function completeIngestionRun(
   runId: string,
   env: IngestionEnv,
 ): Promise<void> {
-  let body: { checkpointAfter?: unknown }
+  let body: { checkpointAfter?: unknown; sourceInvalidPostIds?: unknown }
   try {
-    body = JSON.parse(rawBody) as { checkpointAfter?: unknown }
+    body = JSON.parse(rawBody) as { checkpointAfter?: unknown; sourceInvalidPostIds?: unknown }
   } catch {
     throw new IngestionApiError(400, 'INVALID_JSON', 'JSON 요청 본문을 확인해주세요.')
   }
-  const run = await env.DB.prepare('SELECT id FROM ingestion_runs WHERE id = ?')
+  const invalidPostIds = body.sourceInvalidPostIds ?? []
+  if (
+    !Array.isArray(invalidPostIds) ||
+    invalidPostIds.length > 50 ||
+    invalidPostIds.some((id) => !Number.isSafeInteger(id) || id < 1) ||
+    new Set(invalidPostIds).size !== invalidPostIds.length
+  ) {
+    throw new IngestionApiError(400, 'INVALID_SOURCE_FAILURES', '출처 파싱 실패 ID를 확인해주세요.')
+  }
+  const run = await env.DB.prepare(
+    'SELECT id, discovery_source_id FROM ingestion_runs WHERE id = ?',
+  )
     .bind(runId)
-    .first<{ id: string }>()
+    .first<{ id: string; discovery_source_id: string }>()
   if (!run)
     throw new IngestionApiError(404, 'INGESTION_RUN_NOT_FOUND', '수집 실행을 찾을 수 없습니다.')
+  if (invalidPostIds.length > 0 && run.discovery_source_id !== 'discovery-codemyui') {
+    throw new IngestionApiError(
+      400,
+      'INVALID_SOURCE_FAILURES',
+      'CodeMyUI 실패 ID만 기록할 수 있습니다.',
+    )
+  }
   const counts = await env.DB.prepare(
     `SELECT
         SUM(CASE WHEN result = 'accepted' THEN 1 ELSE 0 END) AS accepted,
@@ -537,19 +565,22 @@ export async function completeIngestionRun(
     throw new IngestionApiError(404, 'INGESTION_RUN_NOT_FOUND', '수집 실행을 찾을 수 없습니다.')
   const accepted = counts.accepted ?? 0
   const duplicates = counts.duplicates ?? 0
-  const failed = counts.failed ?? 0
+  const failed = (counts.failed ?? 0) + invalidPostIds.length
   const status = failed > 0 ? (accepted + duplicates > 0 ? 'partial' : 'failed') : 'success'
   await env.DB.prepare(
     `UPDATE ingestion_runs SET status = ?, checkpoint_after = ?, discovered_count = ?,
-        accepted_count = ?, duplicate_count = ?, failed_count = ?, finished_at = ? WHERE id = ?`,
+        accepted_count = ?, duplicate_count = ?, failed_count = ?, failure_code = ?,
+        failure_detail = ?, finished_at = ? WHERE id = ?`,
   )
     .bind(
       status,
       JSON.stringify(body.checkpointAfter ?? null),
-      counts.discovered,
+      counts.discovered + invalidPostIds.length,
       accepted,
       duplicates,
       failed,
+      invalidPostIds.length ? 'SOURCE_ITEM_PARSE_FAILED' : null,
+      invalidPostIds.length ? `CodeMyUI post IDs: ${invalidPostIds.join(',')}` : null,
       new Date().toISOString(),
       runId,
     )
@@ -573,7 +604,8 @@ export async function readIngestionCheckpoint(
     (sourceKey !== 'wsss' &&
       sourceKey !== 'spark' &&
       sourceKey !== 'freefrontend' &&
-      sourceKey !== 'animatedweb') ||
+      sourceKey !== 'animatedweb' &&
+      sourceKey !== 'codemyui') ||
     typeof category !== 'string' ||
     category.length > 100 ||
     category.includes('..') ||

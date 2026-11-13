@@ -1,0 +1,24 @@
+[
+  {
+    "id": 101,
+    "link": "https://codemyui.com/animated-button/",
+    "title": { "rendered": "Animated Button" },
+    "content": {
+      "rendered": "<p class='codepen' data-slug-hash='AbC123'>See the Pen Button by Alice (@alice) on CodePen.</p>"
+    }
+  },
+  {
+    "id": 102,
+    "link": "https://codemyui.com/scroll-reveal/",
+    "title": { "rendered": "Scroll Reveal" },
+    "content": {
+      "rendered": "<p class='codepen' data-height='500' data-slug-hash='XyZ456'>See the Pen Scroll Reveal by Bob (@bob) on CodePen.</p>"
+    }
+  },
+  {
+    "id": 103,
+    "link": "https://codemyui.com/static-article/",
+    "title": { "rendered": "Static Article" },
+    "content": { "rendered": "<p>No CodePen embed.</p>" }
+  }
+]

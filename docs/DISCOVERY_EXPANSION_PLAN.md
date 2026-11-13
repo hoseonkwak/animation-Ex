@@ -126,3 +126,11 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - [The Animated Web의 CodePen 목록](https://theanimatedweb.com/collection/codepen/)과 빈 robots 응답을 읽기 전용으로 확인했다. 한 페이지에 서로 다른 CodePen 링크 131개가 있으며 `pen`, `full`, `details` 주소를 같은 canonical Pen 형식으로 정규화한다.
 - 카드에서 제목, 개별 `/inspiration/{slug}/` 발견 URL, 원본 Pen URL만 추출한다. 이미지와 영상은 수집하지 않는다. 로컬 preflight는 131개를 후보로 파싱했으며 Production 중복·실행·권리 검사는 아직 완료되지 않았다.
 - 출처별 HMAC 후보 등록과 checkpoint를 추가하고 fixture 및 API 중복 계약을 검사한다. 첫 GitHub Actions 실행에서 출처 접근과 운영 등록 수를 확인한다. 403 또는 429가 나면 자동 실행을 중지한다.
+- 첫 [GitHub Actions 실행 43404677649](https://github.com/hoseonkwak/animation-Ex/actions/runs/43404677649) 후 Production D1 `ingestion_runs`를 읽기 전용으로 대조했다. `discovered=131`, `accepted=114`, `duplicates=17`, `failed=0`, `status=success`이며 131개 external ID가 checkpoint에 기록됐다. 후보 `review`는 40개에서 154개로 늘었다. 공개 Entry는 **1,879개 그대로**다.
+- 제목 기반 태그만으로는 131개 중 118개의 Section을 특정하지 못했다. 이 118개를 임의의 카테고리로 확정하지 않고 실행 화면과 발견 글의 분류 근거를 검토한다. 이 출처 한 곳만으로 3,000개 목표를 달성할 수 없으므로 다른 허용 출처와 기존 909개 미분류 공개 예제의 재분류도 계속한다.
+
+## 15. CodeMyUI 공개 API 파일럿 (2026-11-13)
+
+- [CodeMyUI 공개 WordPress API](https://codemyui.com/wp-json/wp/v2/posts?per_page=1&_fields=id,link,title,content)의 13페이지를 1초 간격으로 읽기 전용 확인했다. 1,208개 글 중 Pen 없는 글 65개, 형식 문제 3개를 제외하고 원본 Pen 1,136개를 정규화했다. API의 글 본문은 임베드 메타데이터를 파싱하는 동안만 사용하며 저장하지 않는다.
+- 원본 제작자와 Pen ID는 `data-slug-hash` 및 임베드의 `(@creator)`에서 읽는다. 출처 글 URL과 원본 CodePen URL을 별도로 저장한다. 제목 기반 태그는 미확정 제안이다.
+- 1,136개는 운영 중복이나 실행 화면 검증 전 수량이다. 첫 예약 실행의 신규·중복·실패 수와 Production D1 checkpoint를 확인하고, 공개 수는 별도로 대조한다.
