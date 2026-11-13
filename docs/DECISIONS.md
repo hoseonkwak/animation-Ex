@@ -490,9 +490,10 @@
 
 ### D-070 CodeMyUI 분류 태그 보강
 
-- 상태: 구현 및 검증 완료 · 기존 후보 일회성 보강 대기
+- 상태: 운영 일회성 보강 완료 · 실제 화면 분류 대기
 - 확인일: 2026-11-13
 - 결정: CodeMyUI의 공개 WordPress 태그 ID를 Section 후보 신호로 사용한다. 제목 기반 제안과 합치되 동일 태그를 중복 저장하지 않고, `confirmed=0`으로 유지한다. Hero를 포함해 실제 화면을 확인하기 전에는 Section을 확정하거나 이 근거만으로 자동 공개하지 않는다.
-- 기존 후보: 기본 예약 수집은 checkpoint에 저장된 글을 건너뛴다. 필요할 때만 수동 `refresh_tags` 실행으로 기존 글의 분류 태그를 재확인하고, 이미 등록된 검수 후보에는 누락된 **미확정** 태그만 더한다. 기존 태그, 공개 예제, 승인 상태는 변경하지 않는다.
+- 기존 후보: 기본 예약 수집은 checkpoint에 저장된 글을 건너뛴다. 수동 `refresh_tags` 실행으로 기존 글의 분류 태그를 재확인하고, 이미 등록된 검수 후보에는 누락된 **미확정** 태그만 더한다. 기존 태그, 공개 예제, 승인 상태는 변경하지 않는다.
 - 근거: Production의 CodeMyUI 발견 경로 중 Section 제안이 없는 검수 후보 481개를 공개 태그와 읽기 전용 대조하니 192개에서 추가 신호를 찾았다. 이 중 Hero 28, Gallery 19개는 태그별 수치이며 같은 글이 여러 태그를 가질 수 있다. 192개는 분류 가능 수가 아니라 분류 검토 대상 수다.
 - 재실행 확인: [CodeMyUI Actions 43410114404](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114404)는 성공했고 Production D1은 신규 0, 중복 3, 실패 0, `knownInvalidPostIds` 3개를 기록했다. 추가 중복 3개는 이전에 처리된 글의 다른 외부 ID이며 신규 공개가 아니다. [The Animated Web Actions 43410114307](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114307)도 성공, 신규·중복·실패 각 0이었다.
+- 일회성 결과: [CodeMyUI Actions 43412081935](https://github.com/hoseonkwak/animation-Ex/actions/runs/43412081935)는 성공했다. Production D1은 발견 305·신규 0·중복 305·실패 0이며 CodeMyUI 발견 경로가 있는 검수 후보 중 Section 제안 없음은 481개에서 292개로 줄었다. 후보 상태와 공개 수 1,879개는 그대로다. 태그가 생긴 189개는 검수 대상이며 공개 가능 판정이 아니다.

@@ -141,3 +141,12 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - CodeMyUI 신규 후보의 제목 기반 Section 제안은 텍스트 136, 버튼 107, 내비게이션 77, 카드 60, 폼 39, 로딩 37, 배경 28, 슬라이더 27, 모달 22, Hero 10개다. 여러 Section을 동시에 제안한 항목이 있어 합계는 신규 후보 수와 다르다. 475개에는 Section 제안이 없다. 모두 미확정이며 화면 단위 분류가 필요하다.
 - 이후 Production의 CodeMyUI 발견 경로에서 Section 제안이 없는 검수 후보 481개를 공개 WordPress 태그와 대조했다. 192개에 추가 신호가 있었고 그중 Hero 28, Gallery 19개였다. 출처에서 원래 제공한 태그도 실제 애니메이션 구성과 다를 수 있어 미확정 제안으로만 저장한다. 예약 수집에 이 태그를 추가하고, 이전 후보는 별도의 일회성 `refresh_tags` 수동 실행으로 보강한다.
 - [CodeMyUI 재실행 43410114404](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114404)는 GitHub Actions와 Production D1 모두 `success`, 신규 0·중복 3·실패 0이었다. checkpoint에는 완료 외부 ID 1,139개와 기존 파싱 오류 글 ID 3개가 남았다. [The Animated Web 재실행 43410114307](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114307)도 성공했고 신규·중복·실패 0이었다. 공개 수는 여전히 1,879개다.
+- [일회성 분류 보강 43412081935](https://github.com/hoseonkwak/animation-Ex/actions/runs/43412081935)는 Production D1에서 `success`, 발견 305·신규 0·중복 305·실패 0으로 끝났다. CodeMyUI 경로가 있는 검수 후보의 Section 제안 없음은 481개에서 292개로 감소했다. 보강 후 제안 분포는 텍스트 162, 버튼 135, 이미지 113, 내비게이션 88, 카드 85, Hero 57, 폼 51, 로딩 46, 슬라이더 35, 모달 31, 배경 28, 갤러리 21개다. 중복 제안이 가능하고 모두 미확정이다. 공개는 **1,879개 그대로**다.
+
+## 16. 새 출처 실행 표본과 공개 경계 (2026-11-13)
+
+- Cloudflare Browser Run의 읽기 전용 검사기로 CodeMyUI 후보 5개를 카테고리별 1개씩 골랐다. 양성 대조군은 Embed·Result 200과 화면 변화를 통과했다.
+- [갤러리](https://codepen.io/hexagoncircle/pen/povGMod)는 Embed·Result 200, 두 구간 화면 변화가 관측됐다. [폼](https://codepen.io/cobra_winfrey/pen/OJVJJoj)과 [Hero](https://codepen.io/saranya-mohan/pen/WNGjWWd)는 실행 화면은 열렸지만 자동 대기 중 변화가 없어 `needs-review`였다. [카드](https://codepen.io/Snowing/pen/JZRxOK)와 [로딩](https://codepen.io/Sirop/pen/mDvnL)은 Result `body`가 표시되지 않아 `inconclusive`였다. 타임아웃은 원본 삭제나 코드 오류의 증거로 쓰지 않는다.
+- 5개 중 자동 화면 변화 신호는 1개뿐이다. 동작에 클릭·호버·스크롤이 필요한 Pen과 현재 Browser Run 검사기의 미지원 입력을 분리해야 한다. 이 5개 표본만으로 새 출처 전체의 통과율이나 카테고리 정확도를 추정하지 않는다. CodeMyUI와 The Animated Web 후보는 기존 자동 공개 경로에 아직 연결하지 않는다.
+- 공개 예제 3,000개 목표까지 1,121개가 더 필요하지만 검수 대기 1,121개를 그대로 공개 가능 수로 취급할 수 없다. 부족한 Hero·갤러리 등을 우선해 상호작용별 검증 표본과 오류율을 쌓고, 무료 Browser Run 한도 안에서 자동 공개 조건을 교정한다.
+- 추가 후보로 살펴본 FrontEnd Resource는 공개 robots의 `User-agent: *`에 `Disallow: /`가 있어 자동 수집 대상에서 제외했다.
