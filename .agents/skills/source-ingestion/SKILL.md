@@ -34,3 +34,11 @@ npm run ingest:wsss:fixture --workspace @kwak-motion/lab
 ```
 
 실제 수동 실행은 fixture 검증 후 GitHub Actions의 `WSSS ingestion` workflow에서 수행한다.
+
+## FreeFrontend 발견 경로
+
+- `docs/DISCOVERY_EXPANSION_PLAN.md`의 여섯 공개 목록만 읽는다. robots를 매 실행 확인하고 403·429에서 중지한다.
+- 목록의 `data-stash-source`에서 원본 CodePen URL, `data-stash-title`에서 제목, `data-stash-url`에서 발견 글 URL만 추출한다. 원본 코드·이미지·첨부 파일은 내려받지 않는다.
+- `FreeFrontend/<분류>` checkpoint를 별도로 관리하고, API가 저장한 external ID만 완료 처리한다.
+- 카테고리와 제목은 미확정 태그 제안이다. 특히 Hero는 실행 화면을 확인하기 전까지 확정하지 않는다.
+- `npm run ingest:freefrontend:fixture --workspace @kwak-motion/lab`과 `npm run test:ingestion`을 통과한 뒤 `--preflight-live --page <허용된 slug>`로 읽기 전용 확인을 한다. 실제 등록은 `FreeFrontend ingestion` workflow에서 진행한다.

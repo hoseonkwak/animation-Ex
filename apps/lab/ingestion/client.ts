@@ -83,7 +83,7 @@ export async function submitCandidateBatches(
   checkpointBefore: string | null,
   credentials: { keyId: string; secret: string },
   trigger: 'manual' | 'schedule' = 'manual',
-  sourceKey: 'wsss' | 'spark' = 'wsss',
+  sourceKey: 'wsss' | 'spark' | 'freefrontend' = 'wsss',
 ): Promise<BatchResponse['data']> {
   const total: BatchResponse['data'] = { accepted: 0, duplicates: 0, failed: 0, items: [] }
   for (let offset = 0; offset < items.length; offset += 50) {

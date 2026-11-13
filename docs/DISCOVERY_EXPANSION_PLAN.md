@@ -109,3 +109,12 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 
 - Production 관리자 화면에서 첫 Spark 예약 검수가 `published (4/8)`로 기록됐다. 실제 실행 검사를 받은 8건 중 4건이 통과·자동 공개됐고, 후보 대기는 44건에서 40건, 공개 CodePen은 1,875건에서 1,879건으로 바뀌었다. 새 묶음의 표본은 `Solar System using :scroll-markers & advanced attr() functions`이며 공개 상세의 CodePen 2.0 Result 프레임이 실제로 렌더링되는 것을 확인했다. 2026-11-12 운영 D1 읽기 전용 대조에서 `auto_publication_runs`는 `examined_count=8`, `passed_count=4`, `published_count=4`였고 `auto_publication_items`의 4건은 모두 현재 공개 Entry에 연결됐다. 같은 실행 시각의 `validation_runs`는 pass 4건, `NO_VISUAL_CHANGE_OBSERVED` warning 4건이었다. 따라서 보류 4건은 시각적 변화 증거 부족이며 자동 공개로 세지 않는다.
 - [`CodePen Spark ingestion #5`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42348116722)는 15:41 KST 예약 시작·성공, 피드 10호 중 새 호 0건으로 `accepted=0`, `duplicates=0`, `failed=0`이었다. [`WSSS ingestion #20`](https://github.com/hoseonkwak/animation-Ex/actions/runs/42352477169)은 16:43 KST 예약 시작·성공, `accepted=0`, `duplicates=0`, `failed=0`이었다. 수집 후보 수의 4건 감소는 신규 수집 감소가 아니라 자동 공개 전환이다.
+
+## 13. 3,000개 확대를 위한 FreeFrontend 발견 경로 (2026-11-13)
+
+- Production 기준 공개 예제는 1,879개이며 3,000개까지 1,121개가 더 필요하다. 확정 Section 태그가 없는 공개 예제 909개는 별도 재분류 대상이다. 새 태그를 붙여도 공개 총수는 증가하지 않는다.
+- CodePen 컬렉션 RSS 세 곳은 HTTP 403을 반환해 수집 대상으로 채택하지 않았다. CSS-Tricks 최신 RSS 15건에는 Pen 링크가 없었다. Forem 공개 API의 GSAP·animation 최신 글 8건씩에도 Pen 링크가 없었고, cssanimation 표본 8건 중 2건에만 링크가 있었다.
+- FreeFrontend의 robots는 일반 경로를 허용하고 검색용 참조를 허용한다. 공개 목록 6개를 읽기 전용으로 검사해 원본 Pen 링크를 찾았다. 목록의 제목, 개별 글 URL과 CodePen URL만 사용하며 코드·이미지·긴 설명은 복사하지 않는다.
+- `css-gallery`, `css-animated-backgrounds`, `css-card-hover-effects`, `css-hero-sections`, `css-carousels`, `css-animations`의 파서 결과는 각각 18, 27, 32, 8, 26, 33개였다. 목록 간 중복을 합치면 고유 141개이고 Production Source에 없는 URL은 136개였다. 이 수는 수집 전 후보 잠재량이며 실행 가능·공개 가능 수가 아니다.
+- 목록의 `data-stash-source`를 원본 Pen으로, `data-stash-url`을 발견 경로로 기록한다. Gallery와 Hero는 제목에 구체적인 동작 신호가 있을 때만 후보로 삼는다. Section 태그는 미확정 제안으로 저장한다.
+- 다음 게이트는 운영 후보 등록 → 중복·실행 검사 → 카테고리별 표본 정확도 확인 → 자동 공개 조건 확대다. Browser Run 무료 10분/일 범위를 확인하기 전에는 검사량을 올리지 않는다. 공개 총수가 늘어난 사실은 D1 Entry와 실행 증거로만 보고한다.

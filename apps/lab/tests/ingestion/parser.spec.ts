@@ -18,6 +18,11 @@ import {
   buildSparkCandidates,
   parseSparkFeed,
 } from '../../ingestion/spark.ts'
+import {
+  FREEFRONTEND_PAGES,
+  advanceFreeFrontendCheckpoint,
+  parseFreeFrontendPage,
+} from '../../ingestion/freefrontend.ts'
 
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 const categoryUrl = 'https://wsss.tistory.com/category/Animation/GSAP'
@@ -196,6 +201,39 @@ describe('CodePen Spark 피드', () => {
   it('피드 구조가 달라지면 빈 성공으로 처리하지 않는다', () => {
     expect(() => parseSparkFeed('<rss><channel></channel></rss>')).toThrowError(
       expect.objectContaining({ code: 'SPARK_FEED_STRUCTURE_CHANGED' }),
+    )
+  })
+})
+
+describe('FreeFrontend 카테고리 목록', () => {
+  const page = FREEFRONTEND_PAGES.find((item) => item.slug === 'css-hero-sections')!
+  const html = readFileSync(path.resolve('fixtures/freefrontend-hero.html'), 'utf8')
+
+  it('실제 Pen과 움직임이 명시된 카드만 후보로 만들고 Hero는 확정하지 않는다', () => {
+    const items = parseFreeFrontendPage(html, page)
+    expect(items).toHaveLength(2)
+    expect(items[0]).toMatchObject({
+      externalId: 'freefrontend:css-hero-sections:alice:AbC123',
+      discoveredVia: {
+        key: 'freefrontend',
+        url: 'https://freefrontend.com/code/hero-appearance-2026-01-01/',
+        category: 'FreeFrontend/Hero',
+      },
+      source: { canonicalUrl: 'https://codepen.io/alice/pen/AbC123' },
+    })
+    expect(items[0]?.tags).toContainEqual(
+      expect.objectContaining({ axis: 'section', key: 'hero', confirmed: false }),
+    )
+  })
+
+  it('저장된 후보만 checkpoint에 기록하고 구조 변경을 실패로 표시한다', () => {
+    const items = parseFreeFrontendPage(html, page)
+    const checkpoint = advanceFreeFrontendCheckpoint(page, undefined, [items[0]!.externalId])
+    expect(parseFreeFrontendPage(html, page, checkpoint).map((item) => item.externalId)).toEqual([
+      items[1]!.externalId,
+    ])
+    expect(() => parseFreeFrontendPage('<html></html>', page)).toThrowError(
+      expect.objectContaining({ code: 'FREEFRONTEND_STRUCTURE_CHANGED' }),
     )
   })
 })

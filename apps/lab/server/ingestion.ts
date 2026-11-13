@@ -10,10 +10,19 @@ interface IngestionEnv {
 
 interface BatchBody {
   runId: string
-  sourceKey?: 'wsss' | 'spark'
+  sourceKey?: 'wsss' | 'spark' | 'freefrontend'
   trigger: 'manual' | 'schedule'
   checkpointBefore: string | null
   items: unknown[]
+}
+
+const freeFrontendCategoryByPage: Record<string, string> = {
+  'css-gallery': 'FreeFrontend/Gallery',
+  'css-animated-backgrounds': 'FreeFrontend/Background',
+  'css-card-hover-effects': 'FreeFrontend/Card',
+  'css-hero-sections': 'FreeFrontend/Hero',
+  'css-carousels': 'FreeFrontend/Slider',
+  'css-animations': 'FreeFrontend/Animation',
 }
 
 export class IngestionApiError extends Error {
@@ -145,8 +154,9 @@ function parseBatch(rawBody: string): BatchBody {
   const body = value as Partial<BatchBody>
   if (
     typeof body.runId !== 'string' ||
-    (body.sourceKey !== undefined && !['wsss', 'spark'].includes(body.sourceKey)) ||
+    (body.sourceKey !== undefined && !['wsss', 'spark', 'freefrontend'].includes(body.sourceKey)) ||
     (body.sourceKey === 'spark' && !/^spark-/.test(body.runId)) ||
+    (body.sourceKey === 'freefrontend' && !/^freefrontend-/.test(body.runId)) ||
     !['manual', 'schedule'].includes(body.trigger ?? '') ||
     !Array.isArray(body.items) ||
     body.items.length > 50
@@ -158,11 +168,12 @@ function parseBatch(rawBody: string): BatchBody {
 
 function validCandidate(
   item: unknown,
-  expectedSourceKey: 'wsss' | 'spark',
+  expectedSourceKey: 'wsss' | 'spark' | 'freefrontend',
 ): item is IngestionCandidate {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return false
   const value = item as Partial<IngestionCandidate>
   const sourceKey = value.discoveredVia?.key
+  const freeFrontendPage = value.externalId?.match(/^freefrontend:([^:]+):/i)?.[1] ?? ''
   const sourceValid =
     (sourceKey === 'wsss' &&
       /^wsss:\d+:\d+$/.test(value.externalId ?? '') &&
@@ -170,7 +181,15 @@ function validCandidate(
     (sourceKey === 'spark' &&
       /^spark:\d+:[A-Za-z0-9_~-]+:[A-Za-z0-9-]+$/.test(value.externalId ?? '') &&
       /^https:\/\/codepen\.io\/spark\/\d+$/.test(value.discoveredVia?.url ?? '') &&
-      value.discoveredVia?.category === 'CodePen/Spark')
+      value.discoveredVia?.category === 'CodePen/Spark') ||
+    (sourceKey === 'freefrontend' &&
+      /^freefrontend:css-(?:gallery|animated-backgrounds|card-hover-effects|hero-sections|carousels|animations):[A-Za-z0-9_~-]+:[A-Za-z0-9-]+$/.test(
+        value.externalId ?? '',
+      ) &&
+      /^https:\/\/freefrontend\.com\/(?:code|-\/(?:\d{4}|old))\/[a-z0-9-]+\/$/i.test(
+        value.discoveredVia?.url ?? '',
+      ) &&
+      freeFrontendCategoryByPage[freeFrontendPage] === value.discoveredVia?.category)
   const normalized = parseCodePenUrl(value.source?.canonicalUrl ?? '')
   const canonicalValid =
     normalized?.canonicalUrl === value.source?.canonicalUrl &&
@@ -425,6 +444,11 @@ export async function handleIngestionBatch(
       `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
        VALUES ('discovery-spark', 'spark', 'CodePen Spark', 'https://codepen.io/spark/feed/', 1, '{}')`,
     ).run()
+  } else if (sourceKey === 'freefrontend') {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
+       VALUES ('discovery-freefrontend', 'freefrontend', 'FreeFrontend', 'https://freefrontend.com/', 1, '{}')`,
+    ).run()
   }
   await env.DB.prepare(
     `INSERT OR IGNORE INTO ingestion_runs (
@@ -533,7 +557,7 @@ export async function readIngestionCheckpoint(
     throw new IngestionApiError(400, 'INVALID_JSON', 'JSON 요청 본문을 확인해주세요.')
   }
   if (
-    (sourceKey !== 'wsss' && sourceKey !== 'spark') ||
+    (sourceKey !== 'wsss' && sourceKey !== 'spark' && sourceKey !== 'freefrontend') ||
     typeof category !== 'string' ||
     category.length > 100 ||
     category.includes('..') ||

@@ -4,6 +4,8 @@
 기준 경로: `/api/v1`
 목적: Vue 화면, 관리자 검수, GitHub Actions 수집기가 같은 요청과 응답 규칙을 사용하게 한다.
 
+수집 서명 API의 `sourceKey`는 `wsss`, `spark`, `freefrontend`를 허용한다. FreeFrontend 후보는 지정한 여섯 공개 목록의 CodePen URL과 `freefrontend.com` 개별 글 URL만 받아들이며, 출처별 checkpoint와 실행 기록을 분리한다.
+
 ## 1. 공통 규칙
 
 - 요청과 응답은 UTF-8 JSON을 사용한다.

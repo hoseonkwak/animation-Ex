@@ -1,0 +1,36 @@
+name: FreeFrontend ingestion
+
+on:
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate ingestion fixtures
+        run: npm run test:ingestion
+      - name: Collect category-balanced motion candidates
+        working-directory: apps/lab
+        env:
+          INGESTION_API_URL: ${{ secrets.INGESTION_API_URL }}
+          INGESTION_KEY_ID: ${{ secrets.INGESTION_KEY_ID }}
+          INGESTION_HMAC_SECRET: ${{ secrets.INGESTION_HMAC_SECRET }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            set -- --scheduled
+          else
+            set --
+          fi
+          for page in css-animated-backgrounds css-gallery css-card-hover-effects css-hero-sections css-carousels css-animations; do
+            node --experimental-transform-types ingestion/freefrontend-cli.ts --live \
+              --page "$page" --remote-checkpoint "$@"
+          done

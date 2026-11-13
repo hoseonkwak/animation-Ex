@@ -9,6 +9,7 @@ import worker from '../../server/index'
 import { parseWsssList } from '../../ingestion/parser.ts'
 import { buildCandidates } from '../../ingestion/pipeline.ts'
 import { buildSparkCandidates, parseSparkFeed } from '../../ingestion/spark.ts'
+import { FREEFRONTEND_PAGES, parseFreeFrontendPage } from '../../ingestion/freefrontend.ts'
 import { createMigratedDatabase } from '../contracts/database'
 
 let sqlite: DatabaseSync
@@ -347,6 +348,46 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     expect((await saved.json()) as { data: { checkpoint: unknown } }).toMatchObject({
       data: { checkpoint },
     })
+  })
+
+  it('FreeFrontend Pen을 출처와 함께 저장하고 잘못된 발견 URL은 거절한다', async () => {
+    const page = FREEFRONTEND_PAGES.find((item) => item.slug === 'css-hero-sections')!
+    const items = parseFreeFrontendPage(
+      readFileSync(path.resolve('fixtures/freefrontend-hero.html'), 'utf8'),
+      page,
+    )
+    const request = (runId: string, candidates: typeof items) =>
+      signedRequest('/api/v1/ingestion/batches', {
+        runId,
+        sourceKey: 'freefrontend',
+        trigger: 'manual',
+        checkpointBefore: null,
+        items: candidates,
+      })
+    const first = await request('freefrontend-fixture-1', items)
+    expect((await first.json()) as object).toMatchObject({
+      data: { accepted: 2, duplicates: 0, failed: 0 },
+    })
+    const second = await request('freefrontend-fixture-2', items)
+    expect((await second.json()) as object).toMatchObject({
+      data: { accepted: 0, duplicates: 2, failed: 0 },
+    })
+    const invalid = await request('freefrontend-fixture-3', [
+      {
+        ...items[0]!,
+        discoveredVia: { ...items[0]!.discoveredVia, url: 'https://example.com/code/other/' },
+      },
+    ])
+    expect((await invalid.json()) as object).toMatchObject({
+      data: { accepted: 0, failed: 1 },
+    })
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-freefrontend'",
+        )
+        .get(),
+    ).toEqual({ count: 2 })
   })
 
   it('팀 계정 CodePen Pen도 후보로 저장한다', async () => {
