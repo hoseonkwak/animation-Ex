@@ -63,8 +63,18 @@ describe('CodeMyUI 공개 API', () => {
     const first = parseCodeMyUiPosts(tagged)
     expect(first.items[0]!.tags).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ axis: 'section', key: 'hero', confirmed: false }),
-        expect.objectContaining({ axis: 'section', key: 'gallery', confirmed: false }),
+        expect.objectContaining({
+          axis: 'section',
+          key: 'hero',
+          source: 'imported',
+          confirmed: false,
+        }),
+        expect.objectContaining({
+          axis: 'section',
+          key: 'gallery',
+          source: 'imported',
+          confirmed: false,
+        }),
       ]),
     )
     expect(first.items[0]!.tags.filter((tag) => tag.key === 'button')).toHaveLength(1)

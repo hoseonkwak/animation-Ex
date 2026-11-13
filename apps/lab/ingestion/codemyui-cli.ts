@@ -112,7 +112,9 @@ async function run(): Promise<void> {
     const result = parseCodeMyUiPosts(await response.json(), checkpoint, refreshTags)
     items.push(
       ...(refreshTags
-        ? result.items.filter((item) => item.tags.some((tag) => tag.axis === 'section'))
+        ? result.items.filter((item) =>
+            item.tags.some((tag) => tag.axis === 'section' && tag.source === 'imported'),
+          )
         : result.items),
     )
     examined += result.examined

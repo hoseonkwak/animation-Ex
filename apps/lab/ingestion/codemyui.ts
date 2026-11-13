@@ -33,7 +33,7 @@ function suggestedTags(post: CodeMyUiPost, title: string): SuggestedTag[] {
   for (const id of post.tags ?? []) {
     const key = sectionByTagId.get(id)
     if (key && !tags.some((tag) => tag.axis === 'section' && tag.key === key)) {
-      tags.push({ axis: 'section', key, source: 'inferred', confidence: 0.85, confirmed: false })
+      tags.push({ axis: 'section', key, source: 'imported', confidence: 0.85, confirmed: false })
     }
   }
   return tags
