@@ -450,6 +450,21 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     expect((await second.json()) as object).toMatchObject({
       data: { accepted: 0, duplicates: 2, failed: 0 },
     })
+    const caseVariant = await request('codemyui-fixture-case', [
+      {
+        ...items[0]!,
+        externalId: 'codemyui:101:Alice:AbC123',
+        source: {
+          ...items[0]!.source,
+          url: 'https://codepen.io/Alice/pen/AbC123',
+          canonicalUrl: 'https://codepen.io/Alice/pen/AbC123',
+          creatorSlug: 'Alice',
+        },
+      },
+    ])
+    expect((await caseVariant.json()) as object).toMatchObject({
+      data: { accepted: 0, duplicates: 1, failed: 0 },
+    })
     const invalid = await request('codemyui-fixture-3', [
       {
         ...items[0]!,

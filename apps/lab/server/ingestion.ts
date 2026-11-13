@@ -278,9 +278,17 @@ async function processItem(
     }
   }
 
+  const pen = parseCodePenUrl(item.source.canonicalUrl)!
+  const creatorUrl = item.source.canonicalUrl.slice(0, -`/pen/${pen.penId}`.length)
   const existing = await db
-    .prepare('SELECT id FROM sources WHERE canonical_url = ?')
-    .bind(item.source.canonicalUrl)
+    .prepare(
+      `SELECT id FROM sources WHERE canonical_url = ? OR (
+        instr(canonical_url, '/pen/') > 0
+        AND lower(substr(canonical_url, 1, instr(canonical_url, '/pen/') - 1)) = lower(?)
+        AND substr(canonical_url, instr(canonical_url, '/pen/') + 5) = ?
+      ) LIMIT 1`,
+    )
+    .bind(item.source.canonicalUrl, creatorUrl, pen.penId)
     .first<{ id: string }>()
   if (existing) {
     const candidate = await db
