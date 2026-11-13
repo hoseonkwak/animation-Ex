@@ -150,4 +150,19 @@ async function run(): Promise<void> {
   )
 }
 
-await run()
+try {
+  await run()
+} catch (error) {
+  const code = error instanceof CollectionStoppedError ? error.code : 'FREEFRONTEND_RUN_FAILED'
+  const message = error instanceof Error ? error.message : String(error)
+  if (process.env.GITHUB_ACTIONS === 'true') {
+    const annotation = `${code}: ${message}`
+      .replaceAll('%', '%25')
+      .replaceAll('\r', '%0D')
+      .replaceAll('\n', '%0A')
+    process.stderr.write(`::error title=FreeFrontend ingestion::${annotation}\n`)
+  } else {
+    process.stderr.write(`${code}: ${message}\n`)
+  }
+  process.exitCode = 1
+}
