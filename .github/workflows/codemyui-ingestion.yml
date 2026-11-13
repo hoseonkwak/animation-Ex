@@ -1,5 +1,9 @@
 name: CodeMyUI ingestion
 
+concurrency:
+  group: codemyui-ingestion
+  cancel-in-progress: false
+
 on:
   schedule:
     - cron: "37 1 * * 2"
@@ -11,9 +15,9 @@ on:
 
 jobs:
   ingest:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_sha == github.sha)
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

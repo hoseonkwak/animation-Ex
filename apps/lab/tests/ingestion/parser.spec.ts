@@ -45,10 +45,14 @@ describe('CodeMyUI 공개 API', () => {
 
   it('저장된 외부 ID만 checkpoint에 반영하고 빈 응답은 실패시킨다', () => {
     const result = parseCodeMyUiPosts(posts)
-    const checkpoint = advanceCodeMyUiCheckpoint(undefined, [result.items[0]!.externalId])
+    const checkpoint = advanceCodeMyUiCheckpoint(undefined, [result.items[0]!.externalId], [999])
+    expect(checkpoint.knownInvalidPostIds).toEqual([999])
     expect(parseCodeMyUiPosts(posts, checkpoint).items.map((item) => item.externalId)).toEqual([
       result.items[1]!.externalId,
     ])
+    expect(
+      advanceCodeMyUiCheckpoint(checkpoint, ['codemyui:999:alice:AbC123']).knownInvalidPostIds,
+    ).toEqual([])
     expect(() => parseCodeMyUiPosts([])).toThrowError(
       expect.objectContaining({ code: 'CODEMYUI_STRUCTURE_CHANGED' }),
     )

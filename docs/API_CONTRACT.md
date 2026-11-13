@@ -306,6 +306,8 @@ checkpoint와 실행 집계를 기록한다. 일부 실패가 있으면 실행 �
 
 CodeMyUI는 게시물에서 원본 Pen 메타데이터를 파싱하지 못한 경우 완료 요청에 `sourceInvalidPostIds`(최대 50개)를 함께 보낸다. Worker는 이 ID들을 `failed_count`, `discovered_count`, `failure_code=SOURCE_ITEM_PARSE_FAILED`, `failure_detail`에 남기며 성공으로 숨기지 않는다. Pen이 애초에 없는 글은 실패가 아닌 제외 대상으로 수집기 로그에 따로 기록한다.
 
+CodeMyUI checkpoint 응답은 최근 partial 실행의 파싱 실패 글 ID를 `knownInvalidPostIds`로 포함한다. 수집기는 같은 글을 계속 재검사하되 이미 알려진 형식 문제를 반복해서 신규 실패로 세지 않고, Pen이 정상 파싱되면 해당 ID를 checkpoint에서 제거한다.
+
 CodePen 중복 판정에서 제작자 이름의 대소문자 차이는 같은 계정으로 처리하되 Pen ID의 대소문자는 보존한다.
 
 ## 5. 상태 코드

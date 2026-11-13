@@ -91,6 +91,7 @@ async function run(): Promise<void> {
   let totalPages = 1
   let examined = 0
   let withoutPen = 0
+  let knownInvalid = 0
   const invalidPostIds: number[] = []
   for (let page = 1; page <= totalPages; page += 1) {
     if (page > 15)
@@ -111,6 +112,7 @@ async function run(): Promise<void> {
     items.push(...result.items)
     examined += result.examined
     withoutPen += result.withoutPen
+    knownInvalid += result.knownInvalid
     invalidPostIds.push(...result.invalidPostIds)
     if (page < totalPages) await new Promise((resolve) => setTimeout(resolve, 1000))
   }
@@ -121,6 +123,7 @@ async function run(): Promise<void> {
         pages: totalPages,
         examined,
         withoutPen,
+        knownInvalid,
         invalid: invalidPostIds.length,
         invalidPostIds,
         candidates: unique.length,
@@ -161,7 +164,7 @@ async function run(): Promise<void> {
   const savedIds = batch.items
     .filter((item) => item.result !== 'failed')
     .map((item) => item.externalId)
-  const next = advanceCodeMyUiCheckpoint(checkpoint, savedIds)
+  const next = advanceCodeMyUiCheckpoint(checkpoint, savedIds, invalidPostIds)
   await sendSignedJson(
     apiBase,
     `/api/v1/ingestion/runs/${runId}/complete`,
@@ -174,6 +177,7 @@ async function run(): Promise<void> {
       pages: totalPages,
       examined,
       withoutPen,
+      knownInvalid,
       invalid: invalidPostIds.length,
       invalidPostIds,
       candidates: unique.length,

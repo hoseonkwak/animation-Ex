@@ -622,7 +622,7 @@ export async function readIngestionCheckpoint(
     throw new IngestionApiError(400, 'INVALID_CATEGORY', '수집 카테고리를 확인해주세요.')
   }
   const row = await env.DB.prepare(
-    `SELECT checkpoint_after FROM ingestion_runs
+    `SELECT checkpoint_after, failure_code, failure_detail FROM ingestion_runs
      WHERE discovery_source_id = ?
        AND status IN ('success', 'partial')
        AND json_extract(
@@ -632,6 +632,23 @@ export async function readIngestionCheckpoint(
      ORDER BY finished_at DESC, id DESC LIMIT 1`,
   )
     .bind(`discovery-${sourceKey}`, category)
-    .first<{ checkpoint_after: string }>()
-  return row ? JSON.parse(row.checkpoint_after) : null
+    .first<{
+      checkpoint_after: string
+      failure_code: string | null
+      failure_detail: string | null
+    }>()
+  if (!row) return null
+  const checkpoint = JSON.parse(row.checkpoint_after) as Record<string, unknown>
+  if (sourceKey === 'codemyui' && row.failure_code === 'SOURCE_ITEM_PARSE_FAILED') {
+    const ids = row.failure_detail?.match(/^CodeMyUI post IDs: ([\d,]+)$/)?.[1]
+    if (ids) {
+      checkpoint.knownInvalidPostIds = [
+        ...new Set([
+          ...((checkpoint.knownInvalidPostIds as number[] | undefined) ?? []),
+          ...ids.split(',').map(Number),
+        ]),
+      ]
+    }
+  }
+  return checkpoint
 }

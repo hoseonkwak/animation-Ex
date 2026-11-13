@@ -494,6 +494,13 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       failure_code: 'SOURCE_ITEM_PARSE_FAILED',
       failure_detail: 'CodeMyUI post IDs: 999',
     })
+    const saved = await signedRequest('/api/v1/ingestion/checkpoint', {
+      sourceKey: 'codemyui',
+      category: 'CodeMyUI/All',
+    })
+    expect((await saved.json()) as object).toMatchObject({
+      data: { checkpoint: { knownInvalidPostIds: [999] } },
+    })
     expect(
       sqlite
         .prepare(
