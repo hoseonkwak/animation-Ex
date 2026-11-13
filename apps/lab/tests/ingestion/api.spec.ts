@@ -10,6 +10,7 @@ import { parseWsssList } from '../../ingestion/parser.ts'
 import { buildCandidates } from '../../ingestion/pipeline.ts'
 import { buildSparkCandidates, parseSparkFeed } from '../../ingestion/spark.ts'
 import { FREEFRONTEND_PAGES, parseFreeFrontendPage } from '../../ingestion/freefrontend.ts'
+import { parseAnimatedWebPage } from '../../ingestion/animatedweb.ts'
 import { createMigratedDatabase } from '../contracts/database'
 
 let sqlite: DatabaseSync
@@ -385,6 +386,45 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       sqlite
         .prepare(
           "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-freefrontend'",
+        )
+        .get(),
+    ).toEqual({ count: 2 })
+  })
+
+  it('The Animated Web Pen을 출처별로 저장하고 재실행은 중복으로 처리한다', async () => {
+    const items = parseAnimatedWebPage(
+      readFileSync(path.resolve('fixtures/animatedweb.html'), 'utf8'),
+    )
+    const request = (runId: string, candidates: typeof items) =>
+      signedRequest('/api/v1/ingestion/batches', {
+        runId,
+        sourceKey: 'animatedweb',
+        trigger: 'manual',
+        checkpointBefore: null,
+        items: candidates,
+      })
+    const first = await request('animatedweb-fixture-1', items)
+    expect((await first.json()) as object).toMatchObject({
+      data: { accepted: 2, duplicates: 0, failed: 0 },
+    })
+    const second = await request('animatedweb-fixture-2', items)
+    expect((await second.json()) as object).toMatchObject({
+      data: { accepted: 0, duplicates: 2, failed: 0 },
+    })
+    const invalid = await request('animatedweb-fixture-3', [
+      {
+        ...items[0]!,
+        discoveredVia: {
+          ...items[0]!.discoveredVia,
+          url: 'https://example.com/inspiration/other/',
+        },
+      },
+    ])
+    expect((await invalid.json()) as object).toMatchObject({ data: { accepted: 0, failed: 1 } })
+    expect(
+      sqlite
+        .prepare(
+          "SELECT COUNT(*) AS count FROM source_discoveries WHERE discovery_source_id = 'discovery-animatedweb'",
         )
         .get(),
     ).toEqual({ count: 2 })

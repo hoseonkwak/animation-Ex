@@ -120,3 +120,9 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - 다음 게이트는 운영 후보 등록 → 중복·실행 검사 → 카테고리별 표본 정확도 확인 → 자동 공개 조건 확대다. Browser Run 무료 10분/일 범위를 확인하기 전에는 검사량을 올리지 않는다. 공개 총수가 늘어난 사실은 D1 Entry와 실행 증거로만 보고한다.
 - 첫 자동 실행은 [GitHub Actions 실행 43401942944](https://github.com/hoseonkwak/animation-Ex/actions/runs/43401942944)에서 출처 요청 단계에 실패했다. 진단 주석을 추가한 [재실행 43403010026](https://github.com/hoseonkwak/animation-Ex/actions/runs/43403010026)은 `SOURCE_RATE_LIMITED: FreeFrontend HTTP 403`을 기록했다. Production D1에는 이 출처의 수집 실행이 없으며 신규 후보와 공개 예제도 늘지 않았다.
 - 403을 우회하지 않기 위해 이 workflow의 예약 및 배포 후 자동 트리거를 제거했다. 출처가 공식적으로 자동 접근을 허용하기 전까지 수동 실행도 하지 않는다. 위의 136개는 여전히 로컬 읽기 전용 발견 잠재량이다. 3,000개 목표를 위해 자동 접근 가능한 다른 출처를 발굴한다.
+
+## 14. The Animated Web 공개 큐레이션 파일럿 (2026-11-13)
+
+- [The Animated Web의 CodePen 목록](https://theanimatedweb.com/collection/codepen/)과 빈 robots 응답을 읽기 전용으로 확인했다. 한 페이지에 서로 다른 CodePen 링크 131개가 있으며 `pen`, `full`, `details` 주소를 같은 canonical Pen 형식으로 정규화한다.
+- 카드에서 제목, 개별 `/inspiration/{slug}/` 발견 URL, 원본 Pen URL만 추출한다. 이미지와 영상은 수집하지 않는다. 로컬 preflight는 131개를 후보로 파싱했으며 Production 중복·실행·권리 검사는 아직 완료되지 않았다.
+- 출처별 HMAC 후보 등록과 checkpoint를 추가하고 fixture 및 API 중복 계약을 검사한다. 첫 GitHub Actions 실행에서 출처 접근과 운영 등록 수를 확인한다. 403 또는 429가 나면 자동 실행을 중지한다.

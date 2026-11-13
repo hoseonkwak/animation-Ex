@@ -40,7 +40,11 @@ export interface SuggestedTag {
 
 export interface IngestionCandidate {
   externalId: string
-  discoveredVia: { key: 'wsss' | 'spark' | 'freefrontend'; url: string; category: string }
+  discoveredVia: {
+    key: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb'
+    url: string
+    category: string
+  }
   source: {
     type: 'codepen'
     url: string

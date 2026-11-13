@@ -10,7 +10,7 @@ interface IngestionEnv {
 
 interface BatchBody {
   runId: string
-  sourceKey?: 'wsss' | 'spark' | 'freefrontend'
+  sourceKey?: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb'
   trigger: 'manual' | 'schedule'
   checkpointBefore: string | null
   items: unknown[]
@@ -154,9 +154,11 @@ function parseBatch(rawBody: string): BatchBody {
   const body = value as Partial<BatchBody>
   if (
     typeof body.runId !== 'string' ||
-    (body.sourceKey !== undefined && !['wsss', 'spark', 'freefrontend'].includes(body.sourceKey)) ||
+    (body.sourceKey !== undefined &&
+      !['wsss', 'spark', 'freefrontend', 'animatedweb'].includes(body.sourceKey)) ||
     (body.sourceKey === 'spark' && !/^spark-/.test(body.runId)) ||
     (body.sourceKey === 'freefrontend' && !/^freefrontend-/.test(body.runId)) ||
+    (body.sourceKey === 'animatedweb' && !/^animatedweb-/.test(body.runId)) ||
     !['manual', 'schedule'].includes(body.trigger ?? '') ||
     !Array.isArray(body.items) ||
     body.items.length > 50
@@ -168,7 +170,7 @@ function parseBatch(rawBody: string): BatchBody {
 
 function validCandidate(
   item: unknown,
-  expectedSourceKey: 'wsss' | 'spark' | 'freefrontend',
+  expectedSourceKey: 'wsss' | 'spark' | 'freefrontend' | 'animatedweb',
 ): item is IngestionCandidate {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return false
   const value = item as Partial<IngestionCandidate>
@@ -189,7 +191,13 @@ function validCandidate(
       /^https:\/\/freefrontend\.com\/(?:code|-\/(?:\d{4}|old))\/[a-z0-9-]+\/$/i.test(
         value.discoveredVia?.url ?? '',
       ) &&
-      freeFrontendCategoryByPage[freeFrontendPage] === value.discoveredVia?.category)
+      freeFrontendCategoryByPage[freeFrontendPage] === value.discoveredVia?.category) ||
+    (sourceKey === 'animatedweb' &&
+      /^animatedweb:[a-z0-9-]+:[A-Za-z0-9_~-]+:[A-Za-z0-9-]+$/.test(value.externalId ?? '') &&
+      /^https:\/\/theanimatedweb\.com\/inspiration\/[a-z0-9-]+\/$/.test(
+        value.discoveredVia?.url ?? '',
+      ) &&
+      value.discoveredVia?.category === 'TheAnimatedWeb/CodePen')
   const normalized = parseCodePenUrl(value.source?.canonicalUrl ?? '')
   const canonicalValid =
     normalized?.canonicalUrl === value.source?.canonicalUrl &&
@@ -449,6 +457,11 @@ export async function handleIngestionBatch(
       `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
        VALUES ('discovery-freefrontend', 'freefrontend', 'FreeFrontend', 'https://freefrontend.com/', 1, '{}')`,
     ).run()
+  } else if (sourceKey === 'animatedweb') {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO discovery_sources (id, key, name, base_url, active, config_json)
+       VALUES ('discovery-animatedweb', 'animatedweb', 'The Animated Web', 'https://theanimatedweb.com/collection/codepen/', 1, '{}')`,
+    ).run()
   }
   await env.DB.prepare(
     `INSERT OR IGNORE INTO ingestion_runs (
@@ -557,7 +570,10 @@ export async function readIngestionCheckpoint(
     throw new IngestionApiError(400, 'INVALID_JSON', 'JSON 요청 본문을 확인해주세요.')
   }
   if (
-    (sourceKey !== 'wsss' && sourceKey !== 'spark' && sourceKey !== 'freefrontend') ||
+    (sourceKey !== 'wsss' &&
+      sourceKey !== 'spark' &&
+      sourceKey !== 'freefrontend' &&
+      sourceKey !== 'animatedweb') ||
     typeof category !== 'string' ||
     category.length > 100 ||
     category.includes('..') ||

@@ -23,6 +23,7 @@ import {
   advanceFreeFrontendCheckpoint,
   parseFreeFrontendPage,
 } from '../../ingestion/freefrontend.ts'
+import { advanceAnimatedWebCheckpoint, parseAnimatedWebPage } from '../../ingestion/animatedweb.ts'
 
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 const categoryUrl = 'https://wsss.tistory.com/category/Animation/GSAP'
@@ -234,6 +235,35 @@ describe('FreeFrontend 카테고리 목록', () => {
     ])
     expect(() => parseFreeFrontendPage('<html></html>', page)).toThrowError(
       expect.objectContaining({ code: 'FREEFRONTEND_STRUCTURE_CHANGED' }),
+    )
+  })
+})
+
+describe('The Animated Web CodePen 큐레이션', () => {
+  const html = readFileSync(path.resolve('fixtures/animatedweb.html'), 'utf8')
+
+  it('개별 Pen 링크만 정규화하고 발견 경로와 제목을 보존한다', () => {
+    const items = parseAnimatedWebPage(html)
+    expect(items).toHaveLength(2)
+    expect(items[0]).toMatchObject({
+      externalId: 'animatedweb:text-warping:alice:AbC123',
+      discoveredVia: {
+        url: 'https://theanimatedweb.com/inspiration/text-warping/',
+        category: 'TheAnimatedWeb/CodePen',
+      },
+      source: { canonicalUrl: 'https://codepen.io/alice/pen/AbC123' },
+    })
+    expect(items[1]?.source.canonicalUrl).toBe('https://codepen.io/bob/pen/XyZ456')
+  })
+
+  it('저장한 항목만 checkpoint에 넣고 카드 구조 변경은 실패시킨다', () => {
+    const items = parseAnimatedWebPage(html)
+    const checkpoint = advanceAnimatedWebCheckpoint(undefined, [items[0]!.externalId])
+    expect(parseAnimatedWebPage(html, checkpoint).map((item) => item.externalId)).toEqual([
+      items[1]!.externalId,
+    ])
+    expect(() => parseAnimatedWebPage('<html></html>')).toThrowError(
+      expect.objectContaining({ code: 'ANIMATED_WEB_STRUCTURE_CHANGED' }),
     )
   })
 })

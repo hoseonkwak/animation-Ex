@@ -41,4 +41,10 @@ npm run ingest:wsss:fixture --workspace @kwak-motion/lab
 - 목록의 `data-stash-source`에서 원본 CodePen URL, `data-stash-title`에서 제목, `data-stash-url`에서 발견 글 URL만 추출한다. 원본 코드·이미지·첨부 파일은 내려받지 않는다.
 - `FreeFrontend/<분류>` checkpoint를 별도로 관리하고, API가 저장한 external ID만 완료 처리한다.
 - 카테고리와 제목은 미확정 태그 제안이다. 특히 Hero는 실행 화면을 확인하기 전까지 확정하지 않는다.
-- `npm run ingest:freefrontend:fixture --workspace @kwak-motion/lab`과 `npm run test:ingestion`을 통과한 뒤 `--preflight-live --page <허용된 slug>`로 읽기 전용 확인을 한다. 실제 등록은 `FreeFrontend ingestion` workflow에서 진행한다.
+- `npm run ingest:freefrontend:fixture --workspace @kwak-motion/lab`과 `npm run test:ingestion`을 통과한 뒤 `--preflight-live --page <허용된 slug>`로 읽기 전용 확인을 한다. GitHub runner에서 HTTP 403을 반환해 자동 등록은 중지했다. 접근이 허용되기 전까지 재시도하거나 실행 위치를 바꾸지 않는다.
+
+## The Animated Web 발견 경로
+
+- 공개 `/collection/codepen/` 목록과 robots만 읽고 개별 CodePen URL, 제목, `/inspiration/{slug}/` 발견 경로만 후보화한다. 목록의 이미지·영상·원본 코드는 가져오지 않는다.
+- `full`, `details` 링크는 `pen` canonical URL로 정규화한다. 출처·제목에서 추론한 태그는 미확정으로 둔다.
+- fixture와 `npm run test:ingestion`을 통과한 뒤 `npm run ingest:animatedweb:preflight --workspace @kwak-motion/lab`로 실제 카드 구조를 읽기 전용 확인한다. 403·429에서는 즉시 멈춘다.
