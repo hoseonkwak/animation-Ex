@@ -446,10 +446,34 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     expect((await first.json()) as object).toMatchObject({
       data: { accepted: 2, duplicates: 0, failed: 0 },
     })
-    const second = await request('codemyui-fixture-2', items)
+    const second = await request('codemyui-fixture-2', [
+      {
+        ...items[0]!,
+        tags: [
+          ...items[0]!.tags,
+          {
+            axis: 'section',
+            key: 'gallery',
+            source: 'inferred',
+            confidence: 0.85,
+            confirmed: false,
+          },
+        ],
+      },
+      items[1]!,
+    ])
     expect((await second.json()) as object).toMatchObject({
       data: { accepted: 0, duplicates: 2, failed: 0 },
     })
+    expect(
+      sqlite
+        .prepare(
+          `SELECT ct.confirmed FROM candidate_tags ct JOIN tags t ON t.id=ct.tag_id
+           JOIN candidates c ON c.id=ct.candidate_id
+           WHERE c.source_title='Animated Button' AND t.axis='section' AND t.key='gallery'`,
+        )
+        .get(),
+    ).toEqual({ confirmed: 0 })
     const caseVariant = await request('codemyui-fixture-case', [
       {
         ...items[0]!,

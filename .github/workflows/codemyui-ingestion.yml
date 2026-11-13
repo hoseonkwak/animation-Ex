@@ -8,6 +8,11 @@ on:
   schedule:
     - cron: "37 1 * * 2"
   workflow_dispatch:
+    inputs:
+      refresh_tags:
+        description: "기존 후보에 CodeMyUI 공개 태그 제안을 보강 (일회성)"
+        type: boolean
+        default: false
   workflow_run:
     workflows: [CI]
     types: [completed]
@@ -38,5 +43,8 @@ jobs:
             set -- --scheduled
           else
             set --
+          fi
+          if [ "${{ inputs.refresh_tags }}" = "true" ]; then
+            set -- "$@" --refresh-tags
           fi
           node --experimental-transform-types ingestion/codemyui-cli.ts --live --remote-checkpoint "$@"

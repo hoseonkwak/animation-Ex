@@ -54,3 +54,4 @@ npm run ingest:wsss:fixture --workspace @kwak-motion/lab
 - 공개 WordPress API의 게시물 100개 단위, 최대 15페이지만 읽는다. robots를 확인하고 요청 간 1초를 둔다. 403·429는 즉시 중지한다.
 - 원본 Pen ID와 제작자가 함께 있는 `codepen` 임베드만 수집한다. Pen 없는 글은 별도 제외 수로 기록하고, 구조가 잘못된 글이 5개 또는 10%를 초과하면 중지한다.
 - 글 본문은 파싱 중에만 사용하고 저장하지 않는다. 출처 글 URL·제목·원본 CodePen URL만 후보에 넣는다. Section 태그는 미확정 제안이다.
+- 공개 WordPress `tags` ID에서 Section을 추가 추론할 수 있지만 `confirmed=0`으로 둔다. 기존 후보 보강은 수동 workflow의 `refresh_tags`로만 수행하며, 기본 예약 실행은 checkpoint를 따라 완료 글을 건너뛴다.

@@ -24,7 +24,7 @@ const credentials = {
 async function fetchSource(url: string): Promise<Response> {
   const allowed =
     url === 'https://codemyui.com/robots.txt' ||
-    /^https:\/\/codemyui\.com\/wp-json\/wp\/v2\/posts\?per_page=100&page=\d{1,2}&_fields=id,link,title,content$/.test(
+    /^https:\/\/codemyui\.com\/wp-json\/wp\/v2\/posts\?per_page=100&page=\d{1,2}&_fields=id,link,title,content,tags$/.test(
       url,
     )
   if (!allowed)
@@ -93,10 +93,11 @@ async function run(): Promise<void> {
   let withoutPen = 0
   let knownInvalid = 0
   const invalidPostIds: number[] = []
+  const refreshTags = args.includes('--refresh-tags')
   for (let page = 1; page <= totalPages; page += 1) {
     if (page > 15)
       throw new CollectionStoppedError('SOURCE_PAGE_LIMIT', 'CodeMyUI 페이지가 15개를 초과합니다.')
-    const url = `${CODEMYUI_API_BASE}?per_page=100&page=${page}&_fields=id,link,title,content`
+    const url = `${CODEMYUI_API_BASE}?per_page=100&page=${page}&_fields=id,link,title,content,tags`
     const response = await fetchSource(url)
     if (page === 1) {
       const declared = Number(response.headers.get('X-WP-TotalPages'))
@@ -108,8 +109,12 @@ async function run(): Promise<void> {
       }
       totalPages = declared
     }
-    const result = parseCodeMyUiPosts(await response.json(), checkpoint)
-    items.push(...result.items)
+    const result = parseCodeMyUiPosts(await response.json(), checkpoint, refreshTags)
+    items.push(
+      ...(refreshTags
+        ? result.items.filter((item) => item.tags.some((tag) => tag.axis === 'section'))
+        : result.items),
+    )
     examined += result.examined
     withoutPen += result.withoutPen
     knownInvalid += result.knownInvalid
@@ -124,6 +129,7 @@ async function run(): Promise<void> {
         examined,
         withoutPen,
         knownInvalid,
+        refreshTags,
         invalid: invalidPostIds.length,
         invalidPostIds,
         candidates: unique.length,
@@ -178,6 +184,7 @@ async function run(): Promise<void> {
       examined,
       withoutPen,
       knownInvalid,
+      refreshTags,
       invalid: invalidPostIds.length,
       invalidPostIds,
       candidates: unique.length,

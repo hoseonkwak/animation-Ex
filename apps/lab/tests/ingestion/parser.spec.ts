@@ -57,6 +57,21 @@ describe('CodeMyUI 공개 API', () => {
       expect.objectContaining({ code: 'CODEMYUI_STRUCTURE_CHANGED' }),
     )
   })
+
+  it('출처의 공개 태그를 미확정 섹션 제안으로 보강하고 필요할 때 기존 항목을 다시 읽는다', () => {
+    const tagged = [{ ...posts[0], tags: [38934147, 81450, 94913] }, ...posts.slice(1)]
+    const first = parseCodeMyUiPosts(tagged)
+    expect(first.items[0]!.tags).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ axis: 'section', key: 'hero', confirmed: false }),
+        expect.objectContaining({ axis: 'section', key: 'gallery', confirmed: false }),
+      ]),
+    )
+    expect(first.items[0]!.tags.filter((tag) => tag.key === 'button')).toHaveLength(1)
+    const checkpoint = advanceCodeMyUiCheckpoint(undefined, [first.items[0]!.externalId])
+    expect(parseCodeMyUiPosts(tagged, checkpoint).items).toHaveLength(1)
+    expect(parseCodeMyUiPosts(tagged, checkpoint, true).items).toHaveLength(2)
+  })
 })
 
 describe('WSSS parser fixture', () => {

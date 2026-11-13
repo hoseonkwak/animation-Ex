@@ -1,6 +1,6 @@
 import { IngestionParseError, normalizeCodePenUrl } from './normalize.ts'
 import { suggestTags } from './tags.ts'
-import type { IngestionCandidate } from './types.ts'
+import type { IngestionCandidate, SuggestedTag } from './types.ts'
 
 export const CODEMYUI_CATEGORY = 'CodeMyUI/All'
 export const CODEMYUI_API_BASE = 'https://codemyui.com/wp-json/wp/v2/posts'
@@ -10,6 +10,33 @@ export interface CodeMyUiPost {
   link: string
   title: { rendered: string }
   content: { rendered: string }
+  tags?: number[]
+}
+
+// CodeMyUI의 공개 WordPress 태그 ID. 실제 화면을 검증하기 전까지 모두 미확정 제안이다.
+const sectionByTagId = new Map<number, string>([
+  [38934147, 'hero'],
+  [81450, 'gallery'],
+  [268522, 'slider'],
+  [177948406, 'card'],
+  [16439113, 'loading'],
+  [94913, 'button'],
+  [1520705, 'navigation'],
+  [1512930, 'text'],
+  [5441733, 'modal'],
+  [2647499, 'form'],
+  [1745484, 'image'],
+])
+
+function suggestedTags(post: CodeMyUiPost, title: string): SuggestedTag[] {
+  const tags = suggestTags(CODEMYUI_CATEGORY, title)
+  for (const id of post.tags ?? []) {
+    const key = sectionByTagId.get(id)
+    if (key && !tags.some((tag) => tag.axis === 'section' && tag.key === key)) {
+      tags.push({ axis: 'section', key, source: 'inferred', confidence: 0.85, confirmed: false })
+    }
+  }
+  return tags
 }
 
 export interface CodeMyUiCheckpoint {
@@ -31,6 +58,7 @@ function decode(value: string): string {
 export function parseCodeMyUiPosts(
   posts: unknown,
   checkpoint?: CodeMyUiCheckpoint,
+  refreshTags = false,
 ): {
   items: IngestionCandidate[]
   examined: number
@@ -44,7 +72,7 @@ export function parseCodeMyUiPosts(
       'CodeMyUI 게시물 배열이 비었습니다.',
     )
   }
-  const processed = new Set(checkpoint?.processedExternalIds ?? [])
+  const processed = new Set(refreshTags ? [] : (checkpoint?.processedExternalIds ?? []))
   const items = new Map<string, IngestionCandidate>()
   let withoutPen = 0
   let knownInvalid = 0
@@ -108,7 +136,7 @@ export function parseCodeMyUiPosts(
         title,
       },
       suggestedTitleKo: title,
-      tags: suggestTags(CODEMYUI_CATEGORY, title),
+      tags: suggestedTags(post as CodeMyUiPost, title),
     })
   }
   if (invalidPostIds.length + knownInvalid > Math.max(5, posts.length * 0.1)) {

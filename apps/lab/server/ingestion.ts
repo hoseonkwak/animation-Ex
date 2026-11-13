@@ -237,6 +237,34 @@ async function knownTags(
   return found
 }
 
+async function addMissingSuggestedTags(
+  db: D1Database,
+  candidateId: string | null | undefined,
+  tags: SuggestedTag[],
+): Promise<void> {
+  if (!candidateId || tags.length === 0) return
+  const candidate = await db
+    .prepare('SELECT status FROM candidates WHERE id = ?')
+    .bind(candidateId)
+    .first<{ status: string }>()
+  if (candidate?.status !== 'review') return
+  const found = await knownTags(
+    db,
+    tags.filter((tag) => !tag.confirmed),
+  )
+  if (found.length === 0) return
+  await db.batch(
+    found.map((tag) =>
+      db
+        .prepare(
+          `INSERT OR IGNORE INTO candidate_tags (candidate_id, tag_id, source, confidence, confirmed)
+           VALUES (?, ?, ?, ?, 0)`,
+        )
+        .bind(candidateId, tag.id, tag.source, tag.confidence),
+    ),
+  )
+}
+
 async function processItem(
   db: D1Database,
   discoverySourceId: string,
@@ -255,6 +283,9 @@ async function processItem(
     .bind(discoverySourceId, item.externalId)
     .first<{ candidate_id: string | null }>()
   if (previousDiscovery) {
+    if (discoverySourceId === 'discovery-codemyui') {
+      await addMissingSuggestedTags(db, previousDiscovery.candidate_id, item.tags)
+    }
     await db
       .prepare(
         `INSERT OR IGNORE INTO ingestion_items (

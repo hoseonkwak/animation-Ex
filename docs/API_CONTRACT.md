@@ -308,6 +308,8 @@ CodeMyUI는 게시물에서 원본 Pen 메타데이터를 파싱하지 못한 �
 
 CodeMyUI checkpoint 응답은 최근 partial 실행의 파싱 실패 글 ID를 `knownInvalidPostIds`로 포함한다. 수집기는 같은 글을 계속 재검사하되 이미 알려진 형식 문제를 반복해서 신규 실패로 세지 않고, Pen이 정상 파싱되면 해당 ID를 checkpoint에서 제거한다.
 
+CodeMyUI의 공개 WordPress Section 태그는 `confirmed=0`인 후보 제안으로만 저장한다. 수동 `refresh_tags` 재수집에서 동일한 외부 ID가 중복으로 판정되더라도 상태가 `review`인 기존 후보에 누락된 미확정 태그만 추가할 수 있다. 기존 태그의 확정 여부, 후보 상태와 공개 Entry는 변경하지 않는다.
+
 CodePen 중복 판정에서 제작자 이름의 대소문자 차이는 같은 계정으로 처리하되 Pen ID의 대소문자는 보존한다.
 
 ## 5. 상태 코드

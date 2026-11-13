@@ -133,9 +133,11 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 
 - [CodeMyUI 공개 WordPress API](https://codemyui.com/wp-json/wp/v2/posts?per_page=1&_fields=id,link,title,content)의 13페이지를 1초 간격으로 읽기 전용 확인했다. 1,208개 글 중 Pen 없는 글 65개, 형식 문제 3개를 제외하고 원본 Pen 1,136개를 정규화했다. API의 글 본문은 임베드 메타데이터를 파싱하는 동안만 사용하며 저장하지 않는다.
 - 원본 제작자와 Pen ID는 `data-slug-hash` 및 임베드의 `(@creator)`에서 읽는다. 출처 글 URL과 원본 CodePen URL을 별도로 저장한다. 제목 기반 태그는 미확정 제안이다.
-- 1,136개는 운영 중복이나 실행 화면 검증 전 수량이다. 첫 예약 실행의 신규·중복·실패 수와 Production D1 checkpoint를 확인하고, 공개 수는 별도로 대조한다.
+- 1,136개는 운영 중복이나 실행 화면 검증 전 수량이다. 첫 자동 실행의 신규·중복·실패 수와 Production D1 checkpoint를 확인하고, 공개 수는 별도로 대조한다.
 - 연속 푸시 중 이전 CI가 뒤늦게 성공해 새 수집 워크플로가 최신 Worker 배포보다 먼저 시작되면 API 카테고리 검증이 실패할 수 있다. `workflow_run.head_sha`가 현재 기본 브랜치 SHA와 같은 경우에만 배포 후 수집하고, 같은 출처의 실행은 직렬화한다.
 - Pen 메타데이터 형식 문제는 글 ID를 `failure_detail`에 남기고 최근 partial checkpoint에 보존한다. 다음 실행에서는 이미 알려진 오류를 새 실패로 다시 세지 않지만 원본 글을 계속 검사해 수정되면 자동 복구한다.
 - [첫 실행 43407210044](https://github.com/hoseonkwak/animation-Ex/actions/runs/43407210044)은 이전 CI가 최신 Worker 배포보다 먼저 끝나 API의 새 카테고리 검증에서 실패했다. 최신 배포 이후 [재실행 43407560414](https://github.com/hoseonkwak/animation-Ex/actions/runs/43407560414)은 GitHub Actions `success`, Production D1은 `partial`이었다. D1 집계는 `discovered=1,139`, `accepted=967`, `duplicates=169`, `failed=3`이며 실패한 글 ID는 `28818,26373,24673`이다. 파싱한 Pen 1,136개의 external ID가 checkpoint에 기록됐다.
 - 운영 전체 검수 대기는 40개에서 1,121개로 늘었다. 이 중 새 출처의 신규 후보는 The Animated Web 114개와 CodeMyUI 967개다. 공개 예제는 **1,879개 그대로**이며, 목표 3,000개까지의 차이는 1,121개다. 현재 대기 후보를 모두 공개할 수 있다고 가정하지 않는다.
 - CodeMyUI 신규 후보의 제목 기반 Section 제안은 텍스트 136, 버튼 107, 내비게이션 77, 카드 60, 폼 39, 로딩 37, 배경 28, 슬라이더 27, 모달 22, Hero 10개다. 여러 Section을 동시에 제안한 항목이 있어 합계는 신규 후보 수와 다르다. 475개에는 Section 제안이 없다. 모두 미확정이며 화면 단위 분류가 필요하다.
+- 이후 Production의 CodeMyUI 발견 경로에서 Section 제안이 없는 검수 후보 481개를 공개 WordPress 태그와 대조했다. 192개에 추가 신호가 있었고 그중 Hero 28, Gallery 19개였다. 출처에서 원래 제공한 태그도 실제 애니메이션 구성과 다를 수 있어 미확정 제안으로만 저장한다. 예약 수집에 이 태그를 추가하고, 이전 후보는 별도의 일회성 `refresh_tags` 수동 실행으로 보강한다.
+- [CodeMyUI 재실행 43410114404](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114404)는 GitHub Actions와 Production D1 모두 `success`, 신규 0·중복 3·실패 0이었다. checkpoint에는 완료 외부 ID 1,139개와 기존 파싱 오류 글 ID 3개가 남았다. [The Animated Web 재실행 43410114307](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114307)도 성공했고 신규·중복·실패 0이었다. 공개 수는 여전히 1,879개다.
