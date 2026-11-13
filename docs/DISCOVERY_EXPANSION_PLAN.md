@@ -118,4 +118,5 @@ CodePen의 과거 Picks·Popular·Recent 및 Collection 피드는 이번 확인�
 - `css-gallery`, `css-animated-backgrounds`, `css-card-hover-effects`, `css-hero-sections`, `css-carousels`, `css-animations`의 파서 결과는 각각 18, 27, 32, 8, 26, 33개였다. 목록 간 중복을 합치면 고유 141개이고 Production Source에 없는 URL은 136개였다. 이 수는 수집 전 후보 잠재량이며 실행 가능·공개 가능 수가 아니다.
 - 목록의 `data-stash-source`를 원본 Pen으로, `data-stash-url`을 발견 경로로 기록한다. Gallery와 Hero는 제목에 구체적인 동작 신호가 있을 때만 후보로 삼는다. Section 태그는 미확정 제안으로 저장한다.
 - 다음 게이트는 운영 후보 등록 → 중복·실행 검사 → 카테고리별 표본 정확도 확인 → 자동 공개 조건 확대다. Browser Run 무료 10분/일 범위를 확인하기 전에는 검사량을 올리지 않는다. 공개 총수가 늘어난 사실은 D1 Entry와 실행 증거로만 보고한다.
-- 새 수집 workflow는 매일 예약 외에 `master` CI의 Production 배포가 성공한 직후에도 한 번 실행한다. 기존 checkpoint가 있는 카테고리는 완료한 Pen을 다시 후보로 만들지 않는다.
+- 첫 자동 실행은 [GitHub Actions 실행 43401942944](https://github.com/hoseonkwak/animation-Ex/actions/runs/43401942944)에서 출처 요청 단계에 실패했다. 진단 주석을 추가한 [재실행 43403010026](https://github.com/hoseonkwak/animation-Ex/actions/runs/43403010026)은 `SOURCE_RATE_LIMITED: FreeFrontend HTTP 403`을 기록했다. Production D1에는 이 출처의 수집 실행이 없으며 신규 후보와 공개 예제도 늘지 않았다.
+- 403을 우회하지 않기 위해 이 workflow의 예약 및 배포 후 자동 트리거를 제거했다. 출처가 공식적으로 자동 접근을 허용하기 전까지 수동 실행도 하지 않는다. 위의 136개는 여전히 로컬 읽기 전용 발견 잠재량이다. 3,000개 목표를 위해 자동 접근 가능한 다른 출처를 발굴한다.
