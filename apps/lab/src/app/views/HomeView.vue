@@ -11,6 +11,7 @@ const scheduler = createPreviewScheduler(1)
 const examples = ref<ExampleCard[]>([])
 const discovery = ref<DiscoveryPayload>({
   totalCount: 0,
+  categories: [],
   sections: [],
   patterns: [],
   collections: [],
@@ -59,10 +60,10 @@ onMounted(async () => {
           <span>전체</span><strong>{{ discovery.totalCount }}</strong>
         </RouterLink>
         <RouterLink
-          v-for="section in discovery.sections"
+          v-for="section in discovery.categories"
           :key="section.key"
           class="category-pill"
-          :to="{ path: '/explore', query: { section: section.key } }"
+          :to="{ path: '/explore', query: { category: section.key } }"
         >
           <span>{{ section.label }}</span
           ><strong>{{ section.count }}</strong>

@@ -112,8 +112,20 @@ const filterGroups: Array<{
   },
 ]
 
+const categoryLabel = computed(() => {
+  const key = queryValue('category')
+  if (key === 'unclassified') return '미분류'
+  return (
+    filterGroups
+      .find((group) => group.axis === 'section')
+      ?.options.find((option) => option.key === key)?.label ?? key
+  )
+})
 const activeFilterCount = computed(() =>
-  filterGroups.reduce((count, group) => count + selectedValues(group.axis).length, 0),
+  filterGroups.reduce(
+    (count, group) => count + selectedValues(group.axis).length,
+    categoryLabel.value ? 1 : 0,
+  ),
 )
 watch(
   () => route.fullPath,
@@ -141,6 +153,7 @@ function apiSearchParams(cursor?: string): URLSearchParams {
   const params = new URLSearchParams()
   for (const name of [
     'q',
+    'category',
     'technology',
     'trigger',
     'motion',
@@ -219,7 +232,7 @@ function toggleFilter(axis: TagAxis, key: string): void {
 }
 
 function clearFilters(): void {
-  const values: Record<string, undefined> = {}
+  const values: Record<string, undefined> = { category: undefined }
   for (const group of filterGroups) values[group.axis] = undefined
   updateQuery(values)
 }
@@ -313,6 +326,15 @@ function setGridColumns(columns: 2 | 3 | 4): void {
             >
             <button v-if="activeFilterCount" type="button" @click="clearFilters">초기화</button>
           </div>
+          <button
+            v-if="categoryLabel"
+            type="button"
+            class="filter-chip selected"
+            :aria-label="`${categoryLabel} 카테고리 필터 해제`"
+            @click="updateQuery({ category: undefined })"
+          >
+            {{ categoryLabel }} ×
+          </button>
           <fieldset v-for="group in filterGroups" :key="group.axis">
             <legend>{{ group.label }}</legend>
             <button

@@ -20,6 +20,7 @@ interface Cursor {
 
 export interface ExampleFilters {
   q?: string | undefined
+  category?: string | undefined
   tags: Partial<Record<TagAxis, string[]>>
   difficulty?: Difficulty[] | undefined
   origin?: ContentOrigin | undefined
@@ -67,6 +68,7 @@ export class ApiInputError extends Error {
 
 const allowedParameters = new Set([
   'q',
+  'category',
   ...tagAxes,
   'difficulty',
   'origin',
@@ -77,6 +79,15 @@ const allowedParameters = new Set([
   'cursor',
 ])
 const keyPattern = /^[a-z0-9-]+$/
+
+// The same assignment drives Home's counts and its Explore links.
+export const primaryCategorySql = `COALESCE((
+  SELECT t.key FROM entry_tags et JOIN tags t ON t.id = et.tag_id
+  WHERE et.animation_entry_id = e.id AND t.axis = 'section' AND t.active = 1
+    AND (t.key <> 'hero' OR et.confirmed = 1)
+  ORDER BY et.confirmed DESC, et.confidence DESC, t.key
+  LIMIT 1
+), 'unclassified')`
 
 function listParameter(url: URL, name: string): string[] | undefined {
   const raw = url.searchParams.get(name)
@@ -101,6 +112,10 @@ export function parseExampleFilters(url: URL): ExampleFilters {
   }
 
   const q = url.searchParams.get('q')?.trim()
+  const category = url.searchParams.get('category')
+  if (category !== null && !keyPattern.test(category)) {
+    throw new ApiInputError('INVALID_FILTER', '지원하지 않는 카테고리입니다.')
+  }
   if (q && (q.length < 2 || q.length > 80)) {
     throw new ApiInputError('INVALID_FILTER', '검색어는 2자 이상 80자 이하여야 합니다.', {
       q,
@@ -151,6 +166,7 @@ export function parseExampleFilters(url: URL): ExampleFilters {
 
   return {
     q: q || undefined,
+    category: category ?? undefined,
     tags,
     difficulty,
     origin: origin ?? undefined,
@@ -242,6 +258,11 @@ export class ExamplesRepository {
   }> {
     const conditions = ["e.status = 'published'", "e.preview_kind = 'codepen'", 'p.active = 1']
     const bindings: unknown[] = []
+
+    if (filters.category) {
+      conditions.push(`${primaryCategorySql} = ?`)
+      bindings.push(filters.category)
+    }
 
     if (filters.q) {
       conditions.push(`(e.search_text LIKE ? OR EXISTS (

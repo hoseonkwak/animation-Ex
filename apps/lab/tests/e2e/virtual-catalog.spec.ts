@@ -169,7 +169,7 @@ test('재활용 카드에서 이전 예제의 실행 상태가 남지 않는다'
 test('카테고리가 많아도 데스크톱과 모바일에서 끝 항목이 잘리지 않는다', async ({ page }) => {
   const response = await page.request.get('/api/v1/discovery')
   const template = await response.json()
-  const sections = Array.from({ length: 12 }, (_, index) => ({
+  const categories = Array.from({ length: 12 }, (_, index) => ({
     key: `section-${index}`,
     label: `카테고리 ${index}`,
     count: index + 1,
@@ -180,7 +180,7 @@ test('카테고리가 많아도 데스크톱과 모바일에서 끝 항목이 �
       contentType: 'application/json',
       body: JSON.stringify({
         ...template,
-        data: { ...template.data, sections },
+        data: { ...template.data, categories },
       }),
     }),
   )

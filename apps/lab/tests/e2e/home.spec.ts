@@ -5,7 +5,13 @@ test('P1-UX-01 Vue 애플리케이션이 로드된다', async ({ page }) => {
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('웹 애니메이션 예제')
   await expect(page.getByRole('heading', { name: '카테고리' })).toBeVisible()
-  await expect(page.locator('.category-pill')).toHaveCount(6)
+  const categoryNav = page.getByRole('navigation', { name: '애니메이션 카테고리' })
+  await expect(categoryNav.getByRole('link', { name: /미분류/ })).toHaveAttribute(
+    'href',
+    '/explore?category=unclassified',
+  )
+  const counts = (await categoryNav.locator('strong').allTextContents()).map(Number)
+  expect(counts.slice(1).reduce((total, count) => total + count, 0)).toBe(counts[0])
   await expect(page.locator('.example-card')).toHaveCount(12)
   await expect(page.locator('.preview-thumbnail')).toHaveCount(12)
   await expect(page.locator('.preview-thumbnail img')).toHaveCount(12)

@@ -5,7 +5,7 @@ import type {
   SectionSummary,
 } from '../src/shared/discovery'
 import type { ExampleCard } from '../src/shared/examples'
-import { ExamplesRepository } from './examples'
+import { ExamplesRepository, primaryCategorySql } from './examples'
 
 const sectionDescriptions: Record<string, string> = {
   hero: '첫 화면에서 메시지와 제품을 인상적으로 소개하는 움직임',
@@ -41,14 +41,20 @@ export class PublicRepository {
   constructor(private readonly db: D1Database) {}
 
   async discovery(): Promise<DiscoveryPayload> {
-    const [totalResult, sectionResult, patternResult, collectionResult] = await Promise.all([
+    const [categoryResult, sectionResult, patternResult, collectionResult] = await Promise.all([
       this.db
         .prepare(
-          `SELECT COUNT(DISTINCT e.id) AS count FROM animation_entries e
-          JOIN codepen_refs p ON p.animation_entry_id = e.id AND p.active = 1
-          WHERE e.status = 'published' AND e.preview_kind = 'codepen'`,
+          `WITH categorized AS (
+            SELECT ${primaryCategorySql} AS key FROM animation_entries e
+            JOIN codepen_refs p ON p.animation_entry_id = e.id AND p.active = 1
+            WHERE e.status = 'published' AND e.preview_kind = 'codepen'
+          )
+          SELECT c.key, COALESCE(t.label_ko, '미분류') AS label_ko, COUNT(*) AS count
+          FROM categorized c LEFT JOIN tags t ON t.axis = 'section' AND t.key = c.key
+          GROUP BY c.key, t.label_ko
+          ORDER BY (c.key = 'unclassified'), count DESC, label_ko`,
         )
-        .first<{ count: number }>(),
+        .all<SectionRow>(),
       this.db
         .prepare(
           `SELECT t.key, t.label_ko, COUNT(DISTINCT e.id) AS count
@@ -102,7 +108,13 @@ export class PublicRepository {
       const items = await this.collectionItems(collection.id)
       if (items.length) collections.push({ ...collection, items })
     }
-    return { totalCount: Number(totalResult?.count ?? 0), sections, patterns, collections }
+    const categories = categoryResult.results.map((row) => ({
+      key: row.key,
+      label: row.label_ko,
+      count: Number(row.count),
+    }))
+    const totalCount = categories.reduce((total, category) => total + category.count, 0)
+    return { totalCount, categories, sections, patterns, collections }
   }
 
   async sitemapSlugs(): Promise<{ examples: string[]; sections: string[] }> {

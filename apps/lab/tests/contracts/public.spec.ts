@@ -3,6 +3,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import type { DiscoveryPayload } from '../../src/shared/discovery'
 
 import worker from '../../server/index'
 import { createMigratedDatabase } from './database'
@@ -98,6 +99,37 @@ describe('WP6 public API', () => {
     )
     const filteredBody = (await filtered.json()) as { data: { items: Array<{ id: string }> } }
     expect(filteredBody.data.items.some((entry) => entry.id === 'entry-basic-1')).toBe(false)
+    sqlite.close()
+  })
+
+  it('홈 카테고리는 미분류를 포함해 예제를 한 번씩 집계하고 탐색과 일치한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase()
+    sqlite.exec(`DELETE FROM entry_tags WHERE animation_entry_id IN ('entry-basic-1', 'entry-legacy-02');
+      INSERT INTO entry_tags (animation_entry_id, tag_id, source, confidence, confirmed) VALUES
+        ('entry-basic-1', 'tag-section-hero', 'inferred', 1, 0),
+        ('entry-legacy-02', 'tag-section-hero', 'admin', 1, 1),
+        ('entry-legacy-02', 'tag-section-background', 'inferred', 1, 0)`)
+    const request = (path: string) =>
+      worker.fetch(new Request(`https://example.test/api/v1/${path}`), { DB: d1 }, context)
+    const response = await request('discovery')
+    const { data } = (await response.json()) as { data: DiscoveryPayload }
+    expect(data.categories.reduce((sum, category) => sum + category.count, 0)).toBe(data.totalCount)
+    expect(data.categories.map(({ key }) => key)).toContain('unclassified')
+    const seen = new Map<string, string>()
+    for (const category of data.categories) {
+      const filtered = await request(`examples?category=${category.key}`)
+      expect(filtered.status).toBe(200)
+      const {
+        data: { items },
+      } = (await filtered.json()) as { data: { items: Array<{ id: string }> } }
+      expect(items).toHaveLength(category.count)
+      for (const item of items) {
+        expect(seen.has(item.id)).toBe(false)
+        seen.set(item.id, category.key)
+      }
+    }
+    expect(seen.get('entry-basic-1')).toBe('unclassified')
+    expect(seen.get('entry-legacy-02')).toBe('hero')
     sqlite.close()
   })
 

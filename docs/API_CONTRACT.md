@@ -52,6 +52,7 @@
 | `trigger`       | 쉼표로 구분한 tag key            | 없음     |
 | `motion`        | 쉼표로 구분한 tag key            | 없음     |
 | `section`       | 쉼표로 구분한 tag key            | 없음     |
+| `category`      | 대표 카테고리 키 또는 `unclassified` | 없음     |
 | `technique`     | 쉼표로 구분한 tag key            | 없음     |
 | `difficulty`    | `beginner,intermediate,advanced` | 없음     |
 | `origin`        | `original-pen,lab-created`       | 없음     |
@@ -64,6 +65,8 @@
 같은 축의 값은 OR, 서로 다른 축은 AND로 결합한다. 예를 들어 `technology=gsap,css&trigger=scroll`은 GSAP 또는 CSS이면서 Scroll인 예제를 찾는다.
 
 `practiceReady=true`는 공개된 Entry 가운데 상태가 `ready`인 자체 제작 Practice Kit이 연결된 항목만 반환한다. `/practice` 홈은 이 필터와 cursor를 사용해 Kit을 탐색한다. 다른 값은 `INVALID_FILTER`로 거절한다.
+
+`GET /discovery`의 `categories`는 홈 카테고리 배열이며 `count`의 합이 `totalCount`다. `category` 필터는 이 배열과 같은 기준으로 예제마다 대표 카테고리 하나를 지정한다. `section`은 해당 영역 태그가 포함된 모든 예제를 검색한다.
 
 목록 항목에는 카드에 필요한 값만 포함한다.
 

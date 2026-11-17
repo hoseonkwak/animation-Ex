@@ -5,7 +5,13 @@ import type { DiscoveryPayload } from '@/shared/discovery'
 import type { ApiSuccess } from '@/shared/examples'
 import { setPageMeta } from '@/app/pageMeta'
 
-const data = ref<DiscoveryPayload>({ totalCount: 0, sections: [], patterns: [], collections: [] })
+const data = ref<DiscoveryPayload>({
+  totalCount: 0,
+  categories: [],
+  sections: [],
+  patterns: [],
+  collections: [],
+})
 const loading = ref(true)
 const error = ref('')
 

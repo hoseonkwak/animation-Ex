@@ -23,6 +23,7 @@ export interface CollectionSummary {
 
 export interface DiscoveryPayload {
   totalCount: number
+  categories: Array<Pick<SectionSummary, 'key' | 'label' | 'count'>>
   sections: SectionSummary[]
   patterns: PatternSummary[]
   collections: CollectionSummary[]
