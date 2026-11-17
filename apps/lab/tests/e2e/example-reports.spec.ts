@@ -15,8 +15,11 @@ test('예제 문제 신고를 관리자가 확인하고 처리한다', async ({ 
   const panel = page.getByRole('region', { name: '예제 문제 신고' })
   await expect(panel.getByRole('heading', { name: /예제 문제 신고/ })).toContainText('1')
   await expect(panel.getByLabel('신고된 예제')).toContainText('GSAP 기초 예제 1')
-  await panel.getByLabel('처리 근거').fill('실행 화면 오류를 직접 확인했습니다.')
-  await panel.getByRole('button', { name: '신고 닫기' }).click()
+  page.once('dialog', (dialog) => dialog.dismiss())
+  await panel.getByRole('button', { name: '예제 삭제', exact: true }).click()
+  await expect(panel.getByLabel('신고된 예제')).toContainText('GSAP 기초 예제 1')
+  await panel.getByLabel('처리 근거').fill('실행 화면을 확인했습니다.')
+  await panel.getByRole('button', { name: '신고만 닫기' }).click()
   await expect(panel.getByText('신고를 닫았습니다.')).toBeVisible()
   await expect(panel.getByText('미처리 신고가 없습니다.')).toBeVisible()
 

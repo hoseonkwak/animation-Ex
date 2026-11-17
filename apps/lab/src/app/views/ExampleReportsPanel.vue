@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import type { ApiSuccess } from '@/shared/examples'
 
@@ -41,6 +41,9 @@ const notice = ref('')
 const localHeaders = { 'X-Local-Access-Email': 'owner@local.test' }
 
 onMounted(load)
+watch(selectedId, () => {
+  adminNote.value = ''
+})
 
 async function load(): Promise<void> {
   loading.value = true
@@ -67,15 +70,26 @@ async function load(): Promise<void> {
 }
 
 async function decide(action: 'dismiss' | 'unpublish'): Promise<void> {
-  if (!selected.value || adminNote.value.trim().length < 3) return
+  const report = selected.value
+  const note = adminNote.value.trim()
+  if (!report || busy.value || (action === 'dismiss' && note.length < 3)) return
+  if (
+    action === 'unpublish' &&
+    report.entryStatus === 'published' &&
+    !window.confirm('이 예제를 공개 목록에서 삭제하시겠어요?')
+  )
+    return
   busy.value = true
   error.value = ''
   notice.value = ''
   try {
-    const response = await fetch(`/api/v1/admin/example-reports/${selected.value.id}/resolve`, {
+    const response = await fetch(`/api/v1/admin/example-reports/${report.id}/resolve`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', ...localHeaders },
-      body: JSON.stringify({ action, note: adminNote.value.trim() }),
+      body: JSON.stringify({
+        action,
+        note: note.length >= 3 ? note : `신고 사유 · ${reasonLabels[report.reasonCode] ?? '기타'}`,
+      }),
     })
     if (!response.ok) {
       const body = (await response.json()) as { error?: { message?: string } }
@@ -83,7 +97,9 @@ async function decide(action: 'dismiss' | 'unpublish'): Promise<void> {
     }
     adminNote.value = ''
     notice.value =
-      action === 'unpublish' ? '예제 공개를 중지하고 신고를 처리했습니다.' : '신고를 닫았습니다.'
+      action === 'unpublish' && report.entryStatus === 'published'
+        ? '공개 목록에서 예제를 삭제하고 신고를 처리했습니다.'
+        : '신고를 닫았습니다.'
     if (action === 'unpublish') emit('unpublished')
     await load()
   } catch (cause) {
@@ -95,13 +111,16 @@ async function decide(action: 'dismiss' | 'unpublish'): Promise<void> {
 </script>
 
 <template>
-  <section class="triage-panel example-reports-panel" aria-label="예제 문제 신고">
+  <section
+    id="example-reports"
+    class="triage-panel example-reports-panel"
+    aria-label="예제 문제 신고"
+  >
     <div class="report-panel-heading">
       <div>
         <h2>
           예제 문제 신고 <strong>{{ counts.open }}</strong>
         </h2>
-        <p>신고를 확인한 뒤 예제를 공개 중지하거나 신고를 닫으세요.</p>
       </div>
       <label>
         신고 상태
@@ -131,7 +150,10 @@ async function decide(action: 'dismiss' | 'unpublish'): Promise<void> {
           <strong>{{ selected.title }}</strong> · {{ reasonLabels[selected.reasonCode] }} ·
           {{ selected.reportCount }}건
         </p>
-        <p>접수: {{ selected.createdAt }} · 예제 상태: {{ selected.entryStatus }}</p>
+        <p>
+          접수: {{ selected.createdAt }} ·
+          {{ selected.entryStatus === 'published' ? '공개 중' : '공개 중지됨' }}
+        </p>
         <p v-if="selected.note">신고 내용: {{ selected.note }}</p>
         <a :href="`/examples/${selected.slug}`" target="_blank" rel="noopener noreferrer"
           >공개 상세 열기</a
@@ -152,22 +174,18 @@ async function decide(action: 'dismiss' | 'unpublish'): Promise<void> {
             v-model="adminNote"
             maxlength="500"
             rows="2"
-            placeholder="직접 확인한 결과를 기록하세요."
+            placeholder="삭제 시 비워두면 신고 사유를 기록합니다."
           />
           <div class="preview-decision">
-            <button
-              type="button"
-              :disabled="busy || adminNote.trim().length < 3"
-              @click="decide('unpublish')"
-            >
-              {{ selected.entryStatus === 'published' ? '예제 공개 중지' : '처리 완료' }}
+            <button type="button" :disabled="busy" @click="decide('unpublish')">
+              {{ selected.entryStatus === 'published' ? '예제 삭제' : '처리 완료' }}
             </button>
             <button
               type="button"
               :disabled="busy || adminNote.trim().length < 3"
               @click="decide('dismiss')"
             >
-              신고 닫기
+              신고만 닫기
             </button>
           </div>
         </template>

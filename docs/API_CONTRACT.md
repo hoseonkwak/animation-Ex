@@ -281,6 +281,8 @@ GitHub Actions 수집기가 후보를 최대 50개씩 전달한다.
 
 일부 항목이 실패해도 성공 항목을 다시 보낼 필요가 없게 결과를 분리한다. `externalId`와 canonical URL은 멱등 키로 사용한다.
 
+D-071 이후 지정 출처의 신규 `accepted` 항목은 내부 Candidate 및 발견 이력, 공개 Entry, 활성 CodePenRef를 한 작업으로 저장한다. 새 Entry는 `runtimeVerified=false`로 반환한다. 중복은 기존 상태를 보존하며 공개 중지된 원본의 재수집도 중복으로 처리한다.
+
 ### `POST /ingestion/checkpoint`
 
 동일한 HMAC 인증으로 `{"category":"Animation/GSAP"}`를 전달하면 WSSS의 최근 `success` 또는 `partial` 수집 실행에 저장된 `checkpointAfter`를 반환한다. Spark는 `{"sourceKey":"spark","category":"CodePen/Spark"}`, The Animated Web은 `{"sourceKey":"animatedweb","category":"TheAnimatedWeb/CodePen"}`, CodeMyUI는 `{"sourceKey":"codemyui","category":"CodeMyUI/All"}`을 사용한다. 기록이 없으면 `null`이다. 예약 실행은 목록을 읽은 뒤 이 값을 받아 이미 저장한 원본을 건너뛴다.

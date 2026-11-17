@@ -251,7 +251,7 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     expect(response.headers.get('x-ingestion-usage-level')).toBe('warning')
   })
 
-  it('같은 fixture를 세 실행에 보내도 Candidate는 최초 세 개만 만든다', async () => {
+  it('한 번만 공개하고 실행 미확인 상태를 반환하며 재수집이 공개 중지를 되돌리지 않는다', async () => {
     const items = fixtureItems()
     const results = []
     for (let run = 1; run <= 3; run += 1) {
@@ -269,6 +269,36 @@ describe('P1-CONTENT WSSS signed batch API', () => {
       [0, 3],
       [0, 3],
     ])
+    const entries = sqlite
+      .prepare(
+        `SELECT e.slug FROM animation_entries e JOIN candidates c ON c.id=e.candidate_id
+         JOIN codepen_refs p ON p.animation_entry_id=e.id AND p.active=1
+         WHERE c.source_category='Animation/GSAP' AND c.status='approved'
+           AND e.status='published' AND e.runtime_verified=0`,
+      )
+      .all() as Array<{ slug: string }>
+    expect(entries).toHaveLength(3)
+    const sampleSlug = entries[0]!.slug
+    const detail = () =>
+      worker.fetch(
+        new Request(`https://example.test/api/v1/examples/${sampleSlug}`),
+        env(),
+        context,
+      )
+    const preview = await detail()
+    expect(preview.status).toBe(200)
+    expect(await preview.json()).toMatchObject({ data: { runtimeVerified: false } })
+    sqlite
+      .prepare("UPDATE animation_entries SET status='unpublished', published_at=NULL WHERE slug=?")
+      .run(sampleSlug)
+    const rerun = await signedRequest('/api/v1/ingestion/batches', {
+      runId: 'run-after-unpublish',
+      trigger: 'manual',
+      checkpointBefore: null,
+      items,
+    })
+    expect(await rerun.json()).toMatchObject({ data: { accepted: 0, duplicates: 3, failed: 0 } })
+    expect((await detail()).status).toBe(410)
     expect(
       sqlite
         .prepare(
@@ -446,6 +476,10 @@ describe('P1-CONTENT WSSS signed batch API', () => {
     expect((await first.json()) as object).toMatchObject({
       data: { accepted: 2, duplicates: 0, failed: 0 },
     })
+    // A candidate saved before direct publication can still receive suggestions.
+    sqlite
+      .prepare("UPDATE candidates SET status='review' WHERE source_title='Animated Button'")
+      .run()
     const second = await request('codemyui-fixture-2', [
       {
         ...items[0]!,

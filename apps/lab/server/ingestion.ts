@@ -359,6 +359,7 @@ async function processItem(
 
   const sourceId = newId()
   const candidateId = newId()
+  const entryId = newId()
   const tags = await knownTags(db, item.tags)
   const copy = suggestCandidateCopy({
     sourceTitle: item.source.title,
@@ -383,7 +384,7 @@ async function processItem(
       )
       .bind(
         sourceId,
-        item.source.url,
+        pen.canonicalUrl,
         item.source.canonicalUrl,
         item.source.creatorName || item.source.creatorSlug,
         now,
@@ -402,7 +403,7 @@ async function processItem(
         `INSERT INTO candidates (
         id, source_id, status, source_title, source_category, metadata_json,
         deduplication_key, confidence, priority_score, created_at, updated_at
-      ) VALUES (?, ?, 'review', ?, ?, ?, ?, ?, 50, ?, ?)`,
+      ) VALUES (?, ?, 'approved', ?, ?, ?, ?, ?, 50, ?, ?)`,
       )
       .bind(
         candidateId,
@@ -410,7 +411,7 @@ async function processItem(
         item.source.title,
         item.discoveredVia.category,
         metadata,
-        `codepen:${item.source.creatorSlug}/${item.source.canonicalUrl.split('/').at(-1)}`,
+        `codepen:${pen.penKey}`,
         item.tags.length ? 0.8 : 0.5,
         now,
         now,
@@ -423,6 +424,50 @@ async function processItem(
         )
         .bind(candidateId, tag.id, tag.source, tag.confidence, tag.confirmed ? 1 : 0),
     ),
+    db
+      .prepare(
+        `INSERT INTO animation_entries (
+          id, candidate_id, source_id, slug, title, original_title, summary, search_text,
+          content_origin, preview_kind, status, difficulty, featured, runtime_verified,
+          published_at, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'original-pen', 'codepen', 'published',
+          'intermediate', 0, 0, ?, ?, ?)`,
+      )
+      .bind(
+        entryId,
+        candidateId,
+        sourceId,
+        `pen-${candidateId.toLowerCase()}`,
+        copy.publicTitle,
+        item.source.title,
+        copy.summary,
+        `${copy.publicTitle} ${item.source.title} ${copy.summary} ${item.discoveredVia.category}`.toLowerCase(),
+        now,
+        now,
+        now,
+      ),
+    db
+      .prepare(
+        `INSERT INTO codepen_refs (
+          id, animation_entry_id, pen_key, pen_id, creator_slug, canonical_url, embed_url,
+          theme_id, default_tab, active, last_verified_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'light', 'result', 1, '1970-01-01T00:00:00.000Z')`,
+      )
+      .bind(
+        newId(),
+        entryId,
+        pen.penKey,
+        pen.penId,
+        pen.creatorSlug,
+        pen.canonicalUrl,
+        `https://codepen.io/${pen.creatorSlug}/embed/${pen.penId}?default-tab=result&theme-id=light`,
+      ),
+    db
+      .prepare(
+        `INSERT INTO entry_tags (animation_entry_id, tag_id, source, confidence, confirmed)
+         SELECT ?, tag_id, source, confidence, confirmed FROM candidate_tags WHERE candidate_id = ?`,
+      )
+      .bind(entryId, candidateId),
     db
       .prepare(
         `INSERT INTO ingestion_items (

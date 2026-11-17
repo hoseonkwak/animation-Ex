@@ -612,6 +612,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         <h1>Candidate Inbox</h1>
       </div>
       <div class="admin-header-actions">
+        <a v-if="authState === 'authenticated'" href="#example-reports">예제 문제 신고</a>
         <a href="/">공개 Explore 보기</a>
         <button v-if="authState === 'authenticated'" type="button" @click="logout">로그아웃</button>
       </div>
@@ -654,16 +655,16 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         ><strong>{{ queue.counts[item] ?? 0 }}</strong>
       </button>
     </section>
+    <ExampleReportsPanel
+      v-if="authState === 'authenticated'"
+      @unpublished="refreshAfterReportUnpublish"
+    />
     <IngestionRunsPanel
       v-if="authState === 'authenticated'"
       :runs="ingestionRuns"
       :loading="ingestionRunsLoading"
       :error="ingestionRunsError"
       @refresh="loadIngestionRuns"
-    />
-    <ExampleReportsPanel
-      v-if="authState === 'authenticated'"
-      @unpublished="refreshAfterReportUnpublish"
     />
     <section
       v-if="authState === 'authenticated' && status === 'review' && triage"

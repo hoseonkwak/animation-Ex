@@ -497,3 +497,10 @@
 - 근거: Production의 CodeMyUI 발견 경로 중 Section 제안이 없는 검수 후보 481개를 공개 태그와 읽기 전용 대조하니 192개에서 추가 신호를 찾았다. 이 중 Hero 28, Gallery 19개는 태그별 수치이며 같은 글이 여러 태그를 가질 수 있다. 192개는 분류 가능 수가 아니라 분류 검토 대상 수다.
 - 재실행 확인: [CodeMyUI Actions 43410114404](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114404)는 성공했고 Production D1은 신규 0, 중복 3, 실패 0, `knownInvalidPostIds` 3개를 기록했다. 추가 중복 3개는 이전에 처리된 글의 다른 외부 ID이며 신규 공개가 아니다. [The Animated Web Actions 43410114307](https://github.com/hoseonkwak/animation-Ex/actions/runs/43410114307)도 성공, 신규·중복·실패 각 0이었다.
 - 일회성 결과: [CodeMyUI Actions 43412081935](https://github.com/hoseonkwak/animation-Ex/actions/runs/43412081935)는 성공했다. Production D1은 발견 305·신규 0·중복 305·실패 0이며 CodeMyUI 발견 경로가 있는 검수 후보 중 Section 제안 없음은 481개에서 292개로 줄었다. 후보 상태와 공개 수 1,879개는 그대로다. 태그가 생긴 189개는 검수 대상이며 공개 가능 판정이 아니다.
+
+### D-071 새 수집분의 자동 공개와 신고 예제 삭제
+
+- 확인일: 2026-11-17
+- 소유자 요청에 따라 지정 출처의 서명된 수집으로 들어오는 고유 CodePen을 같은 DB 작업에서 공개한다. 원본 주소, 제작자, 라이선스 근거와 발견 이력을 보존하고 새 예제는 `실행 미확인`으로 표시한다. 태그의 확정 여부를 보존하며 미확정 Hero는 Hero 목록에 포함되지 않는다. 이 정책으로 D-067~D-070의 신규 수집 후 대기 정책을 갱신한다.
+- 운영 대기 1,121개는 `bulk-2026-11-17`로 공개했다. 전체 공개 3,000개와 연결된 활성 CodePenRef 1,121개, 검수 대기 0개를 운영 DB 및 공개 API에서 확인했다. 되돌리기는 `db/ops/rollback_review_queue_2026_11_17.sql`을 사용한다.
+- 관리자는 문제 신고에서 `예제 삭제`를 선택해 공개 목록에서 예제를 내린다. 상세 API는 410을 반환하고 기존 신고와 사유·처리 이력을 보존한다. 재수집은 삭제한 예제를 다시 게시하지 않는다.
