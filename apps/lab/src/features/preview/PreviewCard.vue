@@ -43,13 +43,13 @@ const frameKey = ref(0)
 const thumbnailFailed = ref(false)
 const thumbnailFromCodePen = ref(false)
 let trigger: HTMLElement | null = null
-const codePenUrl = computed(
-  () => props.example.preview.embedUrl.replace('/embed/', '/pen/').split('?')[0],
+const codePenUrl = computed(() =>
+  props.example.preview.embedUrl.replace('/embed/', '/pen/').replace(/\?.*$/, ''),
 )
 const thumbnailUrl = computed(() =>
   props.practice && !thumbnailFromCodePen.value
     ? `/practice-thumbnails/${props.example.slug}.png`
-    : `${codePenUrl.value}/image/large.png`,
+    : `${codePenUrl.value.replace('https://codepen.io/editor/', 'https://codepen.io/')}/image/large.png`,
 )
 
 function onThumbnailError(): void {

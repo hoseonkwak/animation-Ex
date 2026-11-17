@@ -1,4 +1,5 @@
 import type { SuggestedTag } from './types.ts'
+import { inferSection } from './section.ts'
 
 const exactMappings: Array<{ prefix: string; axis: SuggestedTag['axis']; key: string }> = [
   { prefix: 'Animation/GSAP', axis: 'technology', key: 'gsap' },
@@ -106,6 +107,11 @@ export function suggestTags(category: string, title: string): SuggestedTag[] {
         confirmed: false,
       })
     }
+  }
+  if (!tags.some((tag) => tag.axis === 'section' && tag.key !== 'hero')) {
+    const key = inferSection(title)
+    if (key)
+      tags.push({ axis: 'section', key, source: 'inferred', confidence: 0.7, confirmed: false })
   }
   return tags
 }

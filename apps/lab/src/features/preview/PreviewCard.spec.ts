@@ -68,6 +68,23 @@ describe('PreviewCard', () => {
     wrapper.unmount()
   })
 
+  it('CodePen 2.0 썸네일은 공개 이미지 경로를 사용한다', () => {
+    const penId = '01a16611-b29f-79f5-885d-a2c317fc92bf'
+    const embedUrl = `https://codepen.io/editor/example/embed/${penId}?default-tab=result`
+    const wrapper = mount(PreviewCard, {
+      props: {
+        example: { ...example, preview: { ...example.preview, penId, embedUrl } },
+        active: true,
+      },
+      global: { stubs: { Teleport: true, RouterLink: true } },
+    })
+    expect(wrapper.get('.preview-thumbnail img').attributes('src')).toBe(
+      `https://codepen.io/example/pen/${penId}/image/large.png`,
+    )
+    expect(wrapper.get('iframe').attributes('src')).toBe(embedUrl)
+    wrapper.unmount()
+  })
+
   it('iframe 오류를 모달에서 보여주고 다시 시도할 수 있다', async () => {
     const failed = mount(PreviewCard, {
       props: { example, active: true },

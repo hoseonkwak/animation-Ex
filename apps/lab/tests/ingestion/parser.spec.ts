@@ -13,6 +13,7 @@ import {
 } from '../../ingestion/pipeline.ts'
 import { fetchWsss, CollectionStoppedError, robotsAllows } from '../../ingestion/policy.ts'
 import { suggestTags } from '../../ingestion/tags.ts'
+import { inferSection } from '../../ingestion/section.ts'
 import {
   advanceSparkCheckpoint,
   buildSparkCandidates,
@@ -28,6 +29,16 @@ import { advanceCodeMyUiCheckpoint, parseCodeMyUiPosts } from '../../ingestion/c
 
 const fixture = (name: string) => readFileSync(path.resolve('fixtures/wsss', name), 'utf8')
 const categoryUrl = 'https://wsss.tistory.com/category/Animation/GSAP'
+
+it.each([
+  ['Horizontal Scroll Gallery', 'gallery'],
+  ['Range Slider Input', 'form'],
+  ['CSS Only Magazine Page Turning Animation', 'slider'],
+  ['Canvas - Floating Circles', undefined],
+  ['Hero Book Cover Slide to Intro', undefined],
+])('공개 제목 %s에 근거가 있는 영역만 제안한다', (title, expected) => {
+  expect(inferSection(title)).toBe(expected)
+})
 
 describe('CodeMyUI 공개 API', () => {
   const posts = JSON.parse(readFileSync(path.resolve('fixtures/codemyui.json'), 'utf8'))
