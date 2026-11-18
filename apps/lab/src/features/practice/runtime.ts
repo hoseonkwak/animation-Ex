@@ -1,6 +1,8 @@
 import gsapSource from 'gsap/dist/gsap.min.js?raw'
 import scrollTriggerSource from 'gsap/dist/ScrollTrigger.min.js?raw'
+import scrollSmootherSource from 'gsap/dist/ScrollSmoother.min.js?raw'
 import type { PracticeLibrary } from '@/shared/practice'
+import { validPracticeResources, type PracticeResources } from './resources'
 
 export interface PracticeCode {
   html: string
@@ -30,7 +32,19 @@ export function buildPracticeDocument(
   code: PracticeCode,
   runId: string,
   libraries: PracticeLibrary[] = [],
+  resources: PracticeResources = { scripts: [], styles: [], images: [] },
 ): string {
+  if (!validPracticeResources(resources)) throw new Error('외부 리소스 설정이 올바르지 않습니다.')
+  const policy = contentPolicy
+    .replace(
+      "script-src 'unsafe-inline'",
+      ["script-src 'unsafe-inline'", ...resources.scripts].join(' '),
+    )
+    .replace(
+      "style-src 'unsafe-inline'",
+      ["style-src 'unsafe-inline'", ...resources.styles].join(' '),
+    )
+    .replace('img-src data: blob:', ['img-src data: blob:', ...resources.images].join(' '))
   const payload = JSON.stringify({
     ...code,
     runId,
@@ -38,17 +52,22 @@ export function buildPracticeDocument(
     scrollTriggerSource: libraries.includes('gsap-scrolltrigger@3.15.0')
       ? scrollTriggerSource
       : null,
+    scrollSmootherSource: libraries.includes('gsap-scrollsmoother@3.15.0')
+      ? scrollSmootherSource
+      : null,
+    resources,
   }).replace(/</g, '\\u003c')
   return `<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="${contentPolicy}">
+<meta http-equiv="Content-Security-Policy" content="${policy}">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
 <script>
-(() => {
+(async () => {
   const data = ${payload};
   const send = (type, message) => parent.postMessage({ source: 'kwak-practice', runId: data.runId, type, message }, '*');
   const text = (value) => {
@@ -74,6 +93,9 @@ export function buildPracticeDocument(
   style.textContent = data.css;
   document.head.append(style);
   document.body.innerHTML = data.html;
+  for (const image of document.images) {
+    image.addEventListener('error', () => send('warn', '이미지를 불러오지 못했습니다. 외부 리소스에 주소를 추가했는지 확인하세요: ' + image.src.slice(0, 300)));
+  }
   if (data.gsapSource) {
     const library = document.createElement('script');
     library.textContent = data.gsapSource;
@@ -83,6 +105,32 @@ export function buildPracticeDocument(
     const plugin = document.createElement('script');
     plugin.textContent = data.scrollTriggerSource;
     document.body.append(plugin);
+  }
+  if (data.scrollSmootherSource) {
+    const plugin = document.createElement('script');
+    plugin.textContent = data.scrollSmootherSource;
+    document.body.append(plugin);
+  }
+  const loadResource = (url, type) => new Promise((resolve, reject) => {
+    const element = document.createElement(type === 'script' ? 'script' : 'link');
+    if (type === 'script') element.src = url;
+    else { element.rel = 'stylesheet'; element.href = url; }
+    const timer = setTimeout(() => { element.remove(); reject(new Error('리소스 로드 시간 초과: ' + url)); }, 10000);
+    element.onload = () => { clearTimeout(timer); resolve(); };
+    element.onerror = () => { clearTimeout(timer); reject(new Error('리소스를 불러오지 못했습니다: ' + url)); };
+    document.head.append(element);
+  });
+  const resourceHeartbeat = setInterval(() => send('heartbeat'), 1000);
+  try {
+    await Promise.all(data.resources.styles.map(url => loadResource(url, 'style')));
+    for (const url of data.resources.scripts) await loadResource(url, 'script');
+  } catch (error) {
+    send('error', text(error));
+    send('ready');
+    setInterval(() => send('heartbeat'), 1000);
+    return;
+  } finally {
+    clearInterval(resourceHeartbeat);
   }
   const script = document.createElement('script');
   script.textContent = [

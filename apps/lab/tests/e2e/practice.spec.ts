@@ -37,7 +37,7 @@ test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 �
   page,
 }) => {
   await page.goto('/examples/interactive-card-hover')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const card = preview.getByRole('button', { name: /움직이는 카드/ })
@@ -46,9 +46,8 @@ test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 �
   await expect
     .poll(() => card.evaluate((element) => (element as HTMLElement).style.getPropertyValue('--ry')))
     .not.toBe('0.0deg')
-  await page.getByRole('button', { name: '원본 참고' }).click()
-  await expect(page.getByLabel('원본 참고')).toContainText('practice-card-hover-v1')
-  await page.getByLabel('원본 참고').getByRole('button', { name: '닫기' }).click()
+  await page.getByText('연습 환경', { exact: true }).click()
+  await expect(page.locator('.practice-kit-info')).toContainText('practice-card-hover-v1')
   await page.getByRole('textbox', { name: 'HTML 코드' }).fill('<main>직접 수정</main>')
   await page.getByRole('button', { name: 'Run', exact: true }).click()
   await expect(preview.locator('main')).toHaveText('직접 수정')
@@ -63,7 +62,7 @@ test('GSAP Kit이 격리 실행 화면에서 움직이고 CodePen에도 같은 �
   page,
 }) => {
   await page.goto('/examples/gsap-basic-tween')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const box = preview.getByLabel('움직이는 상자')
@@ -79,14 +78,14 @@ test('GSAP Kit이 격리 실행 화면에서 움직이고 CodePen에도 같은 �
   expect(exportData.js_external).toBe('https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js')
   await page.reload()
   await expect(preview.getByLabel('움직이는 상자')).toBeVisible()
-  await page.getByRole('button', { name: '원본 참고' }).click()
-  await expect(page.getByLabel('원본 참고')).toContainText('GSAP 3.15.0')
+  await page.getByText('연습 환경', { exact: true }).click()
+  await expect(page.locator('.practice-kit-info')).toContainText('GSAP 3.15.0')
 })
 
 test('GSAP Kit은 움직임 줄이기 설정에서 최종 상태를 표시한다', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/examples/gsap-basic-tween')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const box = page.frameLocator('iframe[title="내 코드 실행 화면"]').getByLabel('움직이는 상자')
   await expect(box).toBeVisible()
   await expect
@@ -96,7 +95,7 @@ test('GSAP Kit은 움직임 줄이기 설정에서 최종 상태를 표시한다
 
 test('크기·위치 Kit을 실행하고 다시 재생할 수 있다', async ({ page }) => {
   await page.goto('/examples/gsap-basic-transform')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const shape = preview.getByLabel('크기와 위치가 바뀌는 원')
   await expect(shape).toBeVisible()
@@ -116,7 +115,7 @@ test('크기·위치 Kit을 실행하고 다시 재생할 수 있다', async ({ 
 
 test('from·fromTo·timeline Kit이 실제 코드로 순서대로 등장한다', async ({ page }) => {
   await page.goto('/examples/gsap-from-fromto-timeline')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   await expect(preview.getByText('fromTo')).toBeVisible()
   await expect(preview.getByText('timeline', { exact: true })).toBeVisible()
@@ -146,7 +145,7 @@ test('from·fromTo·timeline Kit이 실제 코드로 순서대로 등장한다',
 test('새 GSAP Kit들은 움직임 줄이기 설정에서 바로 최종 상태를 표시한다', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/examples/gsap-basic-transform')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const shape = preview.getByLabel('크기와 위치가 바뀌는 원')
   await expect(shape).toBeVisible()
@@ -155,7 +154,7 @@ test('새 GSAP Kit들은 움직임 줄이기 설정에서 바로 최종 상태�
   )
 
   await page.goto('/examples/gsap-from-fromto-timeline')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const steps = page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('.timeline-step')
   await expect(steps).toHaveCount(3)
   for (const step of await steps.all()) {
@@ -165,7 +164,7 @@ test('새 GSAP Kit들은 움직임 줄이기 설정에서 바로 최종 상태�
 
 test('포인터 Kit의 원이 입력을 따라가고 버튼으로 중앙에 돌아온다', async ({ page }) => {
   await page.goto('/examples/gsap-mouse-interaction')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const field = preview.locator('.pointer-field')
   const orb = preview.getByLabel('포인터를 따라 움직이는 원')
@@ -183,7 +182,7 @@ test('포인터 Kit의 원이 입력을 따라가고 버튼으로 중앙에 돌�
 
 test('동적 타임라인 Kit의 세 막대가 순서대로 채워진다', async ({ page }) => {
   await page.goto('/examples/gsap-dynamic-timeline')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const bars = preview.locator('.rhythm-bar')
   await expect(bars).toHaveCount(3)
@@ -196,7 +195,7 @@ test('동적 타임라인 Kit의 세 막대가 순서대로 채워진다', async
 
 test('텍스트 리빌 Kit의 단어가 나타나고 재생 버튼이 동작한다', async ({ page }) => {
   await page.goto('/examples/gsap-text-reveal')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const words = preview.locator('.reveal-stage h1 span')
   await expect(words).toHaveCount(4)
@@ -211,7 +210,7 @@ test('텍스트 리빌 Kit의 단어가 나타나고 재생 버튼이 동작한�
 
 test('컬러 Kit의 배경이 변하고 멈추기 버튼에서 고정된다', async ({ page }) => {
   await page.goto('/examples/gsap-rainbow-background')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const panel = preview.getByLabel('색상이 바뀌는 배경')
   await expect(panel).toBeVisible()
@@ -229,7 +228,7 @@ test('컬러 Kit의 배경이 변하고 멈추기 버튼에서 고정된다', as
 
 test('SVG 선 그리기 Kit은 경로를 실제로 그린 뒤 텍스트를 표시한다', async ({ page }) => {
   await page.goto('/examples/gsap-text-drawing')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const line = preview.locator('.draw-line')
   await expect(line).toBeVisible()
@@ -245,7 +244,7 @@ test('SVG 선 그리기 Kit은 경로를 실제로 그린 뒤 텍스트를 표�
 
 test('ScrollTrigger Kit은 실행 화면 내부 스크롤 때 카드를 드러낸다', async ({ page }) => {
   await page.goto('/examples/gsap-scrolltrigger')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
   const card = preview.locator('.scroll-card')
   await expect(card).toHaveCSS('visibility', 'hidden')
@@ -273,7 +272,7 @@ test('추가 Kit은 움직임 줄이기 설정에서 핵심 콘텐츠를 바로 
     ['gsap-scrolltrigger', '.scroll-card'],
   ]) {
     await page.goto(`/examples/${slug}`)
-    await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+    await page.getByRole('link', { name: '연습하기', exact: true }).click()
     const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
     await expect(preview.locator(selector).first(), slug).toBeVisible()
     await expect(page.getByText('정상 실행')).toBeVisible()
@@ -305,7 +304,7 @@ test('10개 Kit의 데스크톱·모바일 실행 화면에 가로 잘림이 없
     await page.setViewportSize(viewport)
     for (const slug of slugs) {
       await page.goto(`/examples/${slug}`)
-      await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+      await page.getByRole('link', { name: '연습하기', exact: true }).click()
       if (viewport.width < 1024) {
         await page.getByRole('link', { name: '이어서 연습' }).click()
         await page.getByRole('tab', { name: '실행 화면' }).click()
@@ -332,7 +331,7 @@ test('Dark 테마와 움직임 줄이기 설정을 작업 공간과 Kit에 적�
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.addInitScript(() => localStorage.setItem('kwak-motion:theme', 'dark'))
   await page.goto('/examples/interactive-card-hover')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   const card = page
     .frameLocator('iframe[title="내 코드 실행 화면"]')
@@ -348,7 +347,7 @@ test('Kit을 불러오지 못하면 오류를 알리고 같은 예제를 빈 코
     route.fulfill({ status: 503, body: '{}' }),
   )
   await page.goto('/examples/interactive-card-hover')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page.getByText('시작 코드를 불러오지 못했습니다.')).toBeVisible()
   await page.getByRole('button', { name: '빈 코드로 시작' }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
@@ -359,7 +358,7 @@ test('Kit을 불러오지 못하면 오류를 알리고 같은 예제를 빈 코
 
 test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행·복원된다', async ({ page }) => {
   await page.goto('/examples/gsap-scrollsmoother')
-  await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
 
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
@@ -392,7 +391,7 @@ test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행�
 
 test('같은 예제에 다시 들어오면 기존 초안 보존과 새 초안 생성을 선택한다', async ({ page }) => {
   await page.goto('/examples/gsap-basic-transform')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   const firstUrl = page.url()
   await page.getByRole('textbox', { name: 'HTML 코드' }).fill('<main>내가 수정한 버전</main>')
@@ -407,27 +406,166 @@ test('같은 예제에 다시 들어오면 기존 초안 보존과 새 초안 �
     await route.fulfill({ response, json: body })
   })
   await page.goto('/examples/gsap-basic-transform')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await expect(page.getByRole('heading', { name: '이 예제를 연습한 기록이 있어요.' })).toBeVisible()
   await page.getByRole('link', { name: '이어서 연습' }).click()
   await expect(page).toHaveURL(firstUrl)
   await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
     '<main>내가 수정한 버전</main>',
   )
-  await page.getByRole('button', { name: '원본 참고' }).click()
-  await expect(page.getByLabel('원본 참고')).toContainText('practice-basic-transform-v2')
+  await page.getByText('연습 환경', { exact: true }).click()
+  await expect(page.locator('.practice-kit-info')).toContainText('practice-basic-transform-v2')
   await page.goto('/examples/gsap-basic-transform')
-  await page.getByRole('link', { name: '시작 코드로 연습하기' }).click()
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
   await page.getByRole('button', { name: '새로 시작' }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   expect(page.url()).not.toBe(firstUrl)
   await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(/새 버전/)
-  await page.getByRole('button', { name: '원본 참고' }).click()
-  await expect(page.getByLabel('원본 참고')).toContainText('practice-basic-transform-v3')
+  await page.getByText('연습 환경', { exact: true }).click()
+  await expect(page.locator('.practice-kit-info')).toContainText('practice-basic-transform-v3')
   await page.goto(firstUrl)
   await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
     '<main>내가 수정한 버전</main>',
   )
+})
+
+test('빈 연습에 GSAP 플러그인을 자동 연결하고 환경 선택과 내보내기를 유지한다', async ({
+  page,
+}) => {
+  await page.goto('/practice/new?reference=gsap-scrollsmoother')
+  const library = page.getByRole('combobox', { name: '라이브러리' })
+  await expect(library).toHaveValue('smoother')
+  await page
+    .getByRole('textbox', { name: 'HTML 코드' })
+    .fill(
+      '<div id="smooth-wrapper"><div id="smooth-content"><main style="height:1400px">GSAP 연습</main></div></div>',
+    )
+  await page.getByRole('tab', { name: 'JS', exact: true }).click()
+  await page
+    .getByRole('textbox', { name: 'JavaScript 코드' })
+    .fill(
+      "gsap.registerPlugin(ScrollTrigger, ScrollSmoother); ScrollSmoother.create({smooth:1}); gsap.set('main', {x:12}); document.querySelector('main').dataset.smoother = String(!!ScrollSmoother.get());",
+    )
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  const main = page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('main')
+  await expect(main).toHaveAttribute('data-smoother', 'true')
+  await expect(main).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 12, 0)')
+  const payload = JSON.parse(await page.locator('form input[name="data"]').inputValue()) as {
+    js_external: string
+  }
+  expect(payload.js_external.split(';')).toEqual([
+    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
+    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js',
+    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollSmoother.min.js',
+  ])
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      const opened = indexedDB.open('kwak-motion-practice', 1)
+      opened.onerror = () => reject(opened.error)
+      opened.onsuccess = () => {
+        const db = opened.result
+        const transaction = db.transaction('drafts', 'readwrite')
+        const store = transaction.objectStore('drafts')
+        const request = store.get(location.pathname.split('/').at(-1)!)
+        request.onsuccess = () => {
+          const oldDraft = request.result
+          oldDraft.libraries = []
+          delete oldDraft.librariesConfigured
+          store.put(oldDraft)
+        }
+        transaction.oncomplete = () => {
+          db.close()
+          resolve()
+        }
+        transaction.onerror = () => reject(transaction.error)
+      }
+    })
+  })
+  await page.reload()
+  await expect(library).toHaveValue('smoother')
+  await expect(main).toHaveAttribute('data-smoother', 'true')
+  await library.selectOption('none')
+  await expect(page.getByText('저장됨', { exact: true })).toBeVisible()
+  await page.reload()
+  await expect(library).toHaveValue('none')
+  await page.getByRole('tab', { name: 'JS', exact: true }).click()
+  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveValue(
+    /ScrollSmoother.create/,
+  )
+})
+
+test('주소와 도메인을 확인해 추가한 JS·CSS·이미지만 로드하고 초안에 보관한다', async ({ page }) => {
+  const origin = 'https://practice-assets.example.test'
+  const requests: string[] = []
+  await page.route(origin + '/**', async (route) => {
+    const url = route.request().url()
+    requests.push(url)
+    if (url.endsWith('.js')) {
+      await route.fulfill({
+        contentType: 'application/javascript',
+        body: "window.practiceLibrary = () => '외부 라이브러리 실행됨';",
+      })
+    } else if (url.endsWith('.css')) {
+      await route.fulfill({ contentType: 'text/css', body: 'p { color: rgb(20, 40, 60) }' })
+    } else {
+      await route.fulfill({
+        contentType: 'image/svg+xml',
+        body: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20" fill="blue"/></svg>',
+      })
+    }
+  })
+  await page.goto('/practice/new')
+  await expect(page).toHaveURL(/\/practice\/drafts\//)
+  await page
+    .getByRole('textbox', { name: 'HTML 코드' })
+    .fill('<main><p>리소스 연습</p><img src="' + origin + '/sample.svg" alt="연습 이미지"></main>')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  expect(requests).toHaveLength(0)
+  await page
+    .getByRole('region', { name: '코드에서 발견한 외부 리소스' })
+    .getByRole('button', { name: '주소 확인' })
+    .click()
+  const panel = page.getByRole('region', { name: '외부 리소스 설정' })
+  await expect(panel).toContainText('도메인 · practice-assets.example.test')
+  await panel.getByRole('button', { name: '확인한 리소스 추가' }).click()
+  const preview = page.frameLocator('iframe[title="내 코드 실행 화면"]')
+  await expect
+    .poll(() =>
+      preview.getByAltText('연습 이미지').evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBe(20)
+  for (const [kind, file] of [
+    ['scripts', '/library.js'],
+    ['styles', '/theme.css'],
+  ]) {
+    await panel.getByRole('combobox', { name: '종류' }).selectOption(kind!)
+    await panel.getByRole('textbox', { name: '리소스 URL' }).fill(origin + file)
+    await expect(panel).toContainText('도메인 · practice-assets.example.test')
+    await panel.getByRole('button', { name: '확인한 리소스 추가' }).click()
+  }
+  await page.getByRole('tab', { name: 'JS', exact: true }).click()
+  await page
+    .getByRole('textbox', { name: 'JavaScript 코드' })
+    .fill('document.querySelector("p").textContent = window.practiceLibrary()')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(preview.locator('p')).toHaveText('외부 라이브러리 실행됨')
+  await expect(preview.locator('p')).toHaveCSS('color', 'rgb(20, 40, 60)')
+  await page.reload()
+  await expect(preview.locator('p')).toHaveText('외부 라이브러리 실행됨')
+  await expect
+    .poll(() =>
+      preview.getByAltText('연습 이미지').evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBe(20)
+  const payload = JSON.parse(await page.locator('form input[name="data"]').inputValue()) as {
+    js_external: string
+    css_external: string
+  }
+  expect(payload.js_external).toBe(origin + '/library.js')
+  expect(payload.css_external).toBe(origin + '/theme.css')
+  await page.getByRole('button', { name: '외부 리소스', exact: true }).click()
+  await panel.getByRole('button', { name: origin + '/library.js 제거' }).click()
+  await expect(preview.locator('p')).toHaveText('리소스 연습')
 })
 
 test('좁은 화면에서는 코드와 실행 화면을 탭으로 전환한다', async ({ page }) => {
@@ -718,16 +856,74 @@ test('HTML 이벤트 속성에서 사용자 JavaScript 함수를 호출할 수 �
   await expect(preview.locator('p')).toHaveText('실행됨')
 })
 
-test('원본 참고는 요청할 때만 Embed를 시작하고 닫으면 제거한다', async ({ page }) => {
+test('원본 코드와 실행을 왼쪽에 두고 오른쪽에서 별도 코드를 실행한다', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.route('https://codepen.io/**/embed/**', (route) =>
+    route.fulfill({
+      contentType: 'text/html; charset=utf-8',
+      body:
+        new URL(route.request().url()).searchParams.get('default-tab') === 'html'
+          ? '<pre>원본 HTML</pre>'
+          : '<p>원본 애니메이션</p>',
+    }),
+  )
   await page.goto('/examples/gsap-scrollsmoother')
-  await page.getByRole('link', { name: '빈 코드로 연습하기' }).click()
-  await page.getByRole('button', { name: '원본 참고' }).click()
-  const panel = page.getByLabel('원본 참고')
-  await expect(panel.locator('iframe')).toHaveCount(0)
-  await panel.getByRole('button', { name: '원본 실행 화면 보기' }).click()
-  await expect(panel.locator('iframe')).toHaveCount(1)
-  await panel.getByRole('button', { name: '닫기' }).click()
-  await expect(panel).toHaveCount(0)
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
+  const original = page.getByRole('region', { name: '원본 참고' })
+  const editor = page.getByRole('textbox', { name: 'HTML 코드' })
+  await expect(original.getByRole('link', { name: 'CodePen에서 열기' })).toBeVisible()
+  await expect(original.frameLocator('iframe[title="원본 코드"]').locator('pre')).toHaveText(
+    '원본 HTML',
+  )
+  await expect(original.frameLocator('iframe[title="원본 실행 화면"]').locator('p')).toHaveText(
+    '원본 애니메이션',
+  )
+  expect((await original.boundingBox())?.x).toBeLessThan((await editor.boundingBox())?.x ?? 0)
+  await expect(editor).not.toHaveValue(/원본 HTML/)
+  await editor.fill('<main>따라 친 코드</main>')
+  await expect(page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('main')).toHaveText(
+    '따라 친 코드',
+  )
+  for (const width of [900, 640]) {
+    await page.setViewportSize({ width, height: 900 })
+    await expect(original).toBeVisible()
+    await expect(original.locator('iframe')).toHaveCount(2)
+    await expect(editor).toBeVisible()
+    await expect(page.getByRole('tab', { name: '원본', exact: true })).toBeHidden()
+    expect((await original.boundingBox())?.x).toBeLessThan((await editor.boundingBox())?.x ?? 0)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    )
+  }
+})
+
+test('모바일 원본 탭에 CodePen 2.0 코드와 실행 화면을 표시한다', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.route('**/api/v1/examples/gsap-scrollsmoother', async (route) => {
+    const response = await route.fetch()
+    const json = await response.json()
+    json.data.preview.embedUrl = 'https://codepen.io/editor/example/embed/abc?default-tab=result'
+    await route.fulfill({ response, json })
+  })
+  await page.route('https://codepen.io/**/embed/**', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<p>CodePen</p>' }),
+  )
+  await page.goto('/examples/gsap-scrollsmoother')
+  await page.getByRole('link', { name: '연습하기', exact: true }).click()
+  const editor = page.getByRole('textbox', { name: 'HTML 코드' })
+  await editor.fill('<main>모바일 연습</main>')
+  await page.getByRole('tab', { name: '원본', exact: true }).click()
+  const frames = page.getByRole('region', { name: '원본 참고' }).locator('iframe')
+  await expect(frames).toHaveCount(2)
+  await expect(frames.first()).toHaveAttribute('src', /default-tab=html&preview=false/)
+  await expect(frames.last()).toHaveAttribute('src', /default-tab=result/)
+  await page.getByRole('tab', { name: '코드', exact: true }).click()
+  await expect(frames).toHaveCount(0)
+  await expect(editor).toHaveValue('<main>모바일 연습</main>')
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+  await expect(page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('main')).toHaveText(
+    '모바일 연습',
+  )
 })
 
 test('연속된 실행 환경 중단 뒤 자동 실행을 멈추고 정상 실행으로 복구한다', async ({ page }) => {

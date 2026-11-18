@@ -11,15 +11,85 @@ import {
   type PracticeCode,
 } from '@/features/practice/runtime'
 import type { ApiSuccess, ExampleDetail } from '@/shared/examples'
+import type { PracticeLibrary } from '@/shared/practice'
+import { resourceUrl, type PracticeResources } from '@/features/practice/resources'
 
 type CodeTab = keyof PracticeCode
-type WorkspaceTab = 'code' | 'preview'
+type WorkspaceTab = 'reference' | 'code' | 'preview'
 type PreviewStatus = 'idle' | 'running' | 'ready' | 'code-error' | 'timeout'
 
 const route = useRoute()
 const draft = ref<PracticeDraft | null>(null)
 const title = ref('')
 const reference = ref<ExampleDetail | null>(null)
+const referenceLoading = ref(true)
+const resourcesOpen = ref(false)
+const resourceKind = ref<keyof PracticeResources>('scripts')
+const resourceInput = ref('')
+const resourceError = ref('')
+const resources = computed<PracticeResources>(
+  () => draft.value?.resources ?? { scripts: [], styles: [], images: [] },
+)
+const pendingResource = computed(() => {
+  try {
+    const url = resourceUrl(resourceInput.value)
+    return { url, domain: new URL(url).host }
+  } catch {
+    return null
+  }
+})
+const resourceLabels: Record<keyof PracticeResources, string> = {
+  scripts: 'JavaScript',
+  styles: 'CSS',
+  images: '이미지',
+}
+const detectedResources = computed(() => {
+  const template = document.createElement('template')
+  template.innerHTML = code.html
+  const found: Array<{ kind: keyof PracticeResources; url: string }> = []
+  const add = (kind: keyof PracticeResources, value: string | null) => {
+    if (!value) return
+    try {
+      const url = resourceUrl(value)
+      if (
+        !resources.value[kind].includes(url) &&
+        !found.some((item) => item.url === url && item.kind === kind)
+      ) {
+        found.push({ kind, url })
+      }
+    } catch {
+      /* 상대 주소와 내장 이미지는 외부 URL 추가 대상에서 제외한다. */
+    }
+  }
+  template.content
+    .querySelectorAll('img[src], image[href]')
+    .forEach((node) => add('images', node.getAttribute('src') ?? node.getAttribute('href')))
+  template.content
+    .querySelectorAll('script[src]')
+    .forEach((node) => add('scripts', node.getAttribute('src')))
+  template.content
+    .querySelectorAll('link[rel="stylesheet"]')
+    .forEach((node) => add('styles', node.getAttribute('href')))
+  for (const match of (code.css + '\n' + code.html).matchAll(
+    /url\(\s*["']?([^"')\s]+)["']?\s*\)/gi,
+  )) {
+    add('images', match[1] ?? null)
+  }
+  return found
+})
+const libraryPreset = computed(() => {
+  const libraries = draft.value?.libraries ?? []
+  if (libraries.includes('gsap-scrollsmoother@3.15.0')) return 'smoother'
+  if (libraries.includes('gsap-scrolltrigger@3.15.0')) return 'scroll'
+  return libraries.includes('gsap@3.15.0') ? 'gsap' : 'none'
+})
+const referenceCodeUrl = computed(() => {
+  if (!reference.value) return ''
+  const url = new URL(reference.value.preview.embedUrl)
+  url.searchParams.set('default-tab', 'html')
+  if (url.pathname.startsWith('/editor/')) url.searchParams.set('preview', 'false')
+  return url.href
+})
 const loading = ref(true)
 const error = ref('')
 const code = reactive<PracticeCode>({ ...blankCode })
@@ -35,8 +105,6 @@ const panels = ref<HTMLElement | null>(null)
 const frameKey = ref(0)
 const frameDocument = ref('')
 const logs = ref<Array<{ type: 'log' | 'warn' | 'error'; message: string }>>([])
-const showReference = ref(false)
-const referencePreviewLoaded = ref(false)
 const showExportCode = ref(false)
 const exportHint = ref(false)
 const copiedTab = ref<CodeTab | null>(null)
@@ -52,6 +120,7 @@ const codePenPayload = computed(() =>
       ? { author: draft.value.kitAuthor, licenseCode: draft.value.kitLicenseCode }
       : undefined,
     draft.value?.libraries ?? [],
+    resources.value,
   ),
 )
 
@@ -97,7 +166,7 @@ onMounted(async () => {
   window.addEventListener('message', onPreviewMessage)
   window.addEventListener('beforeunload', onBeforeUnload)
   document.addEventListener('visibilitychange', onVisibilityChange)
-  compactQuery = window.matchMedia('(max-width: 1023px)')
+  compactQuery = window.matchMedia('(max-width: 639px)')
   compactLayout.value = compactQuery.matches
   compactQuery.addEventListener('change', onCompactChange)
   try {
@@ -179,9 +248,82 @@ async function loadReference(slug: string): Promise<void> {
     const response = await fetch(`/api/v1/examples/${encodeURIComponent(slug)}`)
     if (!response.ok) return
     reference.value = ((await response.json()) as ApiSuccess<ExampleDetail>).data
+    if (
+      draft.value &&
+      !draft.value.kitVersionId &&
+      !draft.value.librariesConfigured &&
+      !draft.value.libraries?.length
+    ) {
+      const signals = [
+        reference.value.slug,
+        reference.value.title,
+        ...Object.values(reference.value.tags).flat(),
+      ].join(' ')
+      if (/scroll-?smoother|scrollsmother/i.test(signals)) {
+        await configureLibraries('smoother')
+      } else if (/gsap/i.test(signals)) {
+        await configureLibraries(/scroll/i.test(signals) ? 'scroll' : 'gsap')
+      }
+    }
   } catch {
     // 작성한 코드는 원본 조회 실패와 관계없이 사용할 수 있다.
+  } finally {
+    referenceLoading.value = false
   }
+}
+
+async function configureLibraries(preset: string): Promise<void> {
+  if (!draft.value) return
+  const libraries: PracticeLibrary[] = preset === 'none' ? [] : ['gsap@3.15.0']
+  if (preset === 'scroll' || preset === 'smoother') libraries.push('gsap-scrolltrigger@3.15.0')
+  if (preset === 'smoother') libraries.push('gsap-scrollsmoother@3.15.0')
+  draft.value.libraries = libraries
+  draft.value.librariesConfigured = true
+  saveStatus.value = 'saving'
+  if (!(await persist())) return
+  if (!compactLayout.value || workspaceTab.value === 'preview') execute()
+}
+
+function reviewResource(kind: keyof PracticeResources, url: string): void {
+  resourceKind.value = kind
+  resourceInput.value = url
+  resourceError.value = ''
+  resourcesOpen.value = true
+}
+
+async function addResource(): Promise<void> {
+  if (!draft.value || !pendingResource.value) return
+  const kind = resourceKind.value
+  const url = pendingResource.value.url
+  if (resources.value[kind].includes(url)) {
+    resourceError.value = '이미 추가한 주소입니다.'
+    return
+  }
+  if (resources.value[kind].length >= 20) {
+    resourceError.value = '종류별로 최대 20개까지 추가할 수 있습니다.'
+    return
+  }
+  draft.value.resources = { ...resources.value, [kind]: [...resources.value[kind], url] }
+  resourceInput.value = ''
+  resourceError.value = ''
+  saveStatus.value = 'saving'
+  if (!(await persist())) return
+  if (!compactLayout.value || workspaceTab.value === 'preview') execute()
+}
+
+async function removeResource(kind: keyof PracticeResources, url: string): Promise<void> {
+  if (!draft.value) return
+  draft.value.resources = {
+    ...resources.value,
+    [kind]: resources.value[kind].filter((item) => item !== url),
+  }
+  saveStatus.value = 'saving'
+  if (!(await persist())) return
+  if (!compactLayout.value || workspaceTab.value === 'preview') execute()
+}
+
+function changeLibraries(event: Event): void {
+  void configureLibraries((event.target as HTMLSelectElement).value)
 }
 
 function snapshot(): PracticeCode {
@@ -242,7 +384,7 @@ function openPreview(): void {
 
 function onCompactChange(event: MediaQueryListEvent): void {
   compactLayout.value = event.matches
-  if (event.matches && workspaceTab.value === 'code') stopPreview()
+  if (event.matches && workspaceTab.value !== 'preview') stopPreview()
   if (!event.matches && !frameDocument.value && ready) execute()
 }
 
@@ -254,6 +396,11 @@ function stopPreview(): void {
 
 function openCode(): void {
   workspaceTab.value = 'code'
+  if (compactLayout.value) stopPreview()
+}
+
+function openReference(): void {
+  workspaceTab.value = 'reference'
   if (compactLayout.value) stopPreview()
 }
 
@@ -298,7 +445,12 @@ function execute(): void {
   receivedHeartbeat = false
   logs.value = []
   previewStatus.value = 'running'
-  frameDocument.value = buildPracticeDocument(runCode, activeRunId, draft.value?.libraries ?? [])
+  frameDocument.value = buildPracticeDocument(
+    runCode,
+    activeRunId,
+    draft.value?.libraries ?? [],
+    resources.value,
+  )
   frameKey.value += 1
   watchdog = setInterval(() => {
     if (Date.now() - lastHeartbeat < 5_000) return
@@ -424,15 +576,7 @@ function openFullscreen(): void {
   void frame.value?.requestFullscreen()
 }
 
-function toggleReference(): void {
-  showExportCode.value = false
-  showReference.value = !showReference.value
-  if (!showReference.value) referencePreviewLoaded.value = false
-}
-
 function toggleExportCode(): void {
-  showReference.value = false
-  referencePreviewLoaded.value = false
   showExportCode.value = !showExportCode.value
 }
 
@@ -463,14 +607,24 @@ async function copyCode(tab: CodeTab): Promise<void> {
           <div>
             <span
               >자유 연습{{ draft.libraries?.includes('gsap@3.15.0') ? ' · GSAP 3.15.0' : ''
+              }}{{ draft.libraries?.includes('gsap-scrolltrigger@3.15.0') ? ' · ScrollTrigger' : ''
               }}{{
-                draft.libraries?.includes('gsap-scrolltrigger@3.15.0') ? ' · ScrollTrigger' : ''
+                draft.libraries?.includes('gsap-scrollsmoother@3.15.0') ? ' · ScrollSmoother' : ''
               }}</span
             >
             <h1><input v-model="title" aria-label="연습 이름" @blur="normalizeTitle" /></h1>
           </div>
         </div>
         <div class="practice-actions">
+          <label class="practice-library-select">
+            라이브러리
+            <select :value="libraryPreset" @change="changeLibraries">
+              <option value="none">사용 안 함</option>
+              <option value="gsap">GSAP</option>
+              <option value="scroll">GSAP + ScrollTrigger</option>
+              <option value="smoother">GSAP + ScrollTrigger + ScrollSmoother</option>
+            </select>
+          </label>
           <span class="practice-save-status" role="status">
             {{
               saveStatus === 'saved' ? '저장됨' : saveStatus === 'saving' ? '저장 중' : '저장 실패'
@@ -497,7 +651,6 @@ async function copyCode(tab: CodeTab): Promise<void> {
           >
             이전 코드 복구
           </button>
-          <button v-if="reference" type="button" @click="toggleReference">원본 참고</button>
           <form
             :action="codePenPrefillUrl"
             method="post"
@@ -509,8 +662,70 @@ async function copyCode(tab: CodeTab): Promise<void> {
             <button type="submit">CodePen으로 보내기</button>
           </form>
           <button type="button" @click="toggleExportCode">코드 복사</button>
+          <button
+            type="button"
+            :aria-expanded="resourcesOpen"
+            @click="resourcesOpen = !resourcesOpen"
+          >
+            외부 리소스
+          </button>
         </div>
       </header>
+      <section v-if="resourcesOpen" class="practice-resources" aria-label="외부 리소스 설정">
+        <h2>라이브러리·이미지 추가</h2>
+        <p>
+          원본 CodePen에서 확인한 JS·CSS·이미지 주소를 입력하세요. JavaScript는 목록 순서대로
+          불러옵니다.
+        </p>
+        <form @submit.prevent="addResource">
+          <label
+            >종류
+            <select v-model="resourceKind">
+              <option v-for="(label, kind) in resourceLabels" :key="kind" :value="kind">
+                {{ label }}
+              </option>
+            </select>
+          </label>
+          <label
+            >리소스 URL
+            <input v-model="resourceInput" type="url" placeholder="https://" required />
+          </label>
+          <div v-if="pendingResource" class="practice-resource-review" role="status">
+            <strong>도메인 · {{ pendingResource.domain }}</strong>
+            <p>{{ pendingResource.url }}</p>
+            <p>추가하면 이 주소에 접속합니다. 외부 스크립트는 현재 연습 코드를 읽을 수 있습니다.</p>
+          </div>
+          <button type="submit" :disabled="!pendingResource">확인한 리소스 추가</button>
+        </form>
+        <p v-if="resourceInput && !pendingResource">유효한 HTTPS 주소를 입력해주세요.</p>
+        <p v-if="resourceError" role="alert">{{ resourceError }}</p>
+        <div v-for="(label, kind) in resourceLabels" :key="kind">
+          <h3>{{ label }}</h3>
+          <p v-if="resources[kind].length === 0">추가한 리소스가 없습니다.</p>
+          <ul v-else>
+            <li v-for="url in resources[kind]" :key="url">
+              <span>{{ url }}</span>
+              <button type="button" :aria-label="`${url} 제거`" @click="removeResource(kind, url)">
+                제거
+              </button>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section
+        v-if="detectedResources.length"
+        class="practice-resource-candidates"
+        aria-label="코드에서 발견한 외부 리소스"
+      >
+        <h2>코드에서 발견한 외부 리소스</h2>
+        <p>주소를 확인하고 추가하면 연습 화면에서 사용할 수 있습니다.</p>
+        <ul>
+          <li v-for="item in detectedResources" :key="item.kind + item.url">
+            <span>{{ resourceLabels[item.kind] }} · {{ item.url }}</span>
+            <button type="button" @click="reviewResource(item.kind, item.url)">주소 확인</button>
+          </li>
+        </ul>
+      </section>
       <div v-if="exportHint" class="practice-export-hint" role="status">
         <span
           >CodePen 새 창이 열리지 않거나 오류가 보이면 현재 코드를 복사해 직접 붙여넣으세요.</span
@@ -531,6 +746,15 @@ async function copyCode(tab: CodeTab): Promise<void> {
         다시 시도하세요.
       </div>
       <div class="practice-mobile-tabs" role="tablist" aria-label="연습 화면">
+        <button
+          v-if="draft.referenceSlug"
+          type="button"
+          role="tab"
+          :aria-selected="workspaceTab === 'reference'"
+          @click="openReference"
+        >
+          원본
+        </button>
         <button type="button" role="tab" :aria-selected="workspaceTab === 'code'" @click="openCode">
           코드
         </button>
@@ -546,12 +770,69 @@ async function copyCode(tab: CodeTab): Promise<void> {
       <div
         ref="panels"
         class="practice-panels"
+        :class="{ 'with-reference': draft.referenceSlug }"
         :style="{
           gridTemplateColumns: `minmax(0, ${editorWidth}fr) 10px minmax(0, ${100 - editorWidth}fr)`,
         }"
       >
+        <section v-if="draft.referenceSlug" class="practice-original" aria-label="원본 참고">
+          <div class="practice-original-heading">
+            <h2>원본 예제</h2>
+            <template v-if="reference">
+              <a :href="reference.source.canonicalUrl" target="_blank" rel="noopener noreferrer">
+                CodePen에서 열기
+              </a>
+              <p>
+                {{ reference.source.creatorName }} ·
+                <a
+                  v-if="reference.source.licenseEvidenceUrl"
+                  :href="reference.source.licenseEvidenceUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ reference.source.licenseCode }}</a
+                >
+                <template v-else>{{ reference.source.licenseCode }}</template>
+              </p>
+            </template>
+          </div>
+          <details v-if="reference" class="practice-original-resources">
+            <summary>원본 라이브러리 확인</summary>
+            <p v-if="reference.tags.technology?.length">
+              예제 기술 태그 · {{ reference.tags.technology.join(', ') }}
+            </p>
+            <p>원본의 외부 JS·CSS 목록과 버전은 아직 확인되지 않았습니다.</p>
+            <a :href="reference.source.canonicalUrl" target="_blank" rel="noopener noreferrer">
+              원본 CodePen에서 리소스 확인
+            </a>
+            <p>GSAP은 상단에서 선택하고, 다른 라이브러리와 이미지는 외부 리소스에 추가하세요.</p>
+          </details>
+          <template v-if="reference && (!compactLayout || workspaceTab === 'reference')">
+            <section class="practice-original-pane">
+              <h3>원본 코드</h3>
+              <iframe
+                title="원본 코드"
+                :src="referenceCodeUrl"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                referrerpolicy="strict-origin-when-cross-origin"
+              />
+            </section>
+            <section class="practice-original-pane">
+              <h3>원본 실행 화면</h3>
+              <iframe
+                title="원본 실행 화면"
+                :src="reference.preview.embedUrl"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                referrerpolicy="strict-origin-when-cross-origin"
+              />
+            </section>
+          </template>
+          <p v-else-if="!reference" role="status" class="practice-original-status">
+            {{ referenceLoading ? '원본을 불러오는 중입니다.' : '원본을 불러오지 못했습니다.' }}
+          </p>
+        </section>
         <section class="practice-editor" aria-label="코드 편집기">
           <div class="practice-code-tabs" role="tablist" aria-label="코드 파일">
+            <strong v-if="draft.referenceSlug">내 코드</strong>
             <button
               v-for="tab in ['html', 'css', 'javascript'] as const"
               :key="tab"
@@ -563,6 +844,17 @@ async function copyCode(tab: CodeTab): Promise<void> {
               {{ tab === 'javascript' ? 'JS' : tab.toUpperCase() }}
             </button>
           </div>
+          <details v-if="draft.kitVersionId" class="practice-kit-info">
+            <summary>연습 환경</summary>
+            <p>자체 제작 시작 코드 {{ draft.kitVersionId }}</p>
+            <p v-if="draft.kitAuthor && draft.kitLicenseCode">
+              {{ draft.kitAuthor }} · {{ draft.kitLicenseCode }}
+            </p>
+            <p v-if="draft.libraries?.includes('gsap@3.15.0')">내장된 GSAP 3.15.0</p>
+            <p v-if="draft.libraries?.includes('gsap-scrolltrigger@3.15.0')">
+              ScrollTrigger 플러그인도 내장되어 있습니다.
+            </p>
+          </details>
           <label :for="`practice-${codeTab}`" class="practice-editor-label"
             >{{ codeTab === 'javascript' ? 'JavaScript' : codeTab.toUpperCase() }} 코드</label
           >
@@ -591,7 +883,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
         <div
           class="practice-divider"
           role="separator"
-          aria-label="편집기와 실행 화면 폭 조절"
+          :aria-label="
+            draft.referenceSlug ? '원본과 내 연습 폭 조절' : '편집기와 실행 화면 폭 조절'
+          "
           aria-orientation="vertical"
           :aria-valuenow="editorWidth"
           aria-valuemin="35"
@@ -634,54 +928,7 @@ async function copyCode(tab: CodeTab): Promise<void> {
           </div>
         </section>
       </div>
-      <aside v-if="showReference && reference" class="practice-reference" aria-label="원본 참고">
-        <div>
-          <h2>원본 참고</h2>
-          <button type="button" @click="toggleReference">닫기</button>
-        </div>
-        <p>{{ reference.title }} · {{ reference.source.creatorName }}</p>
-        <p>원본 라이선스: {{ reference.source.licenseCode }}</p>
-        <a :href="reference.source.canonicalUrl" target="_blank" rel="noopener noreferrer"
-          >원본 CodePen 열기</a
-        >
-        <a
-          v-if="reference.source.licenseEvidenceUrl"
-          :href="reference.source.licenseEvidenceUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          >라이선스 근거</a
-        >
-        <p v-if="draft.kitVersionId">
-          자체 제작 시작 코드 {{ draft.kitVersionId }}을 사용합니다. 원본 Pen 코드는 복사하지
-          않았습니다.
-        </p>
-        <p v-if="draft.kitAuthor && draft.kitLicenseCode">
-          시작 코드: {{ draft.kitAuthor }} · {{ draft.kitLicenseCode }}
-        </p>
-        <p v-if="draft.libraries?.includes('gsap@3.15.0')">
-          이 연습에는 내장된 GSAP 3.15.0이 제공됩니다. CodePen으로 보낼 때는 같은 버전의 외부
-          스크립트를 추가합니다.
-        </p>
-        <p v-if="draft.libraries?.includes('gsap-scrolltrigger@3.15.0')">
-          ScrollTrigger 플러그인도 내장되어 있으며 CodePen에는 GSAP 코어 다음에 추가됩니다.
-        </p>
-        <p v-else>원본의 코드는 편집기에 복사하지 않았습니다.</p>
-        <button v-if="!referencePreviewLoaded" type="button" @click="referencePreviewLoaded = true">
-          원본 실행 화면 보기
-        </button>
-        <iframe
-          v-else
-          :title="`${reference.title} 원본 실행 화면`"
-          :src="reference.preview.embedUrl"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          referrerpolicy="strict-origin-when-cross-origin"
-        />
-      </aside>
-      <aside
-        v-if="showExportCode"
-        class="practice-reference practice-export"
-        aria-label="코드 복사"
-      >
+      <aside v-if="showExportCode" class="practice-export" aria-label="코드 복사">
         <div>
           <h2>현재 코드 복사</h2>
           <button type="button" @click="showExportCode = false">닫기</button>

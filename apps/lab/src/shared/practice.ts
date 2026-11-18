@@ -1,13 +1,23 @@
-export type PracticeLibrary = 'gsap@3.15.0' | 'gsap-scrolltrigger@3.15.0'
+export type PracticeLibrary =
+  'gsap@3.15.0' | 'gsap-scrolltrigger@3.15.0' | 'gsap-scrollsmoother@3.15.0'
 
 export function validPracticeLibraries(value: unknown): value is PracticeLibrary[] {
   if (!Array.isArray(value) || new Set(value).size !== value.length) return false
   if (
-    value.some((library) => library !== 'gsap@3.15.0' && library !== 'gsap-scrolltrigger@3.15.0')
+    value.some(
+      (library) =>
+        library !== 'gsap@3.15.0' &&
+        library !== 'gsap-scrolltrigger@3.15.0' &&
+        library !== 'gsap-scrollsmoother@3.15.0',
+    )
   ) {
     return false
   }
-  return !value.includes('gsap-scrolltrigger@3.15.0') || value.includes('gsap@3.15.0')
+  return (
+    (!value.includes('gsap-scrolltrigger@3.15.0') || value.includes('gsap@3.15.0')) &&
+    (!value.includes('gsap-scrollsmoother@3.15.0') ||
+      (value.includes('gsap@3.15.0') && value.includes('gsap-scrolltrigger@3.15.0')))
+  )
 }
 
 export interface PracticeKitPayload {

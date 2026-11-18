@@ -117,7 +117,7 @@ function openFullscreen(): void {
             class="primary-action"
             :to="{ name: 'practice-new', query: { reference: slug } }"
           >
-            {{ item.practiceKitReady ? '시작 코드로 연습하기' : '빈 코드로 연습하기' }}
+            연습하기
           </RouterLink>
           <a class="secondary-action" href="#report-example">문제 신고</a>
         </div>

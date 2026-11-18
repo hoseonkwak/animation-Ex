@@ -1,4 +1,5 @@
 import type { PracticeCode } from './runtime'
+import { validPracticeResources, type PracticeResources } from './resources'
 import { validPracticeLibraries, type PracticeLibrary } from '@/shared/practice'
 
 export interface PracticeDraft {
@@ -13,6 +14,8 @@ export interface PracticeDraft {
   kitAuthor?: string | null
   kitLicenseCode?: string | null
   libraries?: PracticeLibrary[]
+  librariesConfigured?: boolean
+  resources?: PracticeResources
   createdAt: string
   updatedAt: string
 }
@@ -54,6 +57,8 @@ function isDraft(value: unknown): value is PracticeDraft {
       draft.kitLicenseCode === null ||
       typeof draft.kitLicenseCode === 'string') &&
     (draft.libraries === undefined || validPracticeLibraries(draft.libraries)) &&
+    (draft.librariesConfigured === undefined || typeof draft.librariesConfigured === 'boolean') &&
+    (draft.resources === undefined || validPracticeResources(draft.resources)) &&
     typeof draft.createdAt === 'string' &&
     !Number.isNaN(Date.parse(draft.createdAt)) &&
     typeof draft.updatedAt === 'string' &&
@@ -102,6 +107,12 @@ export async function saveDraft(draft: PracticeDraft): Promise<void> {
     kitAuthor: draft.kitAuthor ?? null,
     kitLicenseCode: draft.kitLicenseCode ?? null,
     libraries: [...(draft.libraries ?? [])],
+    librariesConfigured: draft.librariesConfigured ?? false,
+    resources: {
+      scripts: [...(draft.resources?.scripts ?? [])],
+      styles: [...(draft.resources?.styles ?? [])],
+      images: [...(draft.resources?.images ?? [])],
+    },
     createdAt: draft.createdAt,
     updatedAt: draft.updatedAt,
   }

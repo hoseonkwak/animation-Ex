@@ -1,5 +1,6 @@
 import type { PracticeCode } from './runtime'
 import type { PracticeLibrary } from '@/shared/practice'
+import type { PracticeResources } from './resources'
 
 export const codePenPrefillUrl = 'https://codepen.io/cpe/pen/define/'
 
@@ -9,6 +10,7 @@ export function codePenPrefillData(
   referenceUrl?: string,
   kitCredit?: { author: string; licenseCode: string },
   libraries: PracticeLibrary[] = [],
+  resources: PracticeResources = { scripts: [], styles: [], images: [] },
 ): string {
   const sourceNote = referenceUrl ? `참고한 원본: ${referenceUrl}` : ''
   const kitNote = kitCredit ? `시작 코드: ${kitCredit.author} · ${kitCredit.licenseCode}` : ''
@@ -26,15 +28,22 @@ export function codePenPrefillData(
     html_pre_processor: 'none',
     css_pre_processor: 'none',
     js_pre_processor: 'none',
-    ...(libraries.includes('gsap@3.15.0')
+    ...(libraries.includes('gsap@3.15.0') || resources.scripts.length > 0
       ? {
           js_external: [
-            'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
+            ...(libraries.includes('gsap@3.15.0')
+              ? ['https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js']
+              : []),
             ...(libraries.includes('gsap-scrolltrigger@3.15.0')
               ? ['https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js']
               : []),
+            ...(libraries.includes('gsap-scrollsmoother@3.15.0')
+              ? ['https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollSmoother.min.js']
+              : []),
+            ...resources.scripts,
           ].join(';'),
         }
       : {}),
+    ...(resources.styles.length ? { css_external: resources.styles.join(';') } : {}),
   })
 }
