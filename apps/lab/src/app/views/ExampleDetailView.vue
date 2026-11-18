@@ -8,6 +8,7 @@ import { useLibraryLists } from '@/features/library/useLibraryLists'
 import { createPreviewScheduler } from '@/features/preview/previewScheduler'
 import type { ApiSuccess, ExampleCard, ExampleDetail, ExamplesPayload } from '@/shared/examples'
 import { setPageMeta } from '@/app/pageMeta'
+import { previewUrl, previewSandbox } from '@/shared/previewRuntime'
 
 const route = useRoute()
 const library = useLibraryLists()
@@ -129,7 +130,9 @@ function openFullscreen(): void {
 
       <section class="detail-preview" aria-labelledby="preview-title">
         <div class="block-heading">
-          <h2 id="preview-title">실행 화면</h2>
+          <h2 id="preview-title">
+            {{ item.preview.kind === 'internal' ? '자체 실행 화면' : '실행 화면' }}
+          </h2>
           <div class="preview-actions">
             <button type="button" @click="frameKey++">다시 실행</button
             ><button type="button" @click="openFullscreen">전체 화면</button
@@ -142,12 +145,12 @@ function openFullscreen(): void {
           <iframe
             :key="frameKey"
             ref="frame"
-            :title="`${item.title} CodePen 실행 화면`"
-            :src="item.preview.embedUrl"
+            :title="`${item.title} ${item.preview.kind === 'internal' ? '자체' : 'CodePen'} 실행 화면`"
+            :src="previewUrl(item.preview)"
             allow="fullscreen"
             allowfullscreen
             referrerpolicy="strict-origin-when-cross-origin"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            :sandbox="previewSandbox(item.preview)"
           />
         </div>
       </section>

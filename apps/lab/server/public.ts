@@ -251,12 +251,13 @@ export async function acceptSubmission(
   await db
     .prepare(
       `INSERT OR IGNORE INTO submissions (
-        id, submitted_url, normalized_url_hash, note, status, created_at, updated_at
+        id, submitted_url, normalized_url_hash, note, status, source_id, created_at, updated_at
       )
-      SELECT ?, ?, ?, ?, 'received', ?, ?
-      WHERE NOT EXISTS (SELECT 1 FROM sources WHERE canonical_url = ?)`,
+      SELECT ?, ?, ?, ?,
+        CASE WHEN EXISTS (SELECT 1 FROM sources WHERE canonical_url = ?) THEN 'linked' ELSE 'received' END,
+        (SELECT id FROM sources WHERE canonical_url = ? LIMIT 1), ?, ?`,
     )
-    .bind(crypto.randomUUID(), normalized, hash, note || null, now, now, normalized)
+    .bind(crypto.randomUUID(), normalized, hash, note || null, normalized, normalized, now, now)
     .run()
   await db
     .prepare(

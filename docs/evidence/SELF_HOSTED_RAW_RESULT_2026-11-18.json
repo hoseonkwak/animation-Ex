@@ -1,0 +1,915 @@
+{
+  "checkedAt": "2026-11-18T07:45:12.446Z",
+  "complete": true,
+  "sourceCandidates": 37,
+  "acquisitionFailures": 15,
+  "selected": 22,
+  "acquired": 22,
+  "runtimePassed": 22,
+  "pixelComparisonPassed": 0,
+  "readyForExpansion": false,
+  "results": [
+    {
+      "slug": "pen-01m7mamh2zdxgsvfca0mqygt4f",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "Notifications\nPlayer\nSpending\nSign in\nLight\nDark\n\ntry another card\n\ndrag across the card\n\nDrag across the card to inspect it. Arrow keys move the box.\n\nHow it is built\n\nThe cards and their layout view",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "Notifications\nPlayer\nSpending\nSign in\nLight\nDark\n\ntry another card\n\ndrag across the card\n\nDrag across the card to inspect it. Arrow keys move the box.\n\nHow it is built\n\nThe cards and their layout view",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39scg26htpkkfd5wrxj5e",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "prism currents",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "prism currents",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39yq3hceq7ajctb3yv4cm",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Dummy",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Dummy",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a4anz8njg4cvf22syfjh",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a6yp3txg276bt1eaahkb",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39s0e757bha48r5kt5y54",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39tg9wage3ck5841nmk8d",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "PARACOSM / REACTION LAB\nEXPERIMENT 002\n\nA MOST UNNECESSARY REVELATION\n\nYIKES!\n\nBUT IT GLOWS LIKE A RED FLAG 🚩\n\nFive letters. Unwarranted grandeur.\n\n↻ REPLAY THE REVELATION\nRED FLAG DETECTED. VISUAL A",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "PARACOSM / REACTION LAB\nEXPERIMENT 002\n\nA MOST UNNECESSARY REVELATION\n\nYIKES!\n\nBUT IT GLOWS LIKE A RED FLAG 🚩\n\nFive letters. Unwarranted grandeur.\n\n↻ REPLAY THE REVELATION\nRED FLAG DETECTED. VISUAL A",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39z35d5myxhfy1zfc0wm9",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Button background powered by GSS",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Button background powered by GSS",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3abcr25jbxgwkr5nnxakx",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Nebula\nQuasar\nPulsar",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Nebula\nQuasar\nPulsar",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a36jehzat4cv2qg3yza1",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Landscapes\nWildlife\nOcean\nTransport\nPeople\nSport\nBooks\nArts",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Landscapes\nWildlife\nOcean\nTransport\nPeople\nSport\nBooks\nArts",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39wzqj75ncpbh950ypwkk",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "drag: orbit - scroll: zoom - click: next world - R: regrow - D: dark - space: pause\nmanifold mandala",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "drag: orbit - scroll: zoom - click: next world - R: regrow - D: dark - space: pause\nmanifold mandala",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3aadbbg18wsrh0p5489nb",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "gradient drift",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "gradient drift",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n39xk7gatbnh58nn7pxzea",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "CICADA\nSHIELD BUG",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 1,
+            "text": "CICADA\nSHIELD BUG",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a0ar3nyyfzazbmn0gqxe",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a4z2z1tckh2shvhn7g99",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "PERFORMANCE MODE - ",
+            "overflow": true
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "PERFORMANCE MODE - ",
+            "overflow": true
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a6ets2qbdwwzbxt0ewz1",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a7as5x81as1d05phntjk",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "3D Dancing Bugs\nRotation: On\n\nDrag to rotate · wheel to zoom · right-drag to pan",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "3D Dancing Bugs\nRotation: On\n\nDrag to rotate · wheel to zoom · right-drag to pan",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a7prdxwb1eb1v2t9rx5s",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a8emmgswa1a3mcpnnhtv",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "🔗\nKo-fi\nLinkedin\nX (twitter)\nBluesky\nWebsite",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 3,
+            "text": "🔗\nKo-fi\nLinkedin\nX (twitter)\nBluesky\nWebsite",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a9hqscscgebwc9stas65",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "THREE.js\nRoboCat 3D\nWALK CYCLE\nFire ×4\nAuto rotate: On\n\nDrag to rotate · wheel to zoom · right-drag to pan · Space to fire",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "THREE.js\nRoboCat 3D\nWALK CYCLE\nFire ×4\nAuto rotate: On",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3aaxaqramvhr0ezc795bp",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "🔗\nKo-fi\nLinkedin\nX (twitter)\nBluesky\nWebsite",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 4,
+            "text": "🔗\nKo-fi\nLinkedin\nX (twitter)\nBluesky\nWebsite",
+            "overflow": true
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6qc0kamknhdc0xgf1exy6gk",
+      "runtimeStatus": "passed",
+      "comparisonStatus": "reference-unavailable",
+      "viewports": [
+        {
+          "width": 1280,
+          "height": 800,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Terrarium.\n\nAn endless little world.\n\nNew world\n?\n!\nA SMALL SLICE OF INFINITY\n\nGo a little further.\nThere’s always more.\n\n#\nSEED\n02418\nEcosystem active\n152 trees · 10 wandering animals\n\nDrag to explor",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "localErrors": [],
+          "referenceErrors": [
+            "REFERENCE_CAPTURE_PENDING"
+          ],
+          "blockedCodepenRequests": 0,
+          "localContent": {
+            "children": 2,
+            "text": "Terrarium.\n\nAn endless little world.\n\nNew world\n?\n!\n#\nSEED\n02418\nEcosystem active\n152 trees · 10 wandering animals\n\nDrag to explore · Scroll to zoom\n\n154%\nX 0000 / Z 0000\nWorld init 399 ms\nReal-time F",
+            "overflow": false
+          },
+          "differingPixelRatio": null,
+          "runtimePassed": true,
+          "pixelComparisonPassed": false
+        }
+      ]
+    }
+  ]
+}

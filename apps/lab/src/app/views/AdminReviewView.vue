@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import IngestionRunsPanel from './IngestionRunsPanel.vue'
 import ExampleReportsPanel from './ExampleReportsPanel.vue'
+import SubmissionsPanel from './SubmissionsPanel.vue'
 import type {
   CandidateDetail,
   CandidateListPayload,
@@ -613,6 +614,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
       </div>
       <div class="admin-header-actions">
         <a v-if="authState === 'authenticated'" href="#example-reports">예제 문제 신고</a>
+        <a v-if="authState === 'authenticated'" href="#url-submissions">URL 제보</a>
         <a href="/">공개 Explore 보기</a>
         <button v-if="authState === 'authenticated'" type="button" @click="logout">로그아웃</button>
       </div>
@@ -655,6 +657,7 @@ async function decide(decision: 'needs-edit' | 'merge' | 'reject'): Promise<void
         ><strong>{{ queue.counts[item] ?? 0 }}</strong>
       </button>
     </section>
+    <SubmissionsPanel v-if="authState === 'authenticated'" />
     <ExampleReportsPanel
       v-if="authState === 'authenticated'"
       @unpublished="refreshAfterReportUnpublish"

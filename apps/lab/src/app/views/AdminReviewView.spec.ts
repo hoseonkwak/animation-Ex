@@ -38,6 +38,8 @@ describe('AdminReviewView', () => {
           usage: { level: 'normal', maximumRatio: 0 },
         }
       else if (url.endsWith('/admin/ingestion-runs')) data = { items: [] }
+      else if (url.includes('/admin/submissions?'))
+        data = { items: [], total: 0, counts: { received: 0, linked: 0, rejected: 0 } }
       else if (url.includes('/admin/example-reports?'))
         data = { items: [], counts: { open: 0, closed: 0 } }
       else if (url.endsWith('/admin/auto-publication'))
@@ -152,6 +154,8 @@ describe('AdminReviewView', () => {
         }
       } else if (url.endsWith('/admin/ingestion-runs')) {
         data = { items: [] }
+      } else if (url.includes('/admin/submissions?')) {
+        data = { items: [], total: 0, counts: { received: 0, linked: 0, rejected: 0 } }
       } else if (url.includes('/admin/example-reports?')) {
         data = { items: [], counts: { open: 0, closed: 0 } }
       } else if (url.endsWith('/admin/auto-publication')) {

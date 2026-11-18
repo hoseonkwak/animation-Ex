@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head><base href="/runtime/bulk-01m6n3abcr25jbxgwkr5nnxakx/12b9f0a8b263fed1d392/"><!-- Source and license: /runtime/bulk-01m6n3abcr25jbxgwkr5nnxakx/12b9f0a8b263fed1d392/LICENSE.txt -->
+<script type="importmap">
+{
+  "imports": {
+    "gsap": "https://esm.sh/gsap@^3.15.0",
+    "gsap/": "https://esm.sh/gsap@^3.15.0/"
+  }
+}
+</script>
+
+    <meta charset="UTF-8">
+    <title>Glitchy neon radio buttons with GSAP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/runtime/bulk-01m6n3abcr25jbxgwkr5nnxakx/12b9f0a8b263fed1d392/style.d509e44cf1a175a96f4c.css">
+
+
+  </head>
+
+  <body>
+    <div class="container">
+  <div class="radio-btn-group">
+    <input type="radio" name="options" value="1" id="option-1" />
+    <label for="option-1">
+      <svg width="350px" height="50px">
+        <defs>
+          <filter
+            id="displace"
+            primitiveUnits="objectBoundingBox"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-color="#8888FF" y="0%" height="7%" result="s0" />
+            <feFlood flood-color="#888800" y="7%" height="14%" result="s1" />
+            <feFlood flood-color="#8888FF" y="21%" height="6%" result="s2" />
+            <feFlood flood-color="#888800" y="27%" height="12%" result="s3" />
+            <feFlood flood-color="#8888FF" y="39%" height="8%" result="s4" />
+            <feFlood flood-color="#888800" y="47%" height="17%" result="s5" />
+            <feFlood flood-color="#8888FF" y="64%" height="5%" result="s6" />
+            <feFlood flood-color="#888800" y="69%" height="11%" result="s7" />
+            <feFlood flood-color="#8888FF" y="80%" height="9%" result="s8" />
+            <feFlood flood-color="#888800" y="89%" height="11%" result="s9" />
+
+            <feMerge result="bands">
+              <feMergeNode in="s0" />
+              <feMergeNode in="s1" />
+              <feMergeNode in="s2" />
+              <feMergeNode in="s3" />
+              <feMergeNode in="s4" />
+              <feMergeNode in="s5" />
+              <feMergeNode in="s6" />
+              <feMergeNode in="s7" />
+              <feMergeNode in="s8" />
+              <feMergeNode in="s9" />
+            </feMerge>
+
+            <feDisplacementMap
+              class="displace"
+              in="SourceGraphic"
+              in2="bands"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="B"
+            />
+          </filter>
+
+          <pattern
+            id="scanline-pattern"
+            class="scanline-pattern"
+            patternUnits="userSpaceOnUse"
+            width="5"
+            height="10"
+          >
+            <rect
+              class="scanline"
+              x="0"
+              y="0"
+              width="5"
+              height="1"
+              fill="#131522"
+            />
+            <rect x="0" y="1" width="5" height="9" fill="none" />
+          </pattern>
+
+          <radialGradient
+            id="fade"
+            gradientUnits="userSpaceOnUse"
+            cx="175"
+            cy="25"
+            r="50"
+            gradientTransform="translate(175 25) scale(3 1) translate(-175 -25)"
+          >
+            <stop offset="0%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="60%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="100%" stop-color="#0f0b0b" stop-opacity="1" />
+          </radialGradient>
+        </defs>
+
+        <g filter="url(#displace)">
+          <rect
+            x="0"
+            y="20"
+            width="100%"
+            height="25"
+            fill="url(#scanline-pattern)"
+          />
+
+          <polygon
+            class="unchecked"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(60 0)"
+          />
+
+          <polygon
+            class="pink"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(78 0)"
+          />
+
+          <polygon
+            class="blue"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(42 0)"
+          />
+          <text x="125" y="32" dominant-baseline="middle">Nebula</text>
+        </g>
+        <rect width="350" height="50" fill="url(#fade)" />
+      </svg>
+    </label>
+  </div>
+  <div class="radio-btn-group">
+    <input type="radio" name="options" value="2" id="option-2" />
+    <label for="option-2">
+      <svg width="350px" height="50px">
+        <defs>
+          <filter
+            id="displace-2"
+            primitiveUnits="objectBoundingBox"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-color="#8888FF" y="0%" height="13%" result="s0" />
+            <feFlood flood-color="#888800" y="13%" height="5%" result="s1" />
+            <feFlood flood-color="#8888FF" y="18%" height="16%" result="s2" />
+            <feFlood flood-color="#888800" y="34%" height="7%" result="s3" />
+            <feFlood flood-color="#8888FF" y="41%" height="11%" result="s4" />
+            <feFlood flood-color="#888800" y="52%" height="4%" result="s5" />
+            <feFlood flood-color="#8888FF" y="56%" height="18%" result="s6" />
+            <feFlood flood-color="#888800" y="74%" height="6%" result="s7" />
+            <feFlood flood-color="#8888FF" y="80%" height="13%" result="s8" />
+            <feFlood flood-color="#888800" y="93%" height="7%" result="s9" />
+
+            <feMerge result="bands">
+              <feMergeNode in="s0" />
+              <feMergeNode in="s1" />
+              <feMergeNode in="s2" />
+              <feMergeNode in="s3" />
+              <feMergeNode in="s4" />
+              <feMergeNode in="s5" />
+              <feMergeNode in="s6" />
+              <feMergeNode in="s7" />
+              <feMergeNode in="s8" />
+              <feMergeNode in="s9" />
+            </feMerge>
+
+            <feDisplacementMap
+              class="displace"
+              in="SourceGraphic"
+              in2="bands"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="B"
+            />
+          </filter>
+
+          <pattern
+            id="scanline-pattern-2"
+            class="scanline-pattern"
+            patternUnits="userSpaceOnUse"
+            width="5"
+            height="10"
+          >
+            <rect
+              class="scanline"
+              x="0"
+              y="0"
+              width="5"
+              height="1"
+              fill="#131522"
+            />
+            <rect x="0" y="1" width="5" height="9" fill="none" />
+          </pattern>
+
+          <radialGradient
+            id="fade-2"
+            gradientUnits="userSpaceOnUse"
+            cx="175"
+            cy="25"
+            r="50"
+            gradientTransform="translate(175 25) scale(3 1) translate(-175 -25)"
+          >
+            <stop offset="0%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="60%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="100%" stop-color="#0f0b0b" stop-opacity="1" />
+          </radialGradient>
+        </defs>
+
+        <g filter="url(#displace-2)">
+          <rect
+            x="0"
+            y="20"
+            width="100%"
+            height="25"
+            fill="url(#scanline-pattern-2)"
+          />
+
+          <polygon
+            class="unchecked"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(60 0)"
+          />
+
+          <polygon
+            class="pink"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(78 0)"
+          />
+
+          <polygon
+            class="blue"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(42 0)"
+          />
+
+          <text x="125" y="32" dominant-baseline="middle">Quasar</text>
+        </g>
+
+        <rect width="350" height="50" fill="url(#fade-2)" />
+      </svg>
+    </label>
+  </div>
+  <div class="radio-btn-group">
+    <input type="radio" name="options" value="3" id="option-3" />
+    <label for="option-3">
+      <svg width="350px" height="50px">
+        <defs>
+          <filter
+            id="displace-3"
+            primitiveUnits="objectBoundingBox"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-color="#8888FF" y="0%" height="9%" result="s0" />
+            <feFlood flood-color="#888800" y="9%" height="18%" result="s1" />
+            <feFlood flood-color="#8888FF" y="27%" height="5%" result="s2" />
+            <feFlood flood-color="#888800" y="32%" height="14%" result="s3" />
+            <feFlood flood-color="#8888FF" y="46%" height="8%" result="s4" />
+            <feFlood flood-color="#888800" y="54%" height="12%" result="s5" />
+            <feFlood flood-color="#8888FF" y="66%" height="6%" result="s6" />
+            <feFlood flood-color="#888800" y="72%" height="16%" result="s7" />
+            <feFlood flood-color="#8888FF" y="88%" height="4%" result="s8" />
+            <feFlood flood-color="#888800" y="92%" height="8%" result="s9" />
+
+            <feMerge result="bands">
+              <feMergeNode in="s0" />
+              <feMergeNode in="s1" />
+              <feMergeNode in="s2" />
+              <feMergeNode in="s3" />
+              <feMergeNode in="s4" />
+              <feMergeNode in="s5" />
+              <feMergeNode in="s6" />
+              <feMergeNode in="s7" />
+              <feMergeNode in="s8" />
+              <feMergeNode in="s9" />
+            </feMerge>
+
+            <feDisplacementMap
+              class="displace"
+              in="SourceGraphic"
+              in2="bands"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="B"
+            />
+          </filter>
+
+          <pattern
+            id="scanline-pattern-3"
+            class="scanline-pattern"
+            patternUnits="userSpaceOnUse"
+            width="5"
+            height="10"
+          >
+            <rect
+              class="scanline"
+              x="0"
+              y="0"
+              width="5"
+              height="1"
+              fill="#131522"
+            />
+            <rect x="0" y="1" width="5" height="9" fill="none" />
+          </pattern>
+
+          <radialGradient
+            id="fade-3"
+            gradientUnits="userSpaceOnUse"
+            cx="175"
+            cy="25"
+            r="50"
+            gradientTransform="translate(175 25) scale(3 1) translate(-175 -25)"
+          >
+            <stop offset="0%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="60%" stop-color="#0f0b0b" stop-opacity="0" />
+            <stop offset="100%" stop-color="#0f0b0b" stop-opacity="1" />
+          </radialGradient>
+        </defs>
+
+        <g filter="url(#displace-3)">
+          <rect
+            x="0"
+            y="20"
+            width="100%"
+            height="25"
+            fill="url(#scanline-pattern-3)"
+          />
+
+          <polygon
+            class="unchecked"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(60 0)"
+          />
+
+          <polygon
+            class="pink"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(78 0)"
+          />
+
+          <polygon
+            class="blue"
+            points="30,15 42.99,22.5 42.99,37.5 30,45 17.01,37.5 17.01,22.5"
+            fill="none"
+            stroke-width="4"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            transform="translate(42 0)"
+          />
+
+          <text x="125" y="32" dominant-baseline="middle">Pulsar</text>
+        </g>
+
+        <rect width="350" height="50" fill="url(#fade-3)" />
+      </svg>
+    </label>
+  </div>
+</div>
+
+    <script type="module" src="/runtime/bulk-01m6n3abcr25jbxgwkr5nnxakx/12b9f0a8b263fed1d392/script.99c5b89b9bb86b08a051.js"></script>
+  </body>
+
+</html>

@@ -1,0 +1,110 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #111;
+    background-image: linear-gradient(#234, #111);
+    color: #fff;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    perspective: 600px;
+    overflow: clip;
+    
+    * {
+        transform-style: preserve-3d;
+    }
+}
+
+.scene {
+    --duration: 8s; 
+    
+    position: relative;
+    transform: translateY(100px) rotateX(75deg);
+
+    * { position: absolute; }
+}
+
+.shadow {
+    inset: -80px -120px;
+    filter: blur(24px);
+    
+    &:nth-child(1) {
+        background-image: linear-gradient(to right, #000, #0000);
+        transform-origin: left;
+        animation:
+            shadow-s var(--duration) infinite ease-in-out,
+            shadow1 var(--duration) infinite ease-in-out;
+    }
+    &:nth-child(2) {
+        background-image: linear-gradient(to left, #000, #0000);
+        transform-origin: right;
+        animation:
+            shadow-s var(--duration) infinite ease-in-out,
+            shadow2 var(--duration) infinite ease-in-out;
+    }
+}
+
+@keyframes shadow-s {
+    0%, 15%, 37%, 100% { background-color: #000; }
+    24%, 35% { background-color: #0000; }
+}
+@keyframes shadow1 {
+    0%, 100% { transform: translateX(0); }
+    16%, 20% { transform: translateX(-145px) rotateZ(15deg); }
+    35%, 85% { transform: translateX(-105px) rotateZ(15deg); }
+}
+@keyframes shadow2 {
+    0%, 100% { transform: translateX(0); }
+    16%, 20% { transform: translateX(145px) rotateZ(-15deg); }
+    35%, 85% { transform: translateX(105px) rotateZ(-15deg); }
+}
+
+.card {
+    inset: -80px 0;
+    animation-composition: add;
+
+    &:nth-child(odd) {
+        animation: card1 var(--duration) infinite ease-in-out;
+    }
+    &:nth-child(even) {
+        animation:
+            card2-p var(--duration) infinite ease-in-out,
+            card2-h var(--duration) infinite ease-in-out;
+    }
+}
+
+.cards i {
+    top: 0; left: 15px;
+    width: 16px; height: 160px;
+    transform-origin: left;
+    background:
+        radial-gradient(ellipse at 50% 50%, #0000, 60%, #000) calc(var(--i) * -16px) 50% / 1600% 160px no-repeat,
+        linear-gradient(45deg, #fff, #f77, #fff) calc(var(--i) * -16px) 50% / 1600% 160px no-repeat;
+    animation: var(--a) var(--duration) infinite ease-in-out;
+}
+
+@keyframes card1 {
+    0% { transform: translateX(-135px) translateZ(calc((var(--c) - 1) * 0.5px)); }
+    16%, 20% { transform: translateX(-280px) translateZ(calc((var(--c) - 1) * 0.5px)) rotateZ(15deg); }
+    35% { transform: translateX(-240px) translateZ(calc((var(--c) - 1) * 0.5px)) rotateZ(15deg); }
+    85% { transform: translateX(-240px) translateZ(calc((var(--c) - 1) * 1px)) rotateZ(15deg); }
+    100% { transform: translateX(-135px) translateZ(calc((var(--c) - 1) * 1px)); }
+}
+
+@keyframes card2-p {
+    0% { transform: rotateZ(180deg) translateX(-135px); }
+    16%, 20% { transform: rotateZ(180deg) translateX(-280px) rotateZ(-15deg); }
+    35%, 85% { transform: rotateZ(180deg) translateX(-240px) rotateZ(-15deg); }
+    100% { transform: rotateZ(180deg) translateX(-135px); }
+}
+
+@keyframes card2-h {
+    0% { transform: translateZ(calc(var(--c) * 0.5px + 26px)); }
+    8% { transform: translateZ(calc(var(--c) * 0.5px + 40px)); }
+    16%, 35% { transform: translateZ(calc(var(--c) * 0.5px)); }
+    85%, 100% { transform: translateZ(calc(var(--c) * 1px)); }
+}

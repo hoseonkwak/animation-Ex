@@ -152,7 +152,7 @@ describe('WP6 public API', () => {
     sqlite.close()
   })
 
-  it('기존 Source URL은 존재 여부를 숨기고 새 Submission을 만들지 않는다', async () => {
+  it('기존 Source URL 제보도 linked 상태로 보관하고 같은 202 응답을 반환한다', async () => {
     const { sqlite, d1 } = createMigratedDatabase()
     const response = await worker.fetch(
       new Request('http://localhost/api/v1/submissions', {
@@ -167,7 +167,51 @@ describe('WP6 public API', () => {
       context,
     )
     expect(response.status).toBe(202)
-    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM submissions').get()).toEqual({ count: 0 })
+    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM submissions').get()).toEqual({ count: 1 })
+    expect(sqlite.prepare('SELECT status FROM submissions').get()).toEqual({ status: 'linked' })
+    sqlite.close()
+  })
+
+  it('URL 제보는 관리자 접수함에서 설명과 상태·페이지를 확인한다', async () => {
+    const { sqlite, d1 } = createMigratedDatabase()
+    const env = { DB: d1, LOCAL_ADMIN_SIMULATION: 'true' }
+    await worker.fetch(
+      new Request('http://localhost/api/v1/submissions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          url: 'https://example.com/submitted-motion',
+          note: '새로운 스크롤 효과',
+          turnstileToken: 'local-test-token',
+        }),
+      }),
+      env,
+      context,
+    )
+    const get = (query: string, authorized = true) =>
+      worker.fetch(
+        new Request('http://localhost/api/v1/admin/submissions' + query, {
+          headers: authorized ? { 'X-Local-Access-Email': 'owner@local.test' } : {},
+        }),
+        env,
+        context,
+      )
+    expect((await get('', false)).status).toBe(401)
+    const response = await get('?status=all&page=0')
+    expect(response.status).toBe(200)
+    expect(((await response.json()) as { data: unknown }).data).toMatchObject({
+      total: 1,
+      counts: { received: 1, linked: 0, rejected: 0 },
+      items: [
+        {
+          submittedUrl: 'https://example.com/submitted-motion',
+          note: '새로운 스크롤 효과',
+          status: 'received',
+        },
+      ],
+    })
+    expect((await get('?status=received&page=-1')).status).toBe(400)
+    expect((await get('?status=unknown')).status).toBe(400)
     sqlite.close()
   })
 

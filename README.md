@@ -255,7 +255,7 @@ npm run preview
 | `npm run ingest:wsss:preflight`    | 현재 WSSS 한 건을 읽기 전용으로 점검 |
 | `npm run ingest:wsss:live`         | 서명된 batch API로 후보 제출         |
 | `npm run ingest:spark:fixture`     | Spark 피드 fixture 검사              |
-| `npm run ingest:spark:preflight`   | Spark 피드를 읽기 전용으로 점검       |
+| `npm run ingest:spark:preflight`   | Spark 피드를 읽기 전용으로 점검      |
 | `npm run ingest:spark:live`        | Spark 모션 후보를 batch API로 제출   |
 | `npm run sync:cloudflare-usage`    | Cloudflare 일일 사용량 동기화        |
 | `npm run smoke:preview`            | 배포한 Preview의 핵심 경로 점검      |
@@ -415,3 +415,7 @@ npx playwright install chromium
 ## License
 
 프로젝트 자체 코드의 라이선스는 아직 정하지 않았습니다. 외부 CodePen과 에셋에는 각 원본의 라이선스가 적용됩니다.
+
+### 검증된 예제의 자체 실행
+
+카드에 `자체 실행`이 표시된 예제는 미리보기 모달과 상세보기에서 내부 스냅샷을 실행합니다. 원본 CodePen은 외부 편집·공유 링크로 유지합니다. 아직 비교 검증을 통과하지 않은 예제는 CodePen으로 실행합니다. 파일럿 결과·재현 명령·확대 조건은 [자체 실행 파일럿](docs/SELF_HOSTED_PILOT.md)을 참고하세요.

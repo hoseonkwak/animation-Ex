@@ -24,6 +24,30 @@ const example: ExampleCard = {
 }
 
 describe('PreviewCard', () => {
+  it('자체 실행은 내부 버전을 격리하고 CodePen 링크는 원본으로 유지한다', async () => {
+    const wrapper = mount(PreviewCard, {
+      props: {
+        example: {
+          ...example,
+          preview: {
+            ...example.preview,
+            kind: 'internal',
+            runtimeUrl: '/runtime/example-one/v1/index.html',
+            version: 'v1',
+          },
+        },
+        active: true,
+      },
+      global: { stubs: { Teleport: true, RouterLink: true } },
+    })
+    await nextTick()
+    expect(wrapper.get('iframe').attributes('src')).toBe('/runtime/example-one/v1/index.html')
+    expect(wrapper.get('iframe').attributes('sandbox')).toBe('allow-scripts')
+    expect(wrapper.get('.preview-modal-actions a[target="_blank"]').attributes('href')).toBe(
+      'https://codepen.io/example/pen/abc',
+    )
+    wrapper.unmount()
+  })
   it('썸네일을 유지하고 클릭한 뒤에만 큰 미리보기에서 실제 코드를 실행한다', async () => {
     const wrapper = mount(PreviewCard, {
       props: { example, active: false },

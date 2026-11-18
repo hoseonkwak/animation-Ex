@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  defineAsyncComponent,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from 'vue'
 import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 import { setPageMeta } from '@/app/pageMeta'
@@ -15,6 +24,7 @@ import type { PracticeLibrary } from '@/shared/practice'
 import { resourceUrl, type PracticeResources } from '@/features/practice/resources'
 
 type CodeTab = keyof PracticeCode
+const CodeEditor = defineAsyncComponent(() => import('@/features/practice/CodeEditor.vue'))
 type WorkspaceTab = 'reference' | 'code' | 'preview'
 type PreviewStatus = 'idle' | 'running' | 'ready' | 'code-error' | 'timeout'
 
@@ -97,6 +107,9 @@ const codeTab = ref<CodeTab>('html')
 const workspaceTab = ref<WorkspaceTab>('code')
 const compactLayout = ref(false)
 const editorWidth = ref(50)
+const editorHeight = ref(50)
+const referenceHeight = ref(50)
+const referencePanels = ref<HTMLElement | null>(null)
 const autoRun = ref(true)
 const saveStatus = ref<'saved' | 'saving' | 'error'>('saved')
 const previewStatus = ref<PreviewStatus>('idle')
@@ -169,6 +182,14 @@ onMounted(async () => {
   compactQuery = window.matchMedia('(max-width: 639px)')
   compactLayout.value = compactQuery.matches
   compactQuery.addEventListener('change', onCompactChange)
+  editorHeight.value = Math.min(
+    80,
+    Math.max(20, Number(readSetting('kwak-motion:practice-editor-height')) || 50),
+  )
+  referenceHeight.value = Math.min(
+    80,
+    Math.max(20, Number(readSetting('kwak-motion:practice-reference-height')) || 50),
+  )
   try {
     const stored = readSetting('kwak-motion:practice-auto-run')
     autoRun.value = stored !== 'off'
@@ -409,9 +430,51 @@ function setEditorWidth(value: number): void {
   writeSetting('kwak-motion:practice-editor-width', String(editorWidth.value))
 }
 
+function setPanelHeight(side: 'editor' | 'reference', value: number): void {
+  const height = Math.min(80, Math.max(20, Math.round(value)))
+  if (side === 'editor') editorHeight.value = height
+  else referenceHeight.value = height
+  writeSetting(`kwak-motion:practice-${side}-height`, String(height))
+}
+
+function onHeightDividerPointerDown(event: PointerEvent, side: 'editor' | 'reference'): void {
+  const container = side === 'editor' ? panels.value : referencePanels.value
+  if (!container) return
+  event.preventDefault()
+  const handle = event.currentTarget as HTMLElement
+  handle.setPointerCapture(event.pointerId)
+  const move = (pointer: PointerEvent) => {
+    const bounds = container.getBoundingClientRect()
+    setPanelHeight(side, ((pointer.clientY - bounds.top) / bounds.height) * 100)
+  }
+  const end = () => {
+    window.removeEventListener('pointermove', move)
+    window.removeEventListener('pointerup', end)
+    window.removeEventListener('pointercancel', end)
+    stopDragging = null
+  }
+  stopDragging?.()
+  stopDragging = end
+  window.addEventListener('pointermove', move)
+  window.addEventListener('pointerup', end, { once: true })
+  window.addEventListener('pointercancel', end, { once: true })
+}
+
+function onHeightDividerKeydown(event: KeyboardEvent, side: 'editor' | 'reference'): void {
+  const current = side === 'editor' ? editorHeight.value : referenceHeight.value
+  if (event.key === 'ArrowUp') setPanelHeight(side, current - 5)
+  else if (event.key === 'ArrowDown') setPanelHeight(side, current + 5)
+  else if (event.key === 'Home') setPanelHeight(side, 20)
+  else if (event.key === 'End') setPanelHeight(side, 80)
+  else return
+  event.preventDefault()
+}
+
 function onDividerPointerDown(event: PointerEvent): void {
   if (!panels.value) return
   event.preventDefault()
+  const handle = event.currentTarget as HTMLElement
+  handle.setPointerCapture(event.pointerId)
   const move = (pointer: PointerEvent) => {
     if (!panels.value) return
     const bounds = panels.value.getBoundingClientRect()
@@ -420,12 +483,14 @@ function onDividerPointerDown(event: PointerEvent): void {
   const end = () => {
     window.removeEventListener('pointermove', move)
     window.removeEventListener('pointerup', end)
+    window.removeEventListener('pointercancel', end)
     stopDragging = null
   }
   stopDragging?.()
   stopDragging = end
   window.addEventListener('pointermove', move)
   window.addEventListener('pointerup', end, { once: true })
+  window.addEventListener('pointercancel', end, { once: true })
 }
 
 function onDividerKeydown(event: KeyboardEvent): void {
@@ -773,6 +838,9 @@ async function copyCode(tab: CodeTab): Promise<void> {
         :class="{ 'with-reference': draft.referenceSlug }"
         :style="{
           gridTemplateColumns: `minmax(0, ${editorWidth}fr) 10px minmax(0, ${100 - editorWidth}fr)`,
+          gridTemplateRows: draft.referenceSlug
+            ? `minmax(0, ${editorHeight}fr) 8px minmax(0, ${100 - editorHeight}fr)`
+            : 'minmax(0, 1fr)',
         }"
       >
         <section v-if="draft.referenceSlug" class="practice-original" aria-label="원본 참고">
@@ -806,7 +874,14 @@ async function copyCode(tab: CodeTab): Promise<void> {
             </a>
             <p>GSAP은 상단에서 선택하고, 다른 라이브러리와 이미지는 외부 리소스에 추가하세요.</p>
           </details>
-          <template v-if="reference && (!compactLayout || workspaceTab === 'reference')">
+          <div
+            v-if="reference && (!compactLayout || workspaceTab === 'reference')"
+            ref="referencePanels"
+            class="practice-original-preview"
+            :style="{
+              gridTemplateRows: `minmax(0, ${referenceHeight}fr) 8px minmax(0, ${100 - referenceHeight}fr)`,
+            }"
+          >
             <section class="practice-original-pane">
               <h3>원본 코드</h3>
               <iframe
@@ -816,6 +891,18 @@ async function copyCode(tab: CodeTab): Promise<void> {
                 referrerpolicy="strict-origin-when-cross-origin"
               />
             </section>
+            <div
+              class="practice-row-divider"
+              role="separator"
+              aria-label="원본 코드와 실행 화면 높이 조절"
+              aria-orientation="horizontal"
+              :aria-valuenow="referenceHeight"
+              aria-valuemin="20"
+              aria-valuemax="80"
+              tabindex="0"
+              @pointerdown="onHeightDividerPointerDown($event, 'reference')"
+              @keydown="onHeightDividerKeydown($event, 'reference')"
+            />
             <section class="practice-original-pane">
               <h3>원본 실행 화면</h3>
               <iframe
@@ -825,7 +912,7 @@ async function copyCode(tab: CodeTab): Promise<void> {
                 referrerpolicy="strict-origin-when-cross-origin"
               />
             </section>
-          </template>
+          </div>
           <p v-else-if="!reference" role="status" class="practice-original-status">
             {{ referenceLoading ? '원본을 불러오는 중입니다.' : '원본을 불러오지 못했습니다.' }}
           </p>
@@ -855,29 +942,13 @@ async function copyCode(tab: CodeTab): Promise<void> {
               ScrollTrigger 플러그인도 내장되어 있습니다.
             </p>
           </details>
-          <label :for="`practice-${codeTab}`" class="practice-editor-label"
-            >{{ codeTab === 'javascript' ? 'JavaScript' : codeTab.toUpperCase() }} 코드</label
-          >
-          <textarea
-            v-if="codeTab === 'html'"
-            id="practice-html"
-            v-model="code.html"
-            spellcheck="false"
-            aria-label="HTML 코드"
-          />
-          <textarea
-            v-else-if="codeTab === 'css'"
-            id="practice-css"
-            v-model="code.css"
-            spellcheck="false"
-            aria-label="CSS 코드"
-          />
-          <textarea
-            v-else
-            id="practice-javascript"
-            v-model="code.javascript"
-            spellcheck="false"
-            aria-label="JavaScript 코드"
+          <p class="practice-editor-label">
+            {{ codeTab === 'javascript' ? 'JavaScript' : codeTab.toUpperCase() }} 코드
+          </p>
+          <CodeEditor
+            v-model="code[codeTab]"
+            :language="codeTab"
+            :label="`${codeTab === 'javascript' ? 'JavaScript' : codeTab.toUpperCase()} 코드`"
           />
         </section>
         <div
@@ -893,6 +964,19 @@ async function copyCode(tab: CodeTab): Promise<void> {
           tabindex="0"
           @pointerdown="onDividerPointerDown"
           @keydown="onDividerKeydown"
+        />
+        <div
+          v-if="draft.referenceSlug"
+          class="practice-row-divider practice-editor-row-divider"
+          role="separator"
+          aria-label="내 코드와 실행 화면 높이 조절"
+          aria-orientation="horizontal"
+          :aria-valuenow="editorHeight"
+          aria-valuemin="20"
+          aria-valuemax="80"
+          tabindex="0"
+          @pointerdown="onHeightDividerPointerDown($event, 'editor')"
+          @keydown="onHeightDividerKeydown($event, 'editor')"
         />
         <section class="practice-result" aria-label="내 실행 화면">
           <div class="practice-result-heading">

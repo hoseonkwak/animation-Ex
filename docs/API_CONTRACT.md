@@ -45,22 +45,22 @@
 
 공개 예제 목록을 조회한다.
 
-| 매개변수        | 형식                             | 기본값   |
-| --------------- | -------------------------------- | -------- |
-| `q`             | 2~80자 문자열                    | 없음     |
-| `technology`    | 쉼표로 구분한 tag key            | 없음     |
-| `trigger`       | 쉼표로 구분한 tag key            | 없음     |
-| `motion`        | 쉼표로 구분한 tag key            | 없음     |
-| `section`       | 쉼표로 구분한 tag key            | 없음     |
+| 매개변수        | 형식                                 | 기본값   |
+| --------------- | ------------------------------------ | -------- |
+| `q`             | 2~80자 문자열                        | 없음     |
+| `technology`    | 쉼표로 구분한 tag key                | 없음     |
+| `trigger`       | 쉼표로 구분한 tag key                | 없음     |
+| `motion`        | 쉼표로 구분한 tag key                | 없음     |
+| `section`       | 쉼표로 구분한 tag key                | 없음     |
 | `category`      | 대표 카테고리 키 또는 `unclassified` | 없음     |
-| `technique`     | 쉼표로 구분한 tag key            | 없음     |
-| `difficulty`    | `beginner,intermediate,advanced` | 없음     |
-| `origin`        | `original-pen,lab-created`       | 없음     |
-| `featured`      | `true,false`                     | 없음     |
-| `practiceReady` | `true`                           | 없음     |
-| `sort`          | `latest,featured,difficulty`     | `latest` |
-| `limit`         | 1~24                             | 24       |
-| `cursor`        | 이전 응답의 opaque cursor        | 없음     |
+| `technique`     | 쉼표로 구분한 tag key                | 없음     |
+| `difficulty`    | `beginner,intermediate,advanced`     | 없음     |
+| `origin`        | `original-pen,lab-created`           | 없음     |
+| `featured`      | `true,false`                         | 없음     |
+| `practiceReady` | `true`                               | 없음     |
+| `sort`          | `latest,featured,difficulty`         | `latest` |
+| `limit`         | 1~24                                 | 24       |
+| `cursor`        | 이전 응답의 opaque cursor            | 없음     |
 
 같은 축의 값은 OR, 서로 다른 축은 AND로 결합한다. 예를 들어 `technology=gsap,css&trigger=scroll`은 GSAP 또는 CSS이면서 Scroll인 예제를 찾는다.
 
@@ -146,7 +146,7 @@ Home, Explore, Sections, About, 공개 Section과 실행이 확인된 공개 Ent
 - `note`는 선택이며 300자 이하로 제한한다.
 - 요청 본문은 8KB 이하로 제한한다.
 - Turnstile 토큰을 서버에서 검증한다.
-- canonical URL이 같은 기존 Source 또는 Submission이 있으면 새 행을 만들지 않는다.
+- canonical URL이 같은 기존 Submission이 있으면 새 행을 만들지 않는다. 기존 Source가 있으면 최초 제보를 `linked` 상태로 저장해 관리자 접수함에서도 확인할 수 있게 한다. 새 주소는 `received` 상태로 저장한다.
 - 중복이어도 원본 존재 여부를 노출하지 않고 동일한 `202 Accepted`를 반환한다.
 
 ### `POST /examples/:slug/reports`
@@ -165,6 +165,10 @@ Home, Explore, Sections, About, 공개 Section과 실행이 확인된 공개 Ent
 - `POST /auth/logout`: same-origin 요청에서 관리자 세션 쿠키를 제거한다.
 
 GitHub access token은 사용자 ID 확인 요청에만 사용하고 DB나 로그에 저장하지 않는다. localhost에서는 `LOCAL_ADMIN_SIMULATION=true`일 때만 로컬 신원 헤더를 허용한다.
+
+### `GET /admin/submissions?status=all|received|linked|rejected&page=0`
+
+소유자 세션에서 URL 제보를 최신순으로 조회한다. 기본 상태는 `all`, 페이지는 0부터 시작하고 페이지 크기는 50이다. 상태별 건수 `counts`, 필터 결과 `total`, `page`, `pageSize`, `items`를 반환한다. 각 항목은 주소·설명·접수 시각·상태와 연결된 공개 예제의 slug를 포함한다. 잘못된 상태·페이지 또는 지원하지 않는 조회 인자는 `400 INVALID_FILTER`를 반환한다. 조회만으로 공개 상태를 변경하지 않는다.
 
 ### `GET /admin/example-reports?status=open|closed`
 
@@ -364,3 +368,9 @@ CodePen 중복 판정에서 제작자 이름의 대소문자 차이는 같은 �
 `GET /api/v1/examples/:slug/practice-kit`은 공개 Entry의 `ready` Kit에 한해서 불변 CodePackageVersion의 ID·버전, HTML·CSS·JavaScript 시작 코드, 상호작용 안내와 공개 가능한 제작·라이선스 정보를 반환한다. Kit이 없거나 중지됐거나 Entry가 비공개이면 `404 PRACTICE_KIT_NOT_FOUND`다. 응답 캐시는 최대 60초다.
 
 초기 버전은 외부 스크립트·스타일·에셋을 포함하지 않는다. `libraries`는 고정 버전 내부 실행 라이브러리 목록이며, 현재 허용값은 `gsap@3.15.0`과 `gsap-scrolltrigger@3.15.0`이다. 후자는 코어와 함께 지정해야 하며, 중복 값과 그 밖의 값은 거부한다. 일반 Kit은 `[]`를 반환한다. Preview는 이 값에 따라 로컬에 묶인 코어·플러그인 코드를 순서대로 주입하고 네트워크 연결을 허용하지 않는다. 내부 provenance 원문과 운영 메모는 API에 노출하지 않는다. Kit의 권리·실행 정책이 계약과 다르면 성공 응답을 만들지 않고 추적 가능한 서버 오류를 남긴다.
+
+## 검증된 자체 실행의 공개 계약 (2026-11-18)
+
+공개 목록·상세의 `preview`는 검증 버전에 한해 `kind: internal`, `runtimeUrl`, `version`을 추가한다. `penId`와 원본 `embedUrl`은 유지한다. 이때 `runtimeVerified`는 선택한 내부 스냅샷의 검증 결과이며 원본 CodePen 상태가 검증됐다는 뜻은 아니다.
+
+`GET|HEAD /runtime/:slug/:version/:file`은 배포 검증 목록에 있는 정확한 버전과 파일만 제공한다. D1의 공개 상태와 원본 URL이 일치해야 하며 미등록·공개 중지·이전 버전 파일은 404다. 앱 HTML로 fallback하지 않는다. CSP sandbox는 `allow-scripts`만 허용하고 리소스는 스냅샷 경로와 명시한 외부 출처로 제한한다. 자격 정보 없는 내부 ASSETS 요청으로 파일을 읽고 CORS `*`, `nosniff`, `no-referrer`, `noindex`를 설정한다. 쓰기 요청은 405다. 이 파일럿은 기존 Entry 집계·후보 상태·CodePenRef를 수정하지 않는다.

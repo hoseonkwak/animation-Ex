@@ -1,0 +1,1720 @@
+{
+  "schemaVersion": 1,
+  "selectedAt": "2026-11-18T07:00:44.312Z",
+  "acquisitionMethod": "official-public-raw-file-urls",
+  "documentationUrl": "https://blog.codepen.io/docs/live-view/raw-file-urls/",
+  "items": [
+    {
+      "slug": "pen-01m7mamh2zdxgsvfca0mqygt4f",
+      "title": "Inspector - Reactive CSS",
+      "sections": [
+        "card"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "Maseone",
+        "canonicalUrl": "https://codepen.io/editor/Maseone/pen/01a1c140-a4a7-7fca-ae92-d4701b39bc67",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a1c140-a4a7-7fca-ae92-d4701b39bc67.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a1c140-a4a7-7fca-ae92-d4701b39bc67.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 10543,
+          "sha256": "55546789cd93e4e8489cf897cb54e62fda5ad87ff700a5dfd7c88c1db0007c97"
+        },
+        {
+          "path": "/style.4fb3f7d42f79b3213b54.css",
+          "sourceUrl": "https://01a1c140-a4a7-7fca-ae92-d4701b39bc67.codepenusercontent.com/style.4fb3f7d42f79b3213b54.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 36811,
+          "sha256": "23c910b802a27ea03f96bb6291c6ad8d3c7656ded6ca521bec1661229a9ab783"
+        },
+        {
+          "path": "/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+          "sourceUrl": "https://01a1c140-a4a7-7fca-ae92-d4701b39bc67.codepenusercontent.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+          "contentType": "application/javascript",
+          "bytes": 1239,
+          "sha256": "2595496fe48df6fcf9b1bc57c29a744c121eb4dd11566466bc13d2e52e6bbcc8"
+        }
+      ],
+      "externalOrigins": [
+        "https://cdn.jsdelivr.net",
+        "https://fonts.gstatic.com",
+        "https://reactivecss.com",
+        "https://x.com"
+      ],
+      "totalBytes": 48593,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "pen-01m7mamftpna4e8xaqq2zdhgd1",
+      "title": "textured glass effect",
+      "sections": [
+        "image"
+      ],
+      "technologies": [
+        "svg"
+      ],
+      "source": {
+        "creatorName": "vii120",
+        "canonicalUrl": "https://codepen.io/editor/vii120/pen/01a1a861-e97c-7de2-b634-f1e704a6f725",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a1a861-e97c-7de2-b634-f1e704a6f725.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403"
+    },
+    {
+      "slug": "bulk-01m6n39scg26htpkkfd5wrxj5e",
+      "title": "Prism Currents",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "shubniggurath",
+        "canonicalUrl": "https://codepen.io/editor/shubniggurath/pen/01a164e2-494a-79a0-948d-59baebda2dc9",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1878,
+          "sha256": "6d39663b8a1e54aea31d8dc6a35f8848b57d2559f55714869fcdf1ba84cb0191"
+        },
+        {
+          "path": "/src/main.4072a087723bf963d5f7.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/main.4072a087723bf963d5f7.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 29128,
+          "sha256": "a7e1b09a757489dec589565ffeee05d0e0df5aa5e35bcd4829ff85f410baa1b9"
+        },
+        {
+          "path": "/src/shaders/simulate.vert.58db18d8cf667e58f3ff.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/simulate.vert.58db18d8cf667e58f3ff.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 8374,
+          "sha256": "58f39df110cb67e68d894e5f8811b8b7761a2abb69392504a8d8ee398ebaee96"
+        },
+        {
+          "path": "/src/shaders/prism.vert.69d98e04067c96121924.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/prism.vert.69d98e04067c96121924.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3952,
+          "sha256": "c1e2c1fe8cbcd6775418ba9b414d52936773f49c050278f9a8244bc71fd0be7e"
+        },
+        {
+          "path": "/src/shaders/prism.frag.6b2b9c9249cab5f7d491.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/prism.frag.6b2b9c9249cab5f7d491.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1521,
+          "sha256": "256b3cb762030fb9681a6e4d10e2a459aaa37ce32e1e6c3794ba9c65b9ece3eb"
+        },
+        {
+          "path": "/src/shaders/post.frag.6ec196705eda4af0d715.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/post.frag.6ec196705eda4af0d715.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5233,
+          "sha256": "d54e40019558635e90d809fb372f503cf24635a8ffc217225364a0265730eaa1"
+        },
+        {
+          "path": "/src/shaders/dof.frag.a52f65f76ce4fa4f830f.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/dof.frag.a52f65f76ce4fa4f830f.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2012,
+          "sha256": "ae02880a00ac71f21c69181cb87687cdd23f09a8a69a32f45bd4e9f8aacb56f0"
+        },
+        {
+          "path": "/src/shaders/debug.870c0c8a590e7dd5816f.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/shaders/debug.870c0c8a590e7dd5816f.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 4414,
+          "sha256": "757c6dba3bd974528b98d35551ccc4e5932563386082e5531aaf037484b82b9c"
+        },
+        {
+          "path": "/src/palettes.deb96c64401b3a860ab6.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/palettes.deb96c64401b3a860ab6.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 8505,
+          "sha256": "3c0316c1d034e63c78c12444075ed551b0f02216a1257b3c73440dcc29652612"
+        },
+        {
+          "path": "/src/presets.971142d966ba714d7c69.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/presets.971142d966ba714d7c69.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 12215,
+          "sha256": "5b24c91a5b6444fe244e6713e9dda960d5e8cc2ce938165d02f4384d1f08e102"
+        },
+        {
+          "path": "/src/controls.e178dbc37ffc6f240a33.js",
+          "sourceUrl": "https://01a164e2-494a-79a0-948d-59baebda2dc9.codepenusercontent.com/src/controls.e178dbc37ffc6f240a33.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5820,
+          "sha256": "29a44cb38d5d06b03be1266fbf967f0bc0d436335945ef867b16b660e9c0a708"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh",
+        "https://iquilezles.org"
+      ],
+      "totalBytes": 83052,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n39srva5crkt8pmge7xq9q",
+      "title": "Scroll-Driven Photo Gallery",
+      "sections": [
+        "navigation"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "cbolson",
+        "canonicalUrl": "https://codepen.io/editor/cbolson/pen/01a187ae-e212-756d-8f6c-a76c594987bf",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a187ae-e212-756d-8f6c-a76c594987bf.codepenusercontent.com",
+      "status": "failed",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a187ae-e212-756d-8f6c-a76c594987bf.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 8078,
+          "sha256": "ce58e879b865ec3a35d09361b37a58465f3dc9b8d5aa9c135ef1ad9d2c4b6edd"
+        },
+        {
+          "path": "/style.840dc2d4b7bf66b89c98.css",
+          "sourceUrl": "https://01a187ae-e212-756d-8f6c-a76c594987bf.codepenusercontent.com/style.840dc2d4b7bf66b89c98.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 7325,
+          "sha256": "d078cef8619e7f0b62903219e5c82be36f01d86b4da2f74b17ed4e224db4dd3e"
+        }
+      ],
+      "externalOrigins": [],
+      "failureCode": "HTTP_404: https://01a187ae-e212-756d-8f6c-a76c594987bf.codepenusercontent.com/script.js"
+    },
+    {
+      "slug": "bulk-01m6n39yq3hceq7ajctb3yv4cm",
+      "title": "Toggle Switch With Legs",
+      "sections": [
+        "button"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a15639-274e-78e4-88a1-200861dec192",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a15639-274e-78e4-88a1-200861dec192.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a15639-274e-78e4-88a1-200861dec192.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 754,
+          "sha256": "c05a1a8083ef8d79c4f072d3d0e72a881647e7f2a9c5f83e1c65d47b53a40012"
+        },
+        {
+          "path": "/style.ff5fcf61d4ebc3b11451.css",
+          "sourceUrl": "https://01a15639-274e-78e4-88a1-200861dec192.codepenusercontent.com/style.ff5fcf61d4ebc3b11451.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 17670,
+          "sha256": "d9204870a1022ddf63bf499c83a3aed3b8ba2737ea69a1158bd56f0dba3d6a21"
+        },
+        {
+          "path": "/main.84938c15168d2802c94e.js",
+          "sourceUrl": "https://01a15639-274e-78e4-88a1-200861dec192.codepenusercontent.com/main.84938c15168d2802c94e.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 4564,
+          "sha256": "500d1c06cdcb9670bb8341fa32aa5efdc19978d46e8657c535bde3d98ab5550f"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh"
+      ],
+      "totalBytes": 22988,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a1j92j60m6xyh8cksdhq",
+      "title": "Bouncy Price Selector",
+      "sections": [
+        "form"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "MyXoToD",
+        "canonicalUrl": "https://codepen.io/editor/MyXoToD/pen/01a0e307-2455-7b77-a85c-ef7f34f824ae",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0e307-2455-7b77-a85c-ef7f34f824ae.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a0e307-2455-7b77-a85c-ef7f34f824ae.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a4anz8njg4cvf22syfjh",
+      "title": "Checkerboard Cylinder Illusion",
+      "sections": [
+        "background"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a0a1ec-b757-75ba-9858-62c93353f717",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0a1ec-b757-75ba-9858-62c93353f717.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a0a1ec-b757-75ba-9858-62c93353f717.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 673,
+          "sha256": "d4883d1a51eef8b91a4157150f37dd7d1fe3e6be9521a8f3e8553a3a12b6b690"
+        },
+        {
+          "path": "/style.101efc1004b37b1b2564.css",
+          "sourceUrl": "https://01a0a1ec-b757-75ba-9858-62c93353f717.codepenusercontent.com/style.101efc1004b37b1b2564.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 96,
+          "sha256": "01fc404bb3e9f24f33bbd5b22e50fd23434c1f93002e5f39f5be130e030c2b15"
+        },
+        {
+          "path": "/main.d10f7cd169d878487a2f.js",
+          "sourceUrl": "https://01a0a1ec-b757-75ba-9858-62c93353f717.codepenusercontent.com/main.d10f7cd169d878487a2f.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5462,
+          "sha256": "97e8f0d8772af53c78d28f4dba474240adcb50d99079bf79c2e30235ac298882"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh"
+      ],
+      "totalBytes": 6231,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a6yp3txg276bt1eaahkb",
+      "title": "Simple Animated Counters",
+      "sections": [
+        "text"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a03bbc-6a76-7635-ae59-258893f08721",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a03bbc-6a76-7635-ae59-258893f08721.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a03bbc-6a76-7635-ae59-258893f08721.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 889,
+          "sha256": "09fe1f58d0d1e5dc2100e409843db21635c9a06437ce3d60d5611287ebaf3b0e"
+        },
+        {
+          "path": "/style.5cad6ed78d8e677d2234.css",
+          "sourceUrl": "https://01a03bbc-6a76-7635-ae59-258893f08721.codepenusercontent.com/style.5cad6ed78d8e677d2234.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 1609,
+          "sha256": "518d569afc794a21cc2502c3cdf121e0647a59322393cc1a1696c8753c3ba0bb"
+        },
+        {
+          "path": "/script.874edcb2acc88a21a0c5.js",
+          "sourceUrl": "https://01a03bbc-6a76-7635-ae59-258893f08721.codepenusercontent.com/script.874edcb2acc88a21a0c5.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3119,
+          "sha256": "2919d9a7afe57b57098e51620e194ba0e68f07604a1140f045bf206d004aa97d"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 5617,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/",
+          "failureCode": "HTTP_404: https://fonts.googleapis.com/"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap",
+          "sha256": "ddd1cfc432eaa16fbdd69be01ff4ad047203fb4392ba1d3e9c6a8ceeb5832d9e"
+        }
+      ],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a5v5ej44ahzz4m3r9nm6",
+      "title": "exploded card lock/unlock w/ clip-path: shape()",
+      "sections": [
+        "card"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "jh3y",
+        "canonicalUrl": "https://codepen.io/editor/jh3y/pen/01a03167-892f-7212-ab2b-878cf6f31827",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a03167-892f-7212-ab2b-878cf6f31827.codepenusercontent.com",
+      "status": "failed",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a03167-892f-7212-ab2b-878cf6f31827.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 5066,
+          "sha256": "359996d103a355d71fcd2b95157f7f80bb04f67268db3c38467f46e2ff51d362"
+        },
+        {
+          "path": "/style.a44dd301bcb5306bca60.css",
+          "sourceUrl": "https://01a03167-892f-7212-ab2b-878cf6f31827.codepenusercontent.com/style.a44dd301bcb5306bca60.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 21718,
+          "sha256": "17e0f72aa41f7716679b5dbcb3abda2aed380bbefc80f7cff99516152d768af6"
+        },
+        {
+          "path": "/script.35ebd350638fdf3d1fd1.js",
+          "sourceUrl": "https://01a03167-892f-7212-ab2b-878cf6f31827.codepenusercontent.com/script.35ebd350638fdf3d1fd1.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5680,
+          "sha256": "e944b827cd254ba11eb392d216be333802279b5d5ad60339b34bb0fd0b652178"
+        }
+      ],
+      "externalOrigins": [],
+      "failureCode": "HTTP_404: https://01a03167-892f-7212-ab2b-878cf6f31827.codepenusercontent.com/normalize.css"
+    },
+    {
+      "slug": "bulk-01m6n39s0e757bha48r5kt5y54",
+      "title": "Procedurally generated landscape",
+      "sections": [
+        "image"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "learosema",
+        "canonicalUrl": "https://codepen.io/editor/learosema/pen/01a16611-b29f-79f5-885d-a2c317fc92bf",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a16611-b29f-79f5-885d-a2c317fc92bf.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a16611-b29f-79f5-885d-a2c317fc92bf.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 10766,
+          "sha256": "448dd8e0cf84f81abf85e7e976a4d57764765017821b27a8f42be5262c3c1679"
+        },
+        {
+          "path": "/shader-canvas.ef128593c49f7bc8606f.js",
+          "sourceUrl": "https://01a16611-b29f-79f5-885d-a2c317fc92bf.codepenusercontent.com/shader-canvas.ef128593c49f7bc8606f.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 23353,
+          "sha256": "ba17b1c1c48ba64456eccd2ae83351dab8015f73068583b9acadc4db01ad9c44"
+        }
+      ],
+      "externalOrigins": [
+        "https://github.com"
+      ],
+      "totalBytes": 34119,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n39tg9wage3ck5841nmk8d",
+      "title": "YIKES! | But It Glows Like a Red Flag",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "grauconejo13",
+        "canonicalUrl": "https://codepen.io/editor/grauconejo13/pen/01a16637-e7f6-756a-997f-68e657ff8280",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a16637-e7f6-756a-997f-68e657ff8280.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a16637-e7f6-756a-997f-68e657ff8280.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1992,
+          "sha256": "d7978243bf2cfa1919e8d74e63b2d400bde389c5155ad6a5a818395f770eea54"
+        },
+        {
+          "path": "/style.672fc4e5b0061cb1cf5e.css",
+          "sourceUrl": "https://01a16637-e7f6-756a-997f-68e657ff8280.codepenusercontent.com/style.672fc4e5b0061cb1cf5e.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 7057,
+          "sha256": "0105a1fcb51101843c2934894ef864a62584de9fcfd264d8e2fa6e543fcf309d"
+        },
+        {
+          "path": "/script.d9e3b7c323d135828639.js",
+          "sourceUrl": "https://01a16637-e7f6-756a-997f-68e657ff8280.codepenusercontent.com/script.d9e3b7c323d135828639.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 443,
+          "sha256": "7c43461468f0224d7b57939397666a926a85d56751c1365e851658edea50eddb"
+        }
+      ],
+      "externalOrigins": [
+        "http://www.w3.org",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com",
+        "https://freestockfootagearchive.com"
+      ],
+      "totalBytes": 9492,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&display=swap",
+          "sha256": "6372326e127f00990068ce8cc3e3a1108d78d81e1e9e08b63b00db11dbb102f2"
+        }
+      ],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a0ppn1t9h7vxw7328ccq",
+      "title": "CSS anchor navigation with spring-easing glow",
+      "sections": [
+        "navigation"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "mysth",
+        "canonicalUrl": "https://codepen.io/editor/mysth/pen/0199620a-4588-7c47-988e-ca00d92f4ac4",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://0199620a-4588-7c47-988e-ca00d92f4ac4.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://0199620a-4588-7c47-988e-ca00d92f4ac4.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n39z35d5myxhfy1zfc0wm9",
+      "title": "Button powered by GSS",
+      "sections": [
+        "button"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "LukyVj",
+        "canonicalUrl": "https://codepen.io/editor/LukyVj/pen/01a13f4f-03a2-7912-b810-f80a101db33b",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a13f4f-03a2-7912-b810-f80a101db33b.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a13f4f-03a2-7912-b810-f80a101db33b.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 588,
+          "sha256": "9d0636b1deaab4d5d412d9d57d8098e2f083569de4d95e1bd514f7304bd990d4"
+        },
+        {
+          "path": "/style.f18bb583be29605bee52.css",
+          "sourceUrl": "https://01a13f4f-03a2-7912-b810-f80a101db33b.codepenusercontent.com/style.f18bb583be29605bee52.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 1030,
+          "sha256": "4656deeb5e3e7916b8b680158821a327150a76a593bec9813da8bad80af6d147"
+        },
+        {
+          "path": "/script.1f95f24ab79b1c2c0d9d.js",
+          "sourceUrl": "https://01a13f4f-03a2-7912-b810-f80a101db33b.codepenusercontent.com/script.1f95f24ab79b1c2c0d9d.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1354,
+          "sha256": "9480997cc958433bcb2681249d12c440cddaa73f178aeec049233b436969be9a"
+        }
+      ],
+      "externalOrigins": [
+        "https://cdn.jsdelivr.net",
+        "https://gss-lang.dev"
+      ],
+      "totalBytes": 2972,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3abcr25jbxgwkr5nnxakx",
+      "title": "Glitchy neon radio buttons with GSAP",
+      "sections": [
+        "form"
+      ],
+      "technologies": [
+        "gsap"
+      ],
+      "source": {
+        "creatorName": "jdillon",
+        "canonicalUrl": "https://codepen.io/editor/jdillon/pen/019ff1db-6b1c-7285-af84-26ebd5ac0e02",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019ff1db-6b1c-7285-af84-26ebd5ac0e02.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://019ff1db-6b1c-7285-af84-26ebd5ac0e02.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 12723,
+          "sha256": "f02803e16f22e40a125f1e6629f6b7a5e3a4afbd43b09fd1ddea1fe5f7ebda83"
+        },
+        {
+          "path": "/style.d509e44cf1a175a96f4c.css",
+          "sourceUrl": "https://019ff1db-6b1c-7285-af84-26ebd5ac0e02.codepenusercontent.com/style.d509e44cf1a175a96f4c.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 1048,
+          "sha256": "dc0522a8a9574c786a59feac9f37ff1c8f02fda7c1d36fb917b3b437d967ce1c"
+        },
+        {
+          "path": "/script.99c5b89b9bb86b08a051.js",
+          "sourceUrl": "https://019ff1db-6b1c-7285-af84-26ebd5ac0e02.codepenusercontent.com/script.99c5b89b9bb86b08a051.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3610,
+          "sha256": "798850a32102048c8e6ac35cc605f4fc2bf3a71c75a0c344ecd02e26edd77543"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 17381,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400&display=swap",
+          "sha256": "8764e67fa34bdc4302c8d5ddf3b06b50db54a9fa9979b9fb794cdda146698a6a"
+        }
+      ],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n39tw66p52qq5n1px91vrp",
+      "title": "Ghosts",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "MisterCurtis",
+        "canonicalUrl": "https://codepen.io/editor/MisterCurtis/pen/01a11d92-44b7-7b73-911d-c5aa2d5da177",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a11d92-44b7-7b73-911d-c5aa2d5da177.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a11d92-44b7-7b73-911d-c5aa2d5da177.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a36jehzat4cv2qg3yza1",
+      "title": "Circular nav using :scroll-* & animation-timeline:view()",
+      "sections": [
+        "navigation"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "cbolson",
+        "canonicalUrl": "https://codepen.io/editor/cbolson/pen/01a0a174-adfe-709e-8d70-a053acf0527e",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0a174-adfe-709e-8d70-a053acf0527e.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a0a174-adfe-709e-8d70-a053acf0527e.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 9015,
+          "sha256": "e0d6eaf702ff86e0980f8dd3bff697ebdf861cbac8b9ad51252dc13a619bf514"
+        },
+        {
+          "path": "/style.c473678c054b13d8451c.css",
+          "sourceUrl": "https://01a0a174-adfe-709e-8d70-a053acf0527e.codepenusercontent.com/style.c473678c054b13d8451c.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 8644,
+          "sha256": "dd25bc900d106b1f356db3f42626efac4184ff0b94db29af93c06fc7c7b8f07e"
+        },
+        {
+          "path": "/script.cd372fb85148700fa880.js",
+          "sourceUrl": "https://01a0a174-adfe-709e-8d70-a053acf0527e.codepenusercontent.com/script.cd372fb85148700fa880.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "externalOrigins": [
+        "https://cdn.jsdelivr.net",
+        "https://fonts.bunny.net"
+      ],
+      "totalBytes": 17659,
+      "stylesheets": [
+        {
+          "url": "https://fonts.bunny.net/css?family=jura:300,500",
+          "sha256": "bf455c59219ad39b4aadfe8617a46a0a3445018828566f7a143c080a63622159"
+        }
+      ],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n39zq3h6h75mb2shxpt9w2",
+      "title": "Pixel Dissolve Mask Generator",
+      "sections": [
+        "button"
+      ],
+      "technologies": [
+        "svg"
+      ],
+      "source": {
+        "creatorName": "matthewmorete",
+        "canonicalUrl": "https://codepen.io/editor/matthewmorete/pen/01a0ba53-f463-7c28-88ce-e81a34c742b5",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0ba53-f463-7c28-88ce-e81a34c742b5.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a0ba53-f463-7c28-88ce-e81a34c742b5.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n39w7wb8pkt10ttb6f00fm",
+      "title": "Viscous Liquid - Cursor FX",
+      "sections": [],
+      "technologies": [
+        "threejs"
+      ],
+      "source": {
+        "creatorName": "sabosugi",
+        "canonicalUrl": "https://codepen.io/editor/sabosugi/pen/01a125aa-40e8-70ca-b198-550dc149d263",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a125aa-40e8-70ca-b198-550dc149d263.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a125aa-40e8-70ca-b198-550dc149d263.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a1y5z65np4h79ss5w5q7",
+      "title": "20 New Modal Effects",
+      "sections": [
+        "button",
+        "modal"
+      ],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "ol-ivier",
+        "canonicalUrl": "https://codepen.io/editor/ol-ivier/pen/01a0c541-29b5-777d-bbed-804b95171a23",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0c541-29b5-777d-bbed-804b95171a23.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a0c541-29b5-777d-bbed-804b95171a23.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n39wzqj75ncpbh950ypwkk",
+      "title": "Manifold Mandala",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "shubniggurath",
+        "canonicalUrl": "https://codepen.io/editor/shubniggurath/pen/01a10e01-ac64-7d4c-a9d3-f08a20497a99",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1334,
+          "sha256": "a3d315953b7d8b2dcd13c10cb686815095c4961365bdfa5e3cb066524825afc9"
+        },
+        {
+          "path": "/src/main.6bb19f7a2875c24b1317.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/main.6bb19f7a2875c24b1317.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 18101,
+          "sha256": "6da5b2cb194448751c57ce4ab6df0159b9395327763cad3f1bfc9111c52c54af"
+        },
+        {
+          "path": "/src/shaders/ring.vert.d65d62b136a7d306983b.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/shaders/ring.vert.d65d62b136a7d306983b.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2297,
+          "sha256": "0cfaa346d5c84bff5ff7e4f879c7e363e039ee3f14babe474cc60cfe035de107"
+        },
+        {
+          "path": "/src/shaders/ring.frag.52ab5c5650a01d62a866.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/shaders/ring.frag.52ab5c5650a01d62a866.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1007,
+          "sha256": "60eec4ca902076d3521d7f6d28ee8e00b9b48da08e7da4f96b96d51d9f0e585c"
+        },
+        {
+          "path": "/src/shaders/post.frag.6a20c703ee39ba2c326a.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/shaders/post.frag.6a20c703ee39ba2c326a.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5676,
+          "sha256": "4744d6cf9e2154acf74ebc04ac0e5263d170173fb30e51ad628d66594164028e"
+        },
+        {
+          "path": "/src/sceneTarget.452dd0ed0df22514bf0e.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/sceneTarget.452dd0ed0df22514bf0e.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1343,
+          "sha256": "f7f2fe4e0e523defc446e721c6ed1fe0356751a0a82b909afaf5f237302668d9"
+        },
+        {
+          "path": "/src/shapes.7a255ce23c77587755d3.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/shapes.7a255ce23c77587755d3.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 8434,
+          "sha256": "6eb9175b36e09dad9f696275aa6c18a3164565cb295c51928099d679e0066b78"
+        },
+        {
+          "path": "/src/controls.9c01a7b9c06a84b7ab92.js",
+          "sourceUrl": "https://01a10e01-ac64-7d4c-a9d3-f08a20497a99.codepenusercontent.com/src/controls.9c01a7b9c06a84b7ab92.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2180,
+          "sha256": "d90008501939d2e5c3751dc7d60774dc564eed8823e1f7fec6276e6658217922"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh"
+      ],
+      "totalBytes": 40372,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3aadbbg18wsrh0p5489nb",
+      "title": "Gradient Drift",
+      "sections": [
+        "button"
+      ],
+      "technologies": [],
+      "source": {
+        "creatorName": "shubniggurath",
+        "canonicalUrl": "https://codepen.io/editor/shubniggurath/pen/019fc476-be04-74e7-ab47-bbb8446b5fb2",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 546,
+          "sha256": "a547fcc497fead869b239dc71b06e2e450ec1e963614be67569cd4426e06c5bc"
+        },
+        {
+          "path": "/style.19849f742ec8a4b66229.css",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/style.19849f742ec8a4b66229.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 39,
+          "sha256": "d160394fc1f2ccd286dc749854681078f434413d4b75a0c7fa486bbf974da54b"
+        },
+        {
+          "path": "/src/main.534244f069fb1387d485.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/main.534244f069fb1387d485.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 4702,
+          "sha256": "659328f72c261d280e8049956a6153f1db76d1dbe2644c5be10d6c8ae3070532"
+        },
+        {
+          "path": "/src/gl/BlurPass.dd2397d851220b559c8c.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/BlurPass.dd2397d851220b559c8c.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1445,
+          "sha256": "1ff83d5feb95abd5a02ba414b6cc80eacf5313ed721546193707f01e192a2d3a"
+        },
+        {
+          "path": "/src/gl/PipelineFramebuffer.17e5ba991f0298bbb987.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/PipelineFramebuffer.17e5ba991f0298bbb987.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2047,
+          "sha256": "3a9d17508c5657f09cab473e6302ff5f0d7dab1fa910a8a6115c555db2ff81cc"
+        },
+        {
+          "path": "/src/gl/DistortPass.8bfd88cd9db3eb3c35a6.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/DistortPass.8bfd88cd9db3eb3c35a6.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3737,
+          "sha256": "dd71cd822b62cb66d81b00f57d19debed81c81c9082f49a964c9ebc1cb2899e6"
+        },
+        {
+          "path": "/src/gl/Sketch.607ff88806df056bb565.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/Sketch.607ff88806df056bb565.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3461,
+          "sha256": "47826e053247820881a3d7e65d2fe08e97b74f438e33e2cecc8777359ad137eb"
+        },
+        {
+          "path": "/src/utils/color.5ca5229026939468acea.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/utils/color.5ca5229026939468acea.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 320,
+          "sha256": "baf2ef8941cc721e2a95c11b4b789e89e39cc19e6c8811ec01cd1c92cfdd0cf9"
+        },
+        {
+          "path": "/src/circles.0bc84d6cee4439a2244d.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/circles.0bc84d6cee4439a2244d.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3050,
+          "sha256": "8ba7f7f6058ddde2a3d7bc9473362c51c6a3fcc10ab82d5a5557e39f796a3057"
+        },
+        {
+          "path": "/src/controls.669916c3ab754b9dcb42.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/controls.669916c3ab754b9dcb42.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 4372,
+          "sha256": "a1a7aa224ae8fb9e6095d9c83e3668ea310e22f1c5c71084f8452d1cdc2fd79f"
+        },
+        {
+          "path": "/src/presets.edc2c1036f44b4eee670.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/presets.edc2c1036f44b4eee670.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 10582,
+          "sha256": "6a9d88eab5fefc56c5a6c2dfb75226020bfc941c3918dd539e8c7573e28ec5ac"
+        },
+        {
+          "path": "/src/gl/PostPass.7bc024b5977ff088fd72.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/PostPass.7bc024b5977ff088fd72.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1369,
+          "sha256": "4239b8697f91926413bc322cfde10c7c361d946534927e7752427a061f0ee25d"
+        },
+        {
+          "path": "/src/gl/shaders/post/blur.a0aa89a42abb193e0c65.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/post/blur.a0aa89a42abb193e0c65.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 1732,
+          "sha256": "dd467df46e9361b820588510d8d13e0f527b6a44b200518fc95af5ed440e4689"
+        },
+        {
+          "path": "/src/gl/shaders/post/distort.6d5e1587c21d5e3f35cd.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/post/distort.6d5e1587c21d5e3f35cd.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 7023,
+          "sha256": "2cef7a346238f7ef6131d0ea533de1d99e96bde2bc53ce2ed2589129c0b46233"
+        },
+        {
+          "path": "/src/utils/random.639cdbe049f1c7dac858.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/utils/random.639cdbe049f1c7dac858.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 504,
+          "sha256": "8a884d0e3ca32684115f2cfc841dfeafe8b56b031e28927283bc0aaa2432feab"
+        },
+        {
+          "path": "/src/shaders/circle.75ec88897930744fd805.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/shaders/circle.75ec88897930744fd805.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 665,
+          "sha256": "e27449648368b4677c90ca049a12b2b8260adce9ed9ffdf06764fed4078b2622"
+        },
+        {
+          "path": "/src/gl/shaders/post/fullscreen.b7c275950cb429985f53.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/post/fullscreen.b7c275950cb429985f53.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 304,
+          "sha256": "3e687b9849b147c3b644428013576cf0c11f9957546bb947ba030c8520648c8a"
+        },
+        {
+          "path": "/src/gl/shaders/chunks/dither.76836debb9f36caf3549.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/chunks/dither.76836debb9f36caf3549.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 391,
+          "sha256": "5530bac89c32d738ffaa3317d8b71abbe440420ab68cdff1fe9ed381ef3e22b7"
+        },
+        {
+          "path": "/src/gl/shaders/chunks/gaussian.6ead24cfb86327657eee.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/chunks/gaussian.6ead24cfb86327657eee.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 137,
+          "sha256": "72232e3deb290411fdacb185f8df6647ab97a36cf7c705ecc228e87c6ec30932"
+        },
+        {
+          "path": "/src/gl/shaders/chunks/hash.e7926d7315f6260b3312.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/chunks/hash.e7926d7315f6260b3312.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 140,
+          "sha256": "f6a8bb484a2cb0d20d2281f58f8b81bfca05d46251159f3b1617f0a8ec8fbc72"
+        },
+        {
+          "path": "/src/gl/shaders/chunks/circle.2ead6331d5e481d6a36e.js",
+          "sourceUrl": "https://019fc476-be04-74e7-ab47-bbb8446b5fb2.codepenusercontent.com/src/gl/shaders/chunks/circle.2ead6331d5e481d6a36e.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 317,
+          "sha256": "6f81ac2c54da8e01feebc050d9f2fa6bb3003ed83afa39180606b74c0e13c826"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh"
+      ],
+      "totalBytes": 46883,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n39xk7gatbnh58nn7pxzea",
+      "title": "Pixel Bug Morph: Pure CSS Dither Dissolve",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "Sensiblemnd",
+        "canonicalUrl": "https://codepen.io/editor/Sensiblemnd/pen/01a10e86-574c-721d-afc3-c2895bdbc93a",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a10e86-574c-721d-afc3-c2895bdbc93a.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a10e86-574c-721d-afc3-c2895bdbc93a.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1395,
+          "sha256": "8bd71c1b15f99b005c00898960fcb548403b1064ddc3b658e77a364fa0c3b55f"
+        },
+        {
+          "path": "/style.675209633b23960332d1.css",
+          "sourceUrl": "https://01a10e86-574c-721d-afc3-c2895bdbc93a.codepenusercontent.com/style.675209633b23960332d1.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 290821,
+          "sha256": "9afc78a02bc4acf8555ea2ecd8ab602bb4bebb9e1a6f8756652ae42a1abe42f5"
+        }
+      ],
+      "externalOrigins": [],
+      "totalBytes": 292216,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a0ar3nyyfzazbmn0gqxe",
+      "title": "Zdog omg.lol dancing in the sky",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "pavlovsk",
+        "canonicalUrl": "https://codepen.io/editor/pavlovsk/pen/01a0d01a-6524-79e0-a7b1-e94cc64c63f8",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0d01a-6524-79e0-a7b1-e94cc64c63f8.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a0d01a-6524-79e0-a7b1-e94cc64c63f8.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 507,
+          "sha256": "8ca7f9560a94bbe25892e19113a10e27459fdb4e143e1aa242e45183af5ad092"
+        },
+        {
+          "path": "/style.d2a5f2b2648c84ca63da.css",
+          "sourceUrl": "https://01a0d01a-6524-79e0-a7b1-e94cc64c63f8.codepenusercontent.com/style.d2a5f2b2648c84ca63da.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 150,
+          "sha256": "b84574e2134b4d51d026ae3cec0c07f6bc03c64cdc3ce7f675dee7be36f064f7"
+        },
+        {
+          "path": "/script.d14c3757e946b5301d1c.js",
+          "sourceUrl": "https://01a0d01a-6524-79e0-a7b1-e94cc64c63f8.codepenusercontent.com/script.d14c3757e946b5301d1c.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 4909,
+          "sha256": "3b32c95a4010e6c37240759c73b48da00eae53c31a1058caed2ce1870ed8da79"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh"
+      ],
+      "totalBytes": 5566,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a3tavz8jky9wvwqmxfet",
+      "title": "CSS Sine Wave Animation with sibling-index() and sibling-count()",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "mobalti",
+        "canonicalUrl": "https://codepen.io/editor/mobalti/pen/01a09b3b-3152-74c0-8add-cb751712f259",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a09b3b-3152-74c0-8add-cb751712f259.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a09b3b-3152-74c0-8add-cb751712f259.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a4z2z1tckh2shvhn7g99",
+      "title": "Pure CSS LED Playboard",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "ivorjetski",
+        "canonicalUrl": "https://codepen.io/editor/ivorjetski/pen/01a07dcf-a1e8-7ab6-aea1-aa98135803b3",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a07dcf-a1e8-7ab6-aea1-aa98135803b3.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a07dcf-a1e8-7ab6-aea1-aa98135803b3.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 3551,
+          "sha256": "2871178eca0339e1a79636a85a3d98d80e3220acc4ab37767c83ed85e34db983"
+        },
+        {
+          "path": "/style.bbf67084e69ccd3461a4.css",
+          "sourceUrl": "https://01a07dcf-a1e8-7ab6-aea1-aa98135803b3.codepenusercontent.com/style.bbf67084e69ccd3461a4.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 50537,
+          "sha256": "3e6cf5176372df4873b9f71f4665e7ab5c34c0922040c6892ba19398baf701c6"
+        }
+      ],
+      "externalOrigins": [
+        "https://tinydesign.co.uk"
+      ],
+      "totalBytes": 54088,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a5ezcabtgq8wn23jw9e7",
+      "title": "Navier-Stokes Millennium Problem Solved",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "rafaelcastrocouto",
+        "canonicalUrl": "https://codepen.io/editor/rafaelcastrocouto/pen/01a0825c-470e-7e46-9744-62369ec3e9dd",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0825c-470e-7e46-9744-62369ec3e9dd.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a0825c-470e-7e46-9744-62369ec3e9dd.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a6ets2qbdwwzbxt0ewz1",
+      "title": "sibling-index staggered animations",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "collinsworth",
+        "canonicalUrl": "https://codepen.io/editor/collinsworth/pen/01a0395c-56cb-7c4a-bcb1-8069254d32f5",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0395c-56cb-7c4a-bcb1-8069254d32f5.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a0395c-56cb-7c4a-bcb1-8069254d32f5.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1681,
+          "sha256": "e5aec9acf95bcf20adc31fa796b7b40a15e1265792f3e78a9414a86ed04eabd3"
+        },
+        {
+          "path": "/style.cef5d5bd95fa1db65a4e.css",
+          "sourceUrl": "https://01a0395c-56cb-7c4a-bcb1-8069254d32f5.codepenusercontent.com/style.cef5d5bd95fa1db65a4e.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 1194,
+          "sha256": "d7e48c93b0d806253a73b688b26ec37ee7b158343e517e9ed2c324b9cfb4b8a9"
+        }
+      ],
+      "externalOrigins": [],
+      "totalBytes": 2875,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a7as5x81as1d05phntjk",
+      "title": "3D Dancing Bugs (Animated)",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "grantjenkins",
+        "canonicalUrl": "https://codepen.io/editor/grantjenkins/pen/01a014f5-6f30-7117-8e8e-47962b9ea84c",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a014f5-6f30-7117-8e8e-47962b9ea84c.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a014f5-6f30-7117-8e8e-47962b9ea84c.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1438,
+          "sha256": "dace19abce5a713ff536aaa28919e01acd898a25de605c712f45ffa1f86ce356"
+        },
+        {
+          "path": "/style.af977586a3b905ea5536.css",
+          "sourceUrl": "https://01a014f5-6f30-7117-8e8e-47962b9ea84c.codepenusercontent.com/style.af977586a3b905ea5536.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 1442,
+          "sha256": "4557a87a7ded583a1a6578d665503fc39a25ff53844b8a6cd6bd540b392da5d3"
+        },
+        {
+          "path": "/script.js",
+          "sourceUrl": "https://01a014f5-6f30-7117-8e8e-47962b9ea84c.codepenusercontent.com/script.js?v=20260818",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 33460,
+          "sha256": "d3af169f77693ec4ede82fb33c39ce02ac289dc1ced918e4df82be5eb91b7af9"
+        }
+      ],
+      "externalOrigins": [
+        "https://cdn.jsdelivr.net",
+        "https://codepen.io",
+        "https://esm.sh",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 36340,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/",
+          "failureCode": "HTTP_404: https://fonts.googleapis.com/"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Electrolize&family=Orbitron:wght@400..900&display=swap",
+          "sha256": "766a9b29efcc41dd2bac53cf8a22a4976a7f850d9d218db384dea66a9c9dbb12"
+        }
+      ],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a7prdxwb1eb1v2t9rx5s",
+      "title": "Snake Cube Roll",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "pjkarlik",
+        "canonicalUrl": "https://codepen.io/editor/pjkarlik/pen/01a02be4-5b1d-7381-93ce-c06df0bb7a2e",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a02be4-5b1d-7381-93ce-c06df0bb7a2e.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a02be4-5b1d-7381-93ce-c06df0bb7a2e.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 8750,
+          "sha256": "d4008084e2f52516443d05035a1d1316e1e2b9e5b7246859da033aad094f2ea2"
+        },
+        {
+          "path": "/style.1d28509b36990b6b258a.css",
+          "sourceUrl": "https://01a02be4-5b1d-7381-93ce-c06df0bb7a2e.codepenusercontent.com/style.1d28509b36990b6b258a.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 218,
+          "sha256": "fc5290efd7130587c23abd653feb3ce72c119024f744f9b1c2d2b82240ff2dd5"
+        },
+        {
+          "path": "/script.c29c06b650359d729783.js",
+          "sourceUrl": "https://01a02be4-5b1d-7381-93ce-c06df0bb7a2e.codepenusercontent.com/script.c29c06b650359d729783.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2553,
+          "sha256": "0f563304a68dcec59a4b57f343256d9b89be1926417d1645ee0f7b83319b52ab"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh",
+        "https://www.shadertoy.com"
+      ],
+      "totalBytes": 11521,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a82pjaakdj1aj9fnbwgr",
+      "title": "The Road Dreams · 梦境赛车",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "zhenyu-xiao",
+        "canonicalUrl": "https://codepen.io/editor/zhenyu-xiao/pen/019f90a0-d102-7736-8c0f-760b0bf76c7b",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019f90a0-d102-7736-8c0f-760b0bf76c7b.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "HTTP_404: https://019f90a0-d102-7736-8c0f-760b0bf76c7b.codepenusercontent.com/index.html"
+    },
+    {
+      "slug": "bulk-01m6n3a8emmgswa1a3mcpnnhtv",
+      "title": "Infinite Roll (CSS)",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "amit_sheen",
+        "canonicalUrl": "https://codepen.io/editor/amit_sheen/pen/01a02b4d-a460-72ae-ad11-69ce77d5eb2e",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a02b4d-a460-72ae-ad11-69ce77d5eb2e.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a02b4d-a460-72ae-ad11-69ce77d5eb2e.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 730,
+          "sha256": "90be281046031252678906adc36bddc41ab4676e0baf20b83f6270aeec20a2b8"
+        },
+        {
+          "path": "/style.c007be1f519ad278e85c.css",
+          "sourceUrl": "https://01a02b4d-a460-72ae-ad11-69ce77d5eb2e.codepenusercontent.com/style.c007be1f519ad278e85c.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 3779,
+          "sha256": "62cbe9708297c75b403b5e5dd6fd5c0f68bbc6fba21326d7abcfa79a86c51333"
+        }
+      ],
+      "externalOrigins": [
+        "https://assets.codepen.io",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 4509,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/css?family=Raleway:400,400i,700",
+          "sha256": "4a621b82bbd5ec2e0ec9ef1cf7d1bb4c4631c179e38ebb6d2b41d1147b740b17"
+        }
+      ],
+      "codepenAssets": [
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/twitterButton-2.1.0.js",
+          "path": "/__codepen_assets__/0c2bba8102c4c1bfa8304e6d.js",
+          "sha256": "00787a8b81e6877f5ac4e3f30c7c6ebc08c00a1ca6b82c376ca62015b1de8392",
+          "bytes": 4521
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si05.png",
+          "path": "/__codepen_assets__/de64e983fa51657c657975e9.png",
+          "sha256": "e98d6664a8611c66d604d12b6aa3e281f87b4927c8f91f89f108dd76f7ab8720",
+          "bytes": 2203
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si04.png",
+          "path": "/__codepen_assets__/6a835e86ea655f898c5bdf81.png",
+          "sha256": "26783d75d4aba6816824c50f4eac2da8d8e2a3061ad17ca8193732f050fb23d4",
+          "bytes": 1106
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si03.png",
+          "path": "/__codepen_assets__/40848d850c7ee6fc71f3023d.png",
+          "sha256": "d8649dea01c354fe00f51f2ad334a6930173eda6288d22af43e8651405452b72",
+          "bytes": 1713
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si02.png",
+          "path": "/__codepen_assets__/91978ec985d118de16604e92.png",
+          "sha256": "a6efab7ed9fc836bcb9b8849658a6c078930b0101c4dfcfa871693c5066dc9fb",
+          "bytes": 1727
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si01.png",
+          "path": "/__codepen_assets__/bfcdcc53e36e8787466f2986.png",
+          "sha256": "b90c9d5a44529438ee6f5d65f56a2243c2e41cb90dcff27caf88401488fb9d4e",
+          "bytes": 2574
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3a8y2pwbqt3htyvxcx4ab",
+      "title": "scroll-driven 3d spiral",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "vii120",
+        "canonicalUrl": "https://codepen.io/editor/vii120/pen/01a0257f-5651-70ee-8195-5911e63bad98",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a0257f-5651-70ee-8195-5911e63bad98.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://01a0257f-5651-70ee-8195-5911e63bad98.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3a9hqscscgebwc9stas65",
+      "title": "Robo Cat (3D)",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "grantjenkins",
+        "canonicalUrl": "https://codepen.io/editor/grantjenkins/pen/019ff0a6-ceec-7233-9c8d-e813fc47621e",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019ff0a6-ceec-7233-9c8d-e813fc47621e.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://019ff0a6-ceec-7233-9c8d-e813fc47621e.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 1794,
+          "sha256": "a09a8a3b83114fe7f3806e7b51be66afa0a198a9936dc20dfc1f96bba0753ab4"
+        },
+        {
+          "path": "/style.d156298cc430bf7fd52d.css",
+          "sourceUrl": "https://019ff0a6-ceec-7233-9c8d-e813fc47621e.codepenusercontent.com/style.d156298cc430bf7fd52d.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 3721,
+          "sha256": "46c1dbaed5e7aa2ebd9071fde26bf9b94c5f45f2a5fbc95479ff02efaf25372b"
+        },
+        {
+          "path": "/script.cac985233d12cbe991be.js",
+          "sourceUrl": "https://019ff0a6-ceec-7233-9c8d-e813fc47621e.codepenusercontent.com/script.cac985233d12cbe991be.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 42328,
+          "sha256": "f6bfe030a937551acb56f5169cf128e63b0374781f3368708ca4c358e9a376bb"
+        }
+      ],
+      "externalOrigins": [
+        "https://cdn.jsdelivr.net",
+        "https://codepen.io",
+        "https://esm.sh"
+      ],
+      "totalBytes": 47843,
+      "stylesheets": [],
+      "codepenAssets": []
+    },
+    {
+      "slug": "bulk-01m6n3a9xfmjg0tvqwzsktmkev",
+      "title": "The White Stripes",
+      "sections": [],
+      "technologies": [],
+      "source": {
+        "creatorName": "ccrch",
+        "canonicalUrl": "https://codepen.io/editor/ccrch/pen/019ff211-11e2-7b76-904c-e2616c688373",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019ff211-11e2-7b76-904c-e2616c688373.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://019ff211-11e2-7b76-904c-e2616c688373.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6n3aaxaqramvhr0ezc795bp",
+      "title": "Div Shuffling",
+      "sections": [],
+      "technologies": [
+        "css"
+      ],
+      "source": {
+        "creatorName": "amit_sheen",
+        "canonicalUrl": "https://codepen.io/editor/amit_sheen/pen/01a002cd-8546-71c8-beba-2a312f0b2674",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a002cd-8546-71c8-beba-2a312f0b2674.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a002cd-8546-71c8-beba-2a312f0b2674.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 22218,
+          "sha256": "829625de8a644eb46d5d238990b4f3643d91408a5a38c9fe2cc152c563a94586"
+        },
+        {
+          "path": "/style.4045a03b6be60ed032db.css",
+          "sourceUrl": "https://01a002cd-8546-71c8-beba-2a312f0b2674.codepenusercontent.com/style.4045a03b6be60ed032db.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 3375,
+          "sha256": "1c667fa9fe0a4fd0ceeaa7de6b05a1e4f6705cf65943cfefd5bcfd3512fd34d2"
+        },
+        {
+          "path": "/script.0cd97423cb1ea93a2de1.js",
+          "sourceUrl": "https://01a002cd-8546-71c8-beba-2a312f0b2674.codepenusercontent.com/script.0cd97423cb1ea93a2de1.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 445,
+          "sha256": "545362559c61b476f4e20787235f7b986bad859951a907d35c56f34c785caba0"
+        }
+      ],
+      "externalOrigins": [
+        "https://assets.codepen.io",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 26038,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/css?family=Raleway:400,400i,700",
+          "sha256": "4a621b82bbd5ec2e0ec9ef1cf7d1bb4c4631c179e38ebb6d2b41d1147b740b17"
+        }
+      ],
+      "codepenAssets": [
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/twitterButton-2.1.0.js",
+          "path": "/__codepen_assets__/0c2bba8102c4c1bfa8304e6d.js",
+          "sha256": "00787a8b81e6877f5ac4e3f30c7c6ebc08c00a1ca6b82c376ca62015b1de8392",
+          "bytes": 4521
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si05.png",
+          "path": "/__codepen_assets__/de64e983fa51657c657975e9.png",
+          "sha256": "e98d6664a8611c66d604d12b6aa3e281f87b4927c8f91f89f108dd76f7ab8720",
+          "bytes": 2203
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si04.png",
+          "path": "/__codepen_assets__/6a835e86ea655f898c5bdf81.png",
+          "sha256": "26783d75d4aba6816824c50f4eac2da8d8e2a3061ad17ca8193732f050fb23d4",
+          "bytes": 1106
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si03.png",
+          "path": "/__codepen_assets__/40848d850c7ee6fc71f3023d.png",
+          "sha256": "d8649dea01c354fe00f51f2ad334a6930173eda6288d22af43e8651405452b72",
+          "bytes": 1713
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si02.png",
+          "path": "/__codepen_assets__/91978ec985d118de16604e92.png",
+          "sha256": "a6efab7ed9fc836bcb9b8849658a6c078930b0101c4dfcfa871693c5066dc9fb",
+          "bytes": 1727
+        },
+        {
+          "sourceUrl": "https://assets.codepen.io/1948355/si01.png",
+          "path": "/__codepen_assets__/bfcdcc53e36e8787466f2986.png",
+          "sha256": "b90c9d5a44529438ee6f5d65f56a2243c2e41cb90dcff27caf88401488fb9d4e",
+          "bytes": 2574
+        }
+      ]
+    },
+    {
+      "slug": "bulk-01m6n3abwhc9hwnmjzzz18wvd8",
+      "title": "Ephemeral Flower #2",
+      "sections": [],
+      "technologies": [
+        "threejs"
+      ],
+      "source": {
+        "creatorName": "prisoner849",
+        "canonicalUrl": "https://codepen.io/editor/prisoner849/pen/019fff34-dce9-769c-98ce-6bd8c954b2e1",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://019fff34-dce9-769c-98ce-6bd8c954b2e1.codepenusercontent.com",
+      "status": "failed",
+      "files": [],
+      "externalOrigins": [],
+      "failureCode": "ACQUISITION_STOP_403",
+      "failedUrl": "https://019fff34-dce9-769c-98ce-6bd8c954b2e1.codepenusercontent.com/index.html",
+      "mitigation": "challenge"
+    },
+    {
+      "slug": "bulk-01m6qc0kamknhdc0xgf1exy6gk",
+      "title": "Floating Block v1",
+      "sections": [],
+      "technologies": [
+        "threejs"
+      ],
+      "source": {
+        "creatorName": "DMajor4DearDaniel",
+        "canonicalUrl": "https://codepen.io/editor/DMajor4DearDaniel/pen/01a16203-1aa7-705b-abd0-ce35040882e6",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      },
+      "rawOrigin": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com",
+      "status": "acquired",
+      "files": [
+        {
+          "path": "/index.html",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/index.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytes": 13621,
+          "sha256": "a73fb1503219b07885f3eec212ef99b512228b317f03a078a722c4ad56fc48db"
+        },
+        {
+          "path": "/style.551f8c0a56cc25f17346.css",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/style.551f8c0a56cc25f17346.css",
+          "contentType": "text/css; charset=utf-8",
+          "bytes": 16663,
+          "sha256": "8f148c65ef9031f95ca06c1c1f0addc54678914d076b900642433a66997357c3"
+        },
+        {
+          "path": "/script.0334391e266648edd53c.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/script.0334391e266648edd53c.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 109237,
+          "sha256": "5a8b51ed6211105aafdd83f38af791b127dd5c2ddc9fd675dc9bba5e2182279d"
+        },
+        {
+          "path": "/terrain-renderer.86ae51e0ea6ec208f5d9.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/terrain-renderer.86ae51e0ea6ec208f5d9.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5128,
+          "sha256": "1bc9dde19429e7abc241f715252fef30499eef4c50ebc0a6944ea07e858440f1"
+        },
+        {
+          "path": "/cloud-renderer.04d9f893980133081c78.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/cloud-renderer.04d9f893980133081c78.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 332,
+          "sha256": "751350d1dd2e03e5c2f8a4683a3d89586e8b37c64880cdc010efbee17ef0a7bf"
+        },
+        {
+          "path": "/perlite.443b111a4f5120de5ebb.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/perlite.443b111a4f5120de5ebb.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 3064,
+          "sha256": "6646caeda8ae07558bc01896c322bf6949b4fc21c60926ded0e9e925b561d31e"
+        },
+        {
+          "path": "/fine-tuning-settings.93f8ff6cd7cf6d0cfaf2.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/fine-tuning-settings.93f8ff6cd7cf6d0cfaf2.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 386,
+          "sha256": "034a07a2459c3d28221870292529c8be30fe4b906d80370b80b5db3674519549"
+        },
+        {
+          "path": "/animal_def.7c8aa338f2d04a84c9fa.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/animal_def.7c8aa338f2d04a84c9fa.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 5096,
+          "sha256": "a0bbfa8e49de6197411e89bcde866b6940b4858e22d8c5df68a3a7ea479076b1"
+        },
+        {
+          "path": "/animal_behaviours.1b4fb725e4c62f07d53c.js",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/animal_behaviours.1b4fb725e4c62f07d53c.js",
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 2332,
+          "sha256": "019063d85ea4fb6e87b9f7dfc075c0ba2e310b0d667bfe1bfff6931c5ed7633d"
+        },
+        {
+          "path": "/update-log.txt",
+          "sourceUrl": "https://01a16203-1aa7-705b-abd0-ce35040882e6.codepenusercontent.com/update-log.txt",
+          "contentType": "text/plain; charset=utf-8",
+          "bytes": 275,
+          "sha256": "0c3740d4e57b485b33aea14283b02fd0afb78a14e78f097f2651b141208b4fcb"
+        }
+      ],
+      "externalOrigins": [
+        "https://esm.sh",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "totalBytes": 155859,
+      "stylesheets": [
+        {
+          "url": "https://fonts.googleapis.com/",
+          "failureCode": "HTTP_404: https://fonts.googleapis.com/"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:ital,wght@0,400..700;1,400..700&display=swap",
+          "sha256": "ae0fbdb8752077f825d2954540ed13b8c71413e2a9673cf13799d655aa20fdfa"
+        }
+      ],
+      "codepenAssets": []
+    }
+  ]
+}

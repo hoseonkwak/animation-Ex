@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "selectedAt": "2026-11-18T06:18:06.529Z",
+  "targetCount": 24,
+  "sourceAccess": {
+    "status": "blocked",
+    "checkedAt": "2026-11-18",
+    "url": "https://codepen.io/hoseonkwak/pen/LEVeYQO.html",
+    "statusCode": 403,
+    "mitigation": "challenge",
+    "robotsStatus": 200,
+    "note": "공식 코드 URL 1건에서 접근 차단을 확인해 원본 요청을 중지했다."
+  },
+  "items": [
+    {
+      "slug": "bulk-01m6n39yq3hceq7ajctb3yv4cm",
+      "title": "Toggle Switch With Legs",
+      "category": "button",
+      "technologies": [],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a15639-274e-78e4-88a1-200861dec192",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n39z35d5myxhfy1zfc0wm9",
+      "title": "Button powered by GSS",
+      "category": "button",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "LukyVj",
+        "canonicalUrl": "https://codepen.io/editor/LukyVj/pen/01a13f4f-03a2-7912-b810-f80a101db33b",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3a6yp3txg276bt1eaahkb",
+      "title": "Simple Animated Counters",
+      "category": "text",
+      "technologies": [],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a03bbc-6a76-7635-ae59-258893f08721",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a555wcch6rt77q992634jh",
+      "title": "Text Warping",
+      "category": "text",
+      "technologies": [],
+      "source": {
+        "creatorName": "lokesh",
+        "canonicalUrl": "https://codepen.io/lokesh/pen/vYXvwGQ",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n39srva5crkt8pmge7xq9q",
+      "title": "Scroll-Driven Photo Gallery",
+      "category": "navigation",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "cbolson",
+        "canonicalUrl": "https://codepen.io/editor/cbolson/pen/01a187ae-e212-756d-8f6c-a76c594987bf",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3a0ppn1t9h7vxw7328ccq",
+      "title": "CSS anchor navigation with spring-easing glow",
+      "category": "navigation",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "mysth",
+        "canonicalUrl": "https://codepen.io/editor/mysth/pen/0199620a-4588-7c47-988e-ca00d92f4ac4",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "pen-01m7mamftpna4e8xaqq2zdhgd1",
+      "title": "textured glass effect",
+      "category": "image",
+      "technologies": ["svg"],
+      "source": {
+        "creatorName": "vii120",
+        "canonicalUrl": "https://codepen.io/editor/vii120/pen/01a1a861-e97c-7de2-b634-f1e704a6f725",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n39s0e757bha48r5kt5y54",
+      "title": "Procedurally generated landscape",
+      "category": "image",
+      "technologies": [],
+      "source": {
+        "creatorName": "learosema",
+        "canonicalUrl": "https://codepen.io/editor/learosema/pen/01a16611-b29f-79f5-885d-a2c317fc92bf",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6faw6vvj8k3228n0dzn7n",
+      "title": "Hero Book Cover Slide to Intro &#8211; Mobile Friendly",
+      "category": "slider",
+      "technologies": [],
+      "source": {
+        "creatorName": "saranya-mohan",
+        "canonicalUrl": "https://codepen.io/saranya-mohan/pen/WNGjWWd",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6fg301z76s7s9nfeghktg",
+      "title": "Style Your Page Like An Open Book Using Pure CSS",
+      "category": "slider",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "erinesullivan",
+        "canonicalUrl": "https://codepen.io/erinesullivan/pen/gxdbzp",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6gtc5zv32jfp12b2rvpad",
+      "title": "Scan Text Loading Label",
+      "category": "loading",
+      "technologies": [],
+      "source": {
+        "creatorName": "Sirop",
+        "canonicalUrl": "https://codepen.io/Sirop/pen/mDvnL",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6j2n7qtb0msedc4x79wfn",
+      "title": "Dual Triangle Loading Animations",
+      "category": "loading",
+      "technologies": [],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/jkantner/pen/YzzgWRY",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "pen-01m7mamh2zdxgsvfca0mqygt4f",
+      "title": "Inspector - Reactive CSS",
+      "category": "card",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "Maseone",
+        "canonicalUrl": "https://codepen.io/editor/Maseone/pen/01a1c140-a4a7-7fca-ae92-d4701b39bc67",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3a5v5ej44ahzz4m3r9nm6",
+      "title": "exploded card lock/unlock w/ clip-path: shape()",
+      "category": "card",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "jh3y",
+        "canonicalUrl": "https://codepen.io/editor/jh3y/pen/01a03167-892f-7212-ab2b-878cf6f31827",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3a4anz8njg4cvf22syfjh",
+      "title": "Checkerboard Cylinder Illusion",
+      "category": "background",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "jkantner",
+        "canonicalUrl": "https://codepen.io/editor/jkantner/pen/01a0a1ec-b757-75ba-9858-62c93353f717",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6g1mjvdsy9ajhbkbnmq2h",
+      "title": "CSS Mouse-out Transition Background Colour Hover Animation",
+      "category": "background",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "argyleink",
+        "canonicalUrl": "https://codepen.io/argyleink/pen/poEjvpd",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3a1j92j60m6xyh8cksdhq",
+      "title": "Bouncy Price Selector",
+      "category": "form",
+      "technologies": [],
+      "source": {
+        "creatorName": "MyXoToD",
+        "canonicalUrl": "https://codepen.io/editor/MyXoToD/pen/01a0e307-2455-7b77-a85c-ef7f34f824ae",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m6n3abcr25jbxgwkr5nnxakx",
+      "title": "Glitchy neon radio buttons with GSAP",
+      "category": "form",
+      "technologies": ["gsap"],
+      "source": {
+        "creatorName": "jdillon",
+        "canonicalUrl": "https://codepen.io/editor/jdillon/pen/019ff1db-6b1c-7285-af84-26ebd5ac0e02",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6f4936gfqmz472a9nrm63",
+      "title": "Strikethrough Text With Explanations In Modal On Hover",
+      "category": "modal",
+      "technologies": [],
+      "source": {
+        "creatorName": "EightArmsHQ",
+        "canonicalUrl": "https://codepen.io/EightArmsHQ/pen/pBHqz",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6fcgc9bp78ta08nmn0pb7",
+      "title": "Stick Icon On Right Side Expand To Modal With Store Opening Time",
+      "category": "modal",
+      "technologies": [],
+      "source": {
+        "creatorName": "lisilinhart",
+        "canonicalUrl": "https://codepen.io/lisilinhart/pen/JjYKeVm",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6fn6x1x19h0xyjr4bhqxg",
+      "title": "CSS Only Screensaver Like Floating Up Parallax Image Gallery",
+      "category": "gallery",
+      "technologies": ["css"],
+      "source": {
+        "creatorName": "hexagoncircle",
+        "canonicalUrl": "https://codepen.io/hexagoncircle/pen/povGMod",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m7a6g4epkggddqyy70z1q47p",
+      "title": "Grayscale To Colour Animation On Hover For Team Section",
+      "category": "gallery",
+      "technologies": [],
+      "source": {
+        "creatorName": "SaijoGeorge",
+        "canonicalUrl": "https://codepen.io/SaijoGeorge/pen/oNZoYjO",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "bulk-01m4wq43pqxkgjqgsj42qyd0y6",
+      "title": "인트로 그리드 섹션 레이아웃",
+      "category": "hero",
+      "technologies": [],
+      "source": {
+        "creatorName": "misala",
+        "canonicalUrl": "https://codepen.io/p0waqqatsi/pen/poXNxMY",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    },
+    {
+      "slug": "pen-mubangadv-onabglw-515c6v",
+      "title": "밝은 조명 효과 마우스 효과",
+      "category": "hero",
+      "technologies": [],
+      "source": {
+        "creatorName": "Mubanga",
+        "canonicalUrl": "https://codepen.io/mubangadv/pen/oNaBGLW",
+        "licenseCode": "MIT",
+        "licenseEvidenceUrl": "https://blog.codepen.io/legal/terms-of-service/"
+      }
+    }
+  ]
+}

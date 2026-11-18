@@ -1,0 +1,6 @@
+Terrarium — Update Log
+
+2026-11-15 - Add animal behaviour and instance information
+2026-11-03 - The rain splashes when reaches the ground.
+2026-11-02 - Smoothen the the dragging by lowering the LoD during panning
+2026-10-30 — Finished the first version of the Terrarium.

@@ -4,8 +4,9 @@
   "main": "server/index.ts",
   "compatibility_date": "2026-09-15",
   "assets": {
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*", "/sitemap.xml", "/robots.txt"],
+    "run_worker_first": ["/api/*", "/runtime/*", "/sitemap.xml", "/robots.txt"],
   },
   "vars": {
     "APP_ENVIRONMENT": "local",

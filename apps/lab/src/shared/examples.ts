@@ -12,11 +12,12 @@ export type TagAxis = (typeof tagAxes)[number]
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
 export type ContentOrigin = 'original-pen' | 'lab-created'
 
-export interface CodePenPreview {
-  kind: 'codepen'
+interface PreviewSource {
   penId: string
   embedUrl: string
 }
+export type CodePenPreview = PreviewSource &
+  ({ kind: 'codepen' } | { kind: 'internal'; runtimeUrl: string; version: string })
 
 export interface ExampleCard {
   id: string

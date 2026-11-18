@@ -1,0 +1,341 @@
+@import url(https://fonts.bunny.net/css?family=jura:300,500);
+@layer base, demo;
+
+@layer demo {
+	body{
+		min-height: 100svh;
+		display: grid;
+		place-content: center;
+	}
+	/* register sibling-index() and sibling-count() as custom properties to allow the children to use their value*/
+	@property --i {
+	  syntax: '<number>';
+	  inherits: true;
+	  initial-value: 0;
+	}
+	@property --total-items {
+	  syntax: '<number>';
+	  inherits: true;
+	  initial-value: 0;
+	}
+	@property --wheel-index {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+	}
+
+	nav{
+		/* one day CSS might have a child-count() function - until then this uses a data attribute to define the number of items */
+		--total-items: attr(data-count type(<number>));
+	
+		--nav-radius: min(35vw,200px);
+		
+		/* prev & next buttons */
+	  --nav-btn-size: 40px;
+	  --nav-btn-bg: transparent;
+		--nav-btn-bg-hover: transparent;
+	  --nav-btn-text: var(--clr-text);
+		--nav-btn-text-hover: white;
+		--nav-btn-border: none;
+	
+		/* carousel buttons */
+		--btn-width: min(20vw,80px);
+		--btn-height: calc(var(--btn-width) * 2 / 3); /* aspect ratio 2/3*/
+		--btn-bg: var(--clr-bg);
+		--btn-bg-hover: var(--clr-bg);
+		--btn-bg-current: dodgerblue;
+		--btn-text: var(--clr-text);
+		--btn-text-hover: white;
+		--btn-text-current: white;
+		--btn-border: 1px solid var(--clr-lines);
+		--btn-radius: 9in;
+	
+		width: calc(var(--nav-radius) * 2  );
+		aspect-ratio: 1;
+		list-style: none;
+		display: grid;
+		grid-auto-flow: column;
+		grid-auto-columns: var(--btn-width); 
+		grid-auto-rows: var(--item-height);
+		place-items: center;
+		border: 1px solid var(--clr-lines);
+		border-radius: 9in;
+	
+		/* use the scroll timeline to calculate the rotation of the buttons */
+		scroll-timeline-name: --wheel-scroll;
+	  scroll-timeline-axis: x;
+		
+		animation-name: wheel-position;
+	  animation-duration: 1s;
+		animation-timing-function: steps(var(--total-items));
+	  animation-fill-mode: both;
+	  animation-timeline: --wheel-scroll;
+	
+		anchor-name: --a-nav;
+	  overflow-x: auto;
+		oveflow-y: hidden;
+	  scroll-snap-type: x mandatory;
+	  overscroll-behaviour-x: contain; 
+	  scroll-behavior: smooth; 
+	  scrollbar-width: none;
+	
+		scroll-marker-group: after; 
+		transition: 600ms ease;
+		transition-property: width,height;
+	
+		/* 2 empty pseudo elements to allow first and last items to be scrollable */
+		&::before,&::after{
+			content: '';
+			grid-column: span 2;/* this ensures that the end items are far enough acrosss the container to display properly */
+			width: var(--btn-width);
+		}
+	
+		
+	.scroll-item{
+		--i: sibling-index();
+		--btn-offset: calc(var(--i) * 100% / var(--total-items));
+		--angle: calc( (var(--i) - var(--wheel-index)) * 1turn / var(--total-items));
+	
+		width: var(--btn-width);
+		height: 100px;
+		scroll-snap-align: center;
+	  scroll-snap-stop: always;
+	  container-type: scroll-state; 
+		
+		/* center label on current button */
+		&::after{
+			content: attr(title);
+			position: absolute;
+			position-anchor: --a-nav;
+			position-area: span-all;
+			opacity:0;
+			transition:
+				opacity 150ms ease-in-out, 
+				translate 300ms ease-in-out;
+			font-size: clamp(.9rem, 2.5vw + .045rem,1.4rem);
+			font-weight: 500;
+			translate: 0 -2rem;
+			@container scroll-state(snapped: x) {
+				opacity: 1;
+				translate: 0 0;
+			}
+		}
+	
+	
+		button {
+			--wheel-rotation: calc(var(--wheel-index)  * 100% / var(--total-items));
+			--top-position: calc(50% + 100% / var(--total-items));
+	
+			position: absolute;
+			offset-path: circle(var(--nav-radius) at center);
+	    offset-rotate: 0deg;		
+	    offset-distance: calc(
+	        var(--top-position) +
+	        var(--btn-offset) -
+	        var(--wheel-rotation)
+	    );
+			
+	
+			transition-property: offset,outline,background-color;
+			transition-duration: 600ms,300ms,300ms;
+			transition-timing-function: ease-in-out;
+			transition-delay: 0ms,0ms, 300ms; /* delay on background color change */
+			
+			width: var(--btn-width);
+			height: var(--btn-height);
+			background-color: var(--btn-bg);
+			color: var(--btn-text);
+			border-radius: var(--btn-radius);
+			border: var(--btn-border);
+			display: grid;
+			place-content: center;
+			cursor: pointer;
+	
+			outline: 2px dashed transparent;
+			outline-offset: 0;
+			
+			/* current item */
+			@container scroll-state(snapped: x) {
+				background-color: var(--btn-bg-current);
+				color: var(--btn-text-current);
+			}
+			
+			/* hover or focus */
+			&:where(:hover,:focus-visible){
+				--icon-scale: .8;
+				--icon-y: -.75em;
+				--label-y: .75em;
+				--label: 1;
+				color: var(--btn-text-hover);
+				background-color: var(--btn-bg-hover);
+			}
+			&:focus-visible{
+				outline-color: dodgerblue;
+				outline-offset: 6px;
+			}
+			
+			svg,span{
+				grid-area: 1/1;
+				margin: auto;
+				transition: 150ms ease-in-out;
+				transition-property: scale, opacity,translate;
+			}
+			svg{
+				scale: var(--icon-scale,1);
+				translate: 0 var(--icon-y,0);
+			}
+			span{
+				display:block;
+				font-size: .7rem;
+				opacity: var(--label,0);
+				scale:var(--label,0);
+				translate: 0 var(--label-y,0);
+			}
+		} 
+	}
+	
+
+
+	/**************** MARKERS GROUP *******************/
+  /* the item nav buttons will be dynamically placed within this element */
+  .markers{
+		position: fixed;
+    position-anchor: --a-nav;
+		position-area: center;
+		background-color: light-dark(rgb(1 1 1 / .05), rgb(255 255 255 / .05));
+		border: 1px solid var(--clr-lines);
+		border-radius: 9in;
+		padding: 1rem;
+		width:var(--nav-radius);
+		aspect-ratio: 1;
+		anchor-name: --a-markers;
+   box-shadow: 0 0 10px 10px  rgba(0 0 0 / .05);
+	}
+
+  /************* NAV BUTTONS (left and right) ************/
+  &::scroll-button(*){
+    position: absolute;
+    position-anchor: --a-markers;
+		position-area: center ;
+    translate: 0 0;
+    width: var(--nav-btn-size);
+    aspect-ratio: 1/1;
+    font: inherit;
+    background-color: var(--nav-btn-bg);
+    display: grid;
+    place-content: center;
+    color: var(--nav-btn-text);
+    border: var(--nav-btn-border);
+    border-radius: 50%;
+    cursor: pointer;
+    transition-property: background-color,color,scale,outline;
+		transition-duration: 150ms;
+		transition-timing-function: ease-in-out;
+		outline: dashed 1px transparent;
+  }
+  /* button - prev */
+  &::scroll-button(inline-start){
+    content: '❮';
+		left: calc(anchor(left) - 2rem);
+  }
+  /* button - next */
+  &::scroll-button(inline-end){
+    content: '❯';
+		right: calc(anchor(right) - 2rem);
+  }
+  /* hover and keyboard focus */
+  &::scroll-button(*):hover {
+	  background-color: var(--nav-btn-bg-hover);
+		color: var(--nav-btn-text-hover);
+		scale: 1.5;
+	}
+	/* 
+	this should not be needed but the current implementation of :not(:disabled) doesn't appear to be working on these pseudo buttons 
+	*/
+	&::scroll-button(*):disabled:hover {
+	  background-color: var(--nav-btn-bg);
+	  color: var(--nav-btn-txt);
+		scale: 1;
+	}
+  /* keyboard focus*/
+	&::scroll-button(*):focus-visible {
+		outline-color: var(--nav-btn-bg-hover);
+			scale: 1.5;
+	}
+  /* disabled */
+  &::scroll-button(*):disabled{
+    opacity: .15;
+    cursor: unset;
+  }
+}
+
+@keyframes wheel-position {
+    from {
+        --wheel-index: 0;
+    }
+    to {
+        --wheel-index: var(--total-items);
+    }
+}
+
+
+
+	
+/* general styling not relevant for this demo */
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+	:root {
+		color-scheme: dark;
+		--bg-dark: rgb(41 37 36);
+		--bg-light: rgb(248, 244, 238);
+		--txt-light: rgb(10, 10, 10);
+		--txt-dark: rgb(245, 245, 245););
+		--line-light: rgba(0 0 0 / .25);
+		--line-dark: rgba(255 255 255 / .25);
+    
+    --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
+    --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
+    --clr-lines: light-dark(var(--line-light), var(--line-dark));
+	}
+
+	body {
+		background-color: var(--clr-bg);
+		color: var(--clr-txt);
+		min-height: 100svh;
+		margin: 0;
+		padding: 0;
+		font-family: "Jura", sans-serif;
+		font-size: 1rem;
+		line-height: 1.5;
+		--supports-warning-show: 0;
+		--supports-warning-animation: "";
+		--supports-warning-scroll: "";
+		
+		@supports not (animation-timeline: auto) {
+	    --supports-warning-show: 1;
+	    --supports-warning-animation: "\A animation-timeline";
+	  }
+		@supports not (scroll-marker-group: after) {
+	    --supports-warning-show: 1;
+	    --supports-warning-scroll: "\A  ::scroll-*";
+		}
+		@container style(--supports-warning-show: 1) {
+		  &::before {
+				content:
+			  "Missing support for:"
+			  var(--supports-warning-animation)
+			  var(--supports-warning-scroll);
+				position: fixed;
+				top: 1rem;
+				left: 50%;
+				translate: -50% 0;
+				font-size: 0.8rem;
+				color: red;
+				z-index: 999;
+				white-space: pre-wrap;
+			}
+		}
+	}
+}

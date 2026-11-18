@@ -1,5 +1,7 @@
 # 하네스 확장 로드맵
 
+자체 실행 파일럿의 범위·실행 명령·확대 조건은 [SELF_HOSTED_PILOT.md](SELF_HOSTED_PILOT.md)를 따른다.
+
 문서 상태: Active v0.1
 목적: 필요한 문서, Skill, Subagent, 도구와 자동 검사를 실제 필요 시점에 추가한다.
 

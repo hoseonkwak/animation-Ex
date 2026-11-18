@@ -20,6 +20,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import { useLibraryLists } from '@/features/library/useLibraryLists'
 import type { ExampleCard } from '@/shared/examples'
+import { previewUrl, previewSandbox } from '@/shared/previewRuntime'
 
 const props = defineProps<{
   example: ExampleCard
@@ -47,9 +48,11 @@ const codePenUrl = computed(() =>
   props.example.preview.embedUrl.replace('/embed/', '/pen/').replace(/\?.*$/, ''),
 )
 const thumbnailUrl = computed(() =>
-  props.practice && !thumbnailFromCodePen.value
-    ? `/practice-thumbnails/${props.example.slug}.png`
-    : `${codePenUrl.value.replace('https://codepen.io/editor/', 'https://codepen.io/')}/image/large.png`,
+  props.example.preview.kind === 'internal'
+    ? `/self-hosted-thumbnails/${props.example.slug}-${props.example.preview.version}.png`
+    : props.practice && !thumbnailFromCodePen.value
+      ? `/practice-thumbnails/${props.example.slug}.png`
+      : `${codePenUrl.value.replace('https://codepen.io/editor/', 'https://codepen.io/')}/image/large.png`,
 )
 
 function onThumbnailError(): void {
@@ -159,6 +162,7 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
       <div class="card-meta">
         <span>{{ difficultyLabel(example.difficulty) }}</span>
         <span v-if="example.featured">추천</span>
+        <span v-if="example.preview.kind === 'internal'">자체 실행</span>
         <span v-if="!example.runtimeVerified">실행 미확인</span>
       </div>
       <h3>
@@ -196,7 +200,9 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
       <div class="preview-modal-content">
         <header class="preview-modal-header">
           <div class="preview-modal-heading">
-            <span>실제 코드 미리보기</span>
+            <span>{{
+              example.preview.kind === 'internal' ? '자체 실행 미리보기' : '실제 코드 미리보기'
+            }}</span>
             <h2>{{ example.title }}</h2>
           </div>
           <div class="preview-modal-actions">
@@ -220,13 +226,13 @@ function difficultyLabel(difficulty: ExampleCard['difficulty']): string {
           <iframe
             v-if="active"
             :key="frameKey"
-            :title="`${example.title} CodePen 실행 화면`"
-            :src="example.preview.embedUrl"
+            :title="`${example.title} ${example.preview.kind === 'internal' ? '자체' : 'CodePen'} 실행 화면`"
+            :src="previewUrl(example.preview)"
             allow="fullscreen"
             allowfullscreen
             data-testid="codepen-preview"
             referrerpolicy="strict-origin-when-cross-origin"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            :sandbox="previewSandbox(example.preview)"
             @load="frameState = 'running'"
             @error="frameState = 'error'"
           />

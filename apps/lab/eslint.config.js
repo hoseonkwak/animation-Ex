@@ -12,6 +12,7 @@ export default tseslint.config(
       'playwright-report/**',
       'test-results/**',
       '.wrangler/**',
+      'public/runtime/**',
       '*.config.js',
       '*.config.d.ts',
     ],
@@ -53,6 +54,17 @@ export default tseslint.config(
         ...globals.node,
         fetch: 'readonly',
       },
+    },
+  },
+  {
+    files: [
+      'scripts/self-hosted-pilot.mjs',
+      'scripts/raw-pilot.mjs',
+      'scripts/prepare-internal-preview.mjs',
+      'scripts/verify-internal-preview.mjs',
+    ],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
     },
   },
   prettier,

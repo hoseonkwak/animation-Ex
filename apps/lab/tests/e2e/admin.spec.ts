@@ -1,5 +1,26 @@
 import { expect, test } from '@playwright/test'
 
+test('URL 제보가 관리자 접수함에 설명과 원본 링크로 표시된다', async ({ page }) => {
+  const response = await page.request.post('/api/v1/submissions', {
+    data: {
+      url: 'https://example.org/reported-animation-e2e',
+      note: '제보 접수함 연결 확인',
+      turnstileToken: 'local-test-token',
+    },
+  })
+  expect(response.status()).toBe(202)
+  await page.goto('/admin/review')
+  const inbox = page.getByRole('region', { name: 'URL 제보 접수함' })
+  await expect(inbox).toContainText('제보 접수함 연결 확인')
+  await expect(
+    inbox.getByRole('link', { name: 'https://example.org/reported-animation-e2e' }),
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'URL 제보', exact: true })).toHaveAttribute(
+    'href',
+    '#url-submissions',
+  )
+})
+
 test('P1-ADMIN-01 owner Candidate Inbox에서 실제 Preview를 확인한다', async ({ page }) => {
   await page.goto('/admin/review')
   await expect(page.getByRole('region', { name: '운영 상태' })).toContainText('환경 local', {

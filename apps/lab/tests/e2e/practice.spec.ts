@@ -30,7 +30,7 @@ test('Practice 홈에서 준비된 Kit 10개를 보고 바로 연습한다', asy
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveCount(0)
   await page.getByRole('tab', { name: 'JS' }).click()
-  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveValue(/gsap\.to/)
+  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveText(/gsap\.to/)
 })
 
 test('준비된 Kit에서 자체 시작 코드를 불러오고 초기화해도 같은 버전을 유지한다', async ({
@@ -383,7 +383,7 @@ test('예제에서 빈 코드 연습을 시작하고 저장된 코드가 실행�
   await page.getByRole('button', { name: '닫기' }).click()
 
   await page.reload()
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(
     '<main id="result">직접 만든 화면</main>',
   )
   await expect(preview.locator('#result')).toHaveText('직접 만든 화면')
@@ -410,7 +410,7 @@ test('같은 예제에 다시 들어오면 기존 초안 보존과 새 초안 �
   await expect(page.getByRole('heading', { name: '이 예제를 연습한 기록이 있어요.' })).toBeVisible()
   await page.getByRole('link', { name: '이어서 연습' }).click()
   await expect(page).toHaveURL(firstUrl)
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(
     '<main>내가 수정한 버전</main>',
   )
   await page.getByText('연습 환경', { exact: true }).click()
@@ -420,11 +420,11 @@ test('같은 예제에 다시 들어오면 기존 초안 보존과 새 초안 �
   await page.getByRole('button', { name: '새로 시작' }).click()
   await expect(page).toHaveURL(/\/practice\/drafts\/[a-f0-9-]+$/)
   expect(page.url()).not.toBe(firstUrl)
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(/새 버전/)
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(/새 버전/)
   await page.getByText('연습 환경', { exact: true }).click()
   await expect(page.locator('.practice-kit-info')).toContainText('practice-basic-transform-v3')
   await page.goto(firstUrl)
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(
     '<main>내가 수정한 버전</main>',
   )
 })
@@ -489,7 +489,7 @@ test('빈 연습에 GSAP 플러그인을 자동 연결하고 환경 선택과 �
   await page.reload()
   await expect(library).toHaveValue('none')
   await page.getByRole('tab', { name: 'JS', exact: true }).click()
-  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'JavaScript 코드' })).toHaveText(
     /ScrollSmoother.create/,
   )
 })
@@ -568,6 +568,27 @@ test('주소와 도메인을 확인해 추가한 JS·CSS·이미지만 로드하
   await expect(preview.locator('p')).toHaveText('리소스 연습')
 })
 
+test('CodeMirror는 줄 번호·괄호 자동 닫기·검색과 파일별 실행 취소를 지원한다', async ({ page }) => {
+  await page.goto('/practice/new')
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toBeVisible()
+  await expect(page.locator('.cm-lineNumbers')).toBeVisible()
+  await page.getByRole('tab', { name: 'JS', exact: true }).click()
+  const javascript = page.getByRole('textbox', { name: 'JavaScript 코드' })
+  await javascript.fill('')
+  await javascript.pressSequentially('(')
+  await expect(javascript).toHaveText('()')
+  await page.getByRole('tab', { name: 'CSS', exact: true }).click()
+  await page.getByRole('textbox', { name: 'CSS 코드' }).fill('main { color: red; }')
+  await page.getByRole('tab', { name: 'JS', exact: true }).click()
+  await expect(javascript).toHaveText('()')
+  await javascript.press('Control+z')
+  await expect(javascript).toHaveText('')
+  await javascript.press('Control+f')
+  await expect(page.locator('.cm-search')).toBeVisible()
+  await page.getByRole('tab', { name: 'CSS', exact: true }).click()
+  await expect(page.getByRole('textbox', { name: 'CSS 코드' })).toHaveText('main { color: red; }')
+})
+
 test('좁은 화면에서는 코드와 실행 화면을 탭으로 전환한다', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/practice/new')
@@ -579,6 +600,57 @@ test('좁은 화면에서는 코드와 실행 화면을 탭으로 전환한다',
   await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toBeHidden()
   await page.getByRole('tab', { name: '코드', exact: true }).click()
   await expect(page.locator('iframe[title="내 코드 실행 화면"]')).toHaveCount(0)
+})
+
+test('연습 화면은 뷰포트 높이에 맞고 줄바꿈·내부 스크롤과 세 방향 크기 조절이 동작한다', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 700 })
+  await page.route('https://codepen.io/**/embed/**', (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body: '<p>Original preview</p>',
+    }),
+  )
+  await page.goto('/practice/new?reference=gsap-scrollsmoother')
+  const editor = page.getByRole('textbox', { name: 'HTML 코드' })
+  await editor.fill(
+    '<main>' + '긴문장'.repeat(100) + '</main>\n' + '<p>스크롤 확인</p>\n'.repeat(100),
+  )
+  const scroller = page.locator('.practice-code-editor .cm-scroller')
+  await expect
+    .poll(() => scroller.evaluate((element) => element.scrollHeight > element.clientHeight))
+    .toBe(true)
+  expect(
+    await scroller.evaluate((element) => element.scrollWidth - element.clientWidth),
+  ).toBeLessThanOrEqual(2)
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(701)
+  const horizontal = page.getByRole('separator', { name: '원본과 내 연습 폭 조절' })
+  await horizontal.focus()
+  await horizontal.press('ArrowRight')
+  await expect(horizontal).toHaveAttribute('aria-valuenow', '55')
+  for (const name of ['내 코드와 실행 화면 높이 조절', '원본 코드와 실행 화면 높이 조절']) {
+    const separator = page.getByRole('separator', { name })
+    await separator.focus()
+    await separator.press('ArrowDown')
+    await expect(separator).toHaveAttribute('aria-valuenow', '55')
+  }
+  const handle = page.getByRole('separator', { name: '내 코드와 실행 화면 높이 조절' })
+  const bounds = await handle.boundingBox()
+  if (!bounds) throw new Error('높이 조절 핸들이 보이지 않습니다.')
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + 40)
+  await page.mouse.up()
+  const resizedHeight = await handle.getAttribute('aria-valuenow')
+  expect(resizedHeight).not.toBe('55')
+  await page.reload()
+  await expect(
+    page.getByRole('separator', { name: '내 코드와 실행 화면 높이 조절' }),
+  ).toHaveAttribute('aria-valuenow', resizedHeight!)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(845)
 })
 
 test('320px 화면에서 연습 편집기와 실행 조작이 가로로 잘리지 않는다', async ({ page }) => {
@@ -626,13 +698,13 @@ test('초기화 전에 현재 코드를 보관하고 이전 코드로 복구한�
   page.once('dialog', (dialog) => void dialog.accept())
   await page.getByRole('button', { name: '초기화' }).click()
   await expect(page.getByRole('button', { name: '이전 코드 복구' })).toBeVisible()
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(
     '<main class="stage">여기에서 시작해보세요</main>',
   )
   await page.reload()
   page.once('dialog', (dialog) => void dialog.accept())
   await page.getByRole('button', { name: '이전 코드 복구' }).click()
-  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveValue(
+  await expect(page.getByRole('textbox', { name: 'HTML 코드' })).toHaveText(
     '<main>복구할 내용</main>',
   )
 })
@@ -879,7 +951,7 @@ test('원본 코드와 실행을 왼쪽에 두고 오른쪽에서 별도 코드�
     '원본 애니메이션',
   )
   expect((await original.boundingBox())?.x).toBeLessThan((await editor.boundingBox())?.x ?? 0)
-  await expect(editor).not.toHaveValue(/원본 HTML/)
+  await expect(editor).not.toHaveText(/원본 HTML/)
   await editor.fill('<main>따라 친 코드</main>')
   await expect(page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('main')).toHaveText(
     '따라 친 코드',
@@ -919,7 +991,7 @@ test('모바일 원본 탭에 CodePen 2.0 코드와 실행 화면을 표시한�
   await expect(frames.last()).toHaveAttribute('src', /default-tab=result/)
   await page.getByRole('tab', { name: '코드', exact: true }).click()
   await expect(frames).toHaveCount(0)
-  await expect(editor).toHaveValue('<main>모바일 연습</main>')
+  await expect(editor).toHaveText('<main>모바일 연습</main>')
   await page.getByRole('button', { name: 'Run', exact: true }).click()
   await expect(page.frameLocator('iframe[title="내 코드 실행 화면"]').locator('main')).toHaveText(
     '모바일 연습',

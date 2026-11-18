@@ -6,6 +6,7 @@ import type {
   TagAxis,
 } from '../src/shared/examples'
 import { tagAxes } from '../src/shared/examples'
+import { internalPreview } from './internalPreview'
 
 type Sort = 'latest' | 'featured' | 'difficulty'
 
@@ -230,6 +231,7 @@ function orderBy(sort: Sort): string {
 }
 
 function toCard(row: EntryRow, tags: ExampleCard['tags']): ExampleCard {
+  const internal = internalPreview(row.slug, row.canonical_url)
   return {
     id: row.id,
     slug: row.slug,
@@ -238,9 +240,9 @@ function toCard(row: EntryRow, tags: ExampleCard['tags']): ExampleCard {
     origin: row.content_origin,
     difficulty: row.difficulty,
     featured: row.featured === 1,
-    runtimeVerified: row.runtime_verified === 1,
+    runtimeVerified: !!internal || row.runtime_verified === 1,
     preview: {
-      kind: 'codepen',
+      ...(internal ? { kind: 'internal' as const, ...internal } : { kind: 'codepen' as const }),
       penId: row.pen_id,
       embedUrl: row.embed_url,
     },

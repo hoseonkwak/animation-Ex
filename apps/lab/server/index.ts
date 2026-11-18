@@ -19,6 +19,8 @@ import { readUsageStatus, storeUsageSnapshot } from './operations'
 import { findReadyPracticeKit } from './practice'
 import { acceptExampleReport, ExampleReportError, ExampleReportsRepository } from './exampleReports'
 import { loadCandidateTriage } from './triage'
+import { listSubmissions } from './submissions'
+import { serveInternalPreview } from './internalPreview'
 import {
   readAutoPublicationStatus,
   rollbackAutoPublicationBatch,
@@ -26,6 +28,7 @@ import {
 } from './autoPublication'
 
 interface Env {
+  ASSETS: Fetcher
   DB: D1Database
   ADMIN_GITHUB_USER_ID?: string
   ADMIN_SESSION_SECRET?: string
@@ -87,6 +90,8 @@ function json(data: unknown, init: ResponseInit = {}): Response {
 export default {
   fetch: withErrorBoundary(async (request, env, requestId): Promise<Response> => {
     const url = new URL(request.url)
+    if (url.pathname.startsWith('/runtime/'))
+      return serveInternalPreview(request, env.DB, env.ASSETS)
 
     if (
       url.pathname.startsWith('/api/v1/') &&
@@ -391,6 +396,9 @@ export default {
           return json({ data: await readAutoPublicationStatus(env.DB), meta: { requestId } })
         }
 
+        if (request.method === 'GET' && url.pathname === '/api/v1/admin/submissions') {
+          return json({ data: await listSubmissions(env.DB, url), meta: { requestId } })
+        }
         if (request.method === 'GET' && url.pathname === '/api/v1/admin/ingestion-runs') {
           return json({ data: await repository.ingestionRuns(), meta: { requestId } })
         }

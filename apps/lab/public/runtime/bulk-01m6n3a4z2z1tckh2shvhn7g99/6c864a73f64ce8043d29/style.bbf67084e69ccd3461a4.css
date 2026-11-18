@@ -1,0 +1,1680 @@
+:root {
+    /* LED COLOUR */
+    --led: cyan;
+    --led2: magenta;
+    --led3: yellow;
+    /**/
+    --body: #131214;
+    --body-hsl: 150 25% 2%;
+    --surface: #efefde;
+    --grey: color-mix(in srgb, var(--surface) 40%, var(--body));
+    --surface1: color-mix(in srgb, var(--surface) 50%, var(--body));
+    --pixel: #242625;
+    --pixel-light: color-mix(in srgb, color-mix(in srgb, var(--led) 40%, transparent) 90%, white 10%);
+    --surface-light: color-mix(in srgb, var(--led) 80%, white 20%);
+    --dark: #0002;
+    --yellow: #ff9900;
+    --transition: all 30s linear;
+    --transition2: all 10s linear;
+    --transition3: all 1s linear;
+    --conic: transparent 90deg, var(--pixel-light) 110deg, var(--pixel-light) 250deg, transparent 270deg;
+    --start: 1.5s steps(1, start);
+    --grid-size: 43rem;
+}
+* {
+    box-sizing: border-box;
+
+    &:before,
+    &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+html,
+body {
+    font-size: 1vmin;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+
+    &:after, &:before {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #0005, transparent);
+        z-index: 200;
+        pointer-events: none;
+        box-shadow: inset 0 0 3rem var(--body);
+    }
+
+    &:before {
+        background: linear-gradient( transparent, cyan);
+        transition: var(--transition);
+        /*setting mix-blend-mode to saturation is fun!*/
+        mix-blend-mode: overlay;
+        opacity: 0;
+    }
+
+    &:has(main pixel-grid u:hover):before {
+        opacity: .1;
+        transition: none;
+    }
+}
+
+main {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100%;
+
+    &:after {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( var(--led2), transparent);
+        z-index: 200;
+        pointer-events: none;
+        mix-blend-mode: soft-light;
+        opacity: .5;
+    }
+}
+
+background,
+foreground {
+    display: block;
+    height: 50%;
+}
+
+/* the background needs to be in front of the foreground for the surface shadow to be cut*/
+background {
+    background: linear-gradient(var(--grey), #0001 70%, #0000000D, #0003), var(--grey);
+    z-index: 1;
+}
+
+foreground {
+    background: linear-gradient(var(--surface1),#fff1), var(--surface1);
+}
+
+/* the said surface shadows*/
+shadow {
+    &:before {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(-90deg, hsl(var(--body-hsl) / .3), transparent 50%);
+        transform: translate3d(calc(var(--grid-size) - 104rem), 0, 0) skewY(10deg);
+        transform-origin: 100%;
+        filter: blur(.5rem);
+    }
+
+    &:after {
+        width: 100%;
+        height: 80%;
+        background: linear-gradient(hsl(var(--body-hsl) / .3) 50%, transparent 60%);
+        transform: translate3d(-.1rem, 39rem, 0);
+        filter: blur(.5rem);
+        border-radius: 50%;
+    }
+}
+
+/*pixel-grid is the black square and a clone for the shadow*/
+pixel-grid,
+shadow {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    background: var(--body);
+    width: var(--grid-size);
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 10rem;
+    border-radius: .5rem;
+    box-sizing: content-box;
+    flex-shrink: 0;
+    /* <u> is the LED pixel for mouse hovering and pattern is for the box-shadow intro demonstration */
+    > u,
+    pattern {
+        display: block;
+        width: 3rem;
+        aspect-ratio: 1/1;
+        border-radius: .25rem;
+    }
+
+    > u {
+        position: relative;
+        z-index: 10;
+        background: var(--pixel);
+        display: block;
+        width: 3rem;
+        aspect-ratio: 1/1;
+        border-radius: .25rem;
+        box-shadow: inset -.1rem 0 0 var(--grey), inset .1rem 0 0 transparent, inset 0 0 0 .5rem var(--pixel), -.6rem .1rem .3rem var(--dark);
+        filter: blur(.1rem);
+        background-image: linear-gradient(to bottom, transparent 50%, #1e1e1d 50%);
+        background-size: 3rem 1.2rem;
+        transition: var(--transition);
+    }
+}
+
+pixel-grid {
+    z-index: 200;
+    background: radial-gradient(at left bottom, #1e1c1e, var(--body));
+    -webkit-box-reflect: below 0 linear-gradient(transparent, #0001, transparent);
+
+    pattern {
+        z-index: 1000;
+        transition: none;
+        position: absolute;
+        pointer-events: none;
+        filter: blur(.5rem);
+    }
+}
+
+/*backlight u - are the background darkness layers*/
+backlight {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+
+    u {
+        width: 100rem;
+        height: calc(50% + var(--grid-size) - 11.5rem);
+        position: absolute;
+        top: 0;
+        left: 50%;
+        z-index: 1;
+        opacity: 0;
+        transition: var(--transition2);
+
+        &:before,
+        &:after {
+            width: 200%;
+            background: conic-gradient(from 270deg at 85% 100%, transparent, var(--body));
+            height: 100%;
+        }
+
+        &:before {
+            left: auto;
+            right: 100%;
+        }
+
+        &:after {
+            transform: scaleX(-1);
+        }
+    }
+}
+
+main:has([c="1"]:hover) backlight u:nth-of-type(1),
+main:has([c="2"]:hover) backlight u:nth-of-type(2),
+main:has([c="3"]:hover) backlight u:nth-of-type(3),
+main:has([c="4"]:hover) backlight u:nth-of-type(4),
+main:has([c="5"]:hover) backlight u:nth-of-type(5),
+main:has([c="6"]:hover) backlight u:nth-of-type(6),
+main:has([c="7"]:hover) backlight u:nth-of-type(7),
+main:has([c="8"]:hover) backlight u:nth-of-type(8),
+main:has([c="9"]:hover) backlight u:nth-of-type(9),
+main:has([r="1"]:hover) backlight u:nth-of-type(1),
+main:has([r="2"]:hover) backlight u:nth-of-type(2),
+main:has([r="3"]:hover) backlight u:nth-of-type(3),
+main:has([r="4"]:hover) backlight u:nth-of-type(4),
+main:has([r="5"]:hover) backlight u:nth-of-type(5),
+main:has([r="6"]:hover) backlight u:nth-of-type(6),
+main:has([r="7"]:hover) backlight u:nth-of-type(7),
+main:has([r="8"]:hover) backlight u:nth-of-type(8),
+main:has([r="9"]:hover) backlight u:nth-of-type(9) {
+    opacity: 0.6;
+    transition: none;
+}
+
+/*surfacelight - are the light effects on the surface */
+
+surfacelight {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate3d(0, calc(var(--grid-size) - 11rem), 0);
+    z-index: 1;
+
+    u {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: conic-gradient(from 0deg at calc(50% - 20rem) 0, var(--conic));
+        opacity: 0;
+        transition: var(--transition2);
+    }
+
+        u:nth-of-type(2) {
+            background: conic-gradient(from 0deg at calc(50% - 15rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(3) {
+            background: conic-gradient(from 0deg at calc(50% - 10rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(4) {
+            background: conic-gradient(from 0deg at calc(50% - 5rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(5) {
+            background: conic-gradient(from 0deg at calc(50%) 0, var(--conic));
+        }
+
+        u:nth-of-type(6) {
+            background: conic-gradient(from 0deg at calc(50% + 5rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(7) {
+            background: conic-gradient(from 0deg at calc(50% + 10rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(8) {
+            background: conic-gradient(from 0deg at calc(50% + 15rem) 0, var(--conic));
+        }
+
+        u:nth-of-type(9) {
+            background: conic-gradient(from 0deg at calc(50% + 20rem) 0, var(--conic));
+        }
+}
+
+main:has([c="1"]:hover) surfacelight u:nth-of-type(1),
+main:has([c="2"]:hover) surfacelight u:nth-of-type(2),
+main:has([c="3"]:hover) surfacelight u:nth-of-type(3),
+main:has([c="4"]:hover) surfacelight u:nth-of-type(4),
+main:has([c="5"]:hover) surfacelight u:nth-of-type(5),
+main:has([c="6"]:hover) surfacelight u:nth-of-type(6),
+main:has([c="7"]:hover) surfacelight u:nth-of-type(7),
+main:has([c="8"]:hover) surfacelight u:nth-of-type(8),
+main:has([c="9"]:hover) surfacelight u:nth-of-type(9) {
+    opacity: .15;
+    transition: none;
+}
+
+
+/*this part controls the LED hover effects*/
+pixel-grid {
+    > u {
+        transition: all 5s ease-out;
+
+        &:not([c="9"]):hover + u {
+            box-shadow: inset -.1rem 0 0 var(--grey), inset .1rem 0 0 var(--pixel-light), inset 0 0 0 .5rem var(--pixel), .8rem .1rem .4rem var(--dark);
+            transition: none;
+        }
+
+        &:hover + u + u + u + u + u + u + u + u + u {
+            box-shadow: inset -.1rem 0 0 var(--grey), inset 0 .1rem 0 var(--pixel-light), inset 0 0 0 .5rem var(--pixel), -.1rem .8rem .4rem var(--dark);
+            transition: none;
+        }
+
+        &:has(+ u + u + u + u + u + u + u + u + u:hover) {
+            box-shadow: inset -.1rem 0 0 var(--grey), inset 0 -.1rem 0 var(--pixel-light), inset 0 0 0 .5rem var(--pixel), -.1rem -.8rem .4rem var(--dark);
+            transition: none;
+        }
+
+        &:has(+ u:hover) {
+            box-shadow: inset -.1rem 0 0 var(--pixel-light), inset .1rem 0 0 transparent, inset 0 0 0 .5rem var(--pixel), -.6rem .1rem .3rem var(--dark);
+            transition: none;
+        }
+
+        &:after,
+        &:before {
+            display: block;
+            width: 3rem;
+            aspect-ratio: 1/1;
+            transition: var(--transition2);
+            border-radius: .25rem;
+            filter: blur(.5rem);
+        }
+
+        &:before {
+            background-image: linear-gradient(to bottom, transparent 50%, var(--led3) 50%);
+            background-size: 3rem 1.2rem;
+            box-shadow: inset 0 0 0 .5rem var(--pixel);
+            opacity: 0;
+            filter: blur(.2rem);
+        }
+
+        &:hover {
+            transition: none;
+
+            &:after {
+                background: var(--led);
+                transition: none;
+                filter: blur(.1rem) brightness(1.4);
+                box-shadow: 0 0 .5rem var(--led), 0 0 1.5rem var(--led), 0 0 3rem #fff8;
+            }
+
+            &:before {
+                transition: none;
+                opacity: 1;
+            }
+        }
+    }
+}
+
+/*this is the intro demonstration box-shadow animation*/
+
+pixel-grid pattern {
+    animation: sequence var(--start);
+}
+
+@keyframes sequence {
+    5% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led);
+    }
+
+    10% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), 25rem 10rem .2rem var(--led);
+    }
+
+    15% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), 25rem 10rem .2rem var(--led), 30rem 15rem .2rem var(--led);
+    }
+
+    20% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), 25rem 10rem .2rem var(--led), 30rem 15rem .2rem var(--led), 30rem 20rem .2rem var(--led);
+    }
+
+    25% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), 25rem 10rem .2rem var(--led), 30rem 15rem .2rem var(--led), 30rem 20rem .2rem var(--led), 30rem 25rem .2rem var(--led);
+    }
+
+    30% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led);
+    }
+
+    35% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led);
+    }
+
+    40% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led);
+    }
+
+    45% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led);
+    }
+
+    50% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led);
+    }
+
+    55% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led);
+    }
+
+    65% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led);
+    }
+
+    60% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led);
+    }
+
+    70% {
+        background: transparent;
+        box-shadow: 20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        /**/
+        15rem 25rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led);
+    }
+
+    75% {
+        background: transparent;
+        box-shadow: 15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        20rem 20rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led);
+    }
+
+    80% {
+        background: transparent;
+        box-shadow: 5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        20rem 20rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led); /**/
+    }
+
+    85% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        20rem 20rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    90% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        20rem 15rem .2rem var(--led), /**/
+        25rem 15rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        15rem 20rem .2rem var(--led), /**/
+        25rem 20rem .2rem var(--led), /**/
+        30rem 20rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        20rem 25rem .2rem var(--led), /**/
+        25rem 25rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    92% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        20rem 10rem .2rem var(--led), /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        15rem 15rem .2rem var(--led), /**/
+        /**/
+        25rem 15rem .2rem var(--led), /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        10rem 20rem .2rem var(--led), /**/
+        /**/
+        30rem 20rem .2rem var(--led), /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        15rem 25rem .2rem var(--led), /**/
+        /**/
+        25rem 25rem .2rem var(--led), /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        20rem 30rem .2rem var(--led), /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    93% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    94% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /**/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        20rem 5rem .2rem var(--led), /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /**/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        15rem 10rem .2rem var(--led), /**/
+        /**/
+        25rem 10rem .2rem var(--led), /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /**/
+        5rem 15rem .2rem var(--led), /**/
+        10rem 15rem .2rem var(--led), /**/
+        /**/
+        30rem 15rem .2rem var(--led), /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /**/
+        5rem 20rem .2rem var(--led), /**/
+        /**/
+        35rem 20rem .2rem var(--led), /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /**/
+        5rem 25rem .2rem var(--led), /**/
+        10rem 25rem .2rem var(--led), /**/
+        /**/
+        30rem 25rem .2rem var(--led), /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /**/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        15rem 30rem .2rem var(--led), /**/
+        /**/
+        25rem 30rem .2rem var(--led), /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /**/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        20rem 35rem .2rem var(--led), /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    95% {
+        box-shadow: 0 0 .2rem var(--led), /*1*/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        20rem 0 .2rem var(--led), /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /*2*/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        15rem 5rem .2rem var(--led), /**/
+        /**/
+        25rem 5rem .2rem var(--led), /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /*3*/
+        5rem 10rem .2rem var(--led), /**/
+        10rem 10rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        30rem 10rem .2rem var(--led), /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /*4*/
+        5rem 15rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        35rem 15rem .2rem var(--led), /**/
+        40rem 15rem .2rem var(--led), /**/
+        0 20rem .2rem var(--led), /*5*/
+        /**/
+        /**/
+        /**/
+        40rem 20rem .2rem var(--led), /**/
+        0 25rem .2rem var(--led), /*6*/
+        5rem 25rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        35rem 25rem .2rem var(--led), /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /*7*/
+        5rem 30rem .2rem var(--led), /**/
+        10rem 30rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        30rem 30rem .2rem var(--led), /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /*8*/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        15rem 35rem .2rem var(--led), /**/
+        /**/
+        25rem 35rem .2rem var(--led), /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /*9*/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        20rem 40rem .2rem var(--led), /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    96% {
+        box-shadow: 0 0 .2rem var(--led), /*1*/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        15rem 0 .2rem var(--led), /**/
+        /**/
+        25rem 0 .2rem var(--led), /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /*2*/
+        5rem 5rem .2rem var(--led), /**/
+        10rem 5rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        30rem 5rem .2rem var(--led), /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /*3*/
+        5rem 10rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        35rem 10rem .2rem var(--led), /**/
+        40rem 10rem .2rem var(--led), /**/
+        0 15rem .2rem var(--led), /*4*/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        40rem 15rem .2rem var(--led), /**/
+        /*5*/
+        /**/
+        /**/
+        /**/
+        /**/
+        0 25rem .2rem var(--led), /*6*/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        40rem 25rem .2rem var(--led), /**/
+        0 30rem .2rem var(--led), /*7*/
+        5rem 30rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        35rem 30rem .2rem var(--led), /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /*8*/
+        5rem 35rem .2rem var(--led), /**/
+        10rem 35rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        30rem 35rem .2rem var(--led), /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /*9*/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        15rem 40rem .2rem var(--led), /**/
+        /**/
+        25rem 40rem .2rem var(--led), /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    97% {
+        box-shadow: 0 0 .2rem var(--led), /*1*/
+        5rem 0 .2rem var(--led), /**/
+        10rem 0 .2rem var(--led), /**/
+        /**/
+        30rem 0 .2rem var(--led), /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /*2*/
+        5rem 5rem .2rem var(--led), /**/
+        /**/
+        35rem 5rem .2rem var(--led), /**/
+        40rem 5rem .2rem var(--led), /**/
+        0 10rem .2rem var(--led), /*3*/
+        /**/
+        40rem 10rem .2rem var(--led), /**/
+        /*4*/
+        /**/
+        0 30rem .2rem var(--led), /*7*/
+        /**/
+        40rem 30rem .2rem var(--led), /**/
+        0 35rem .2rem var(--led), /*8*/
+        5rem 35rem .2rem var(--led), /**/
+        /**/
+        35rem 35rem .2rem var(--led), /**/
+        40rem 35rem .2rem var(--led), /*9*/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        10rem 40rem .2rem var(--led), /**/
+        /**/
+        /**/
+        /**/
+        30rem 40rem .2rem var(--led), /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    98% {
+        box-shadow: 0 0 .2rem var(--led), /*1*/
+        5rem 0 .2rem var(--led), /**/
+        /**/
+        /**/
+        35rem 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 5rem .2rem var(--led), /*2*/
+        /**/
+        /**/
+        40rem 5rem .2rem var(--led), /**/
+        /**/
+        0 35rem .2rem var(--led), /*8*/
+        /**/
+        40rem 35rem .2rem var(--led), /*9*/
+        0 40rem .2rem var(--led), /**/
+        5rem 40rem .2rem var(--led), /**/
+        /**/
+        35rem 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+
+    99% {
+        background: var(--led);
+        box-shadow: 0 0 .2rem var(--led), /**/
+        40rem 0 .2rem var(--led), /**/
+        0 40rem .2rem var(--led), /**/
+        40rem 40rem .2rem var(--led); /**/
+    }
+}
+
+/*animating the demo lighting the surface*/
+/*surface*/
+/*surface*/
+/*surface*/
+
+surfacelight u:nth-of-type(5) {
+    animation: s-sequence-1 var(--start);
+}
+
+@keyframes s-sequence-1 {
+    5% {
+        opacity: .05;
+    }
+
+    30%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(6) {
+    animation: s-sequence-2 var(--start);
+}
+
+@keyframes s-sequence-2 {
+    10% {
+        opacity: 0;
+    }
+
+    10.1% {
+        opacity: .05;
+    }
+
+    25%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(7) {
+    animation: s-sequence-3 var(--start);
+}
+
+@keyframes s-sequence-3 {
+    15% {
+        opacity: 0;
+    }
+
+    15.1% {
+        opacity: .05;
+    }
+
+    20% {
+        opacity: .075;
+    }
+
+    25%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(4) {
+    animation: s-sequence-4 var(--start);
+}
+
+@keyframes s-sequence-4 {
+    35% {
+        opacity: 0;
+    }
+
+    35.1% {
+        opacity: .075;
+    }
+
+    55%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(3) {
+    animation: s-sequence-5 var(--start);
+}
+
+@keyframes s-sequence-5 {
+    40% {
+        opacity: 0;
+    }
+
+    40.1% {
+        opacity: .05;
+    }
+
+    45% {
+        opacity: .075;
+    }
+
+    50%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(2), surfacelight u:nth-of-type(8) {
+    animation: s-sequence-6 var(--start);
+}
+
+@keyframes s-sequence-6 {
+    60% {
+        opacity: 0;
+    }
+
+    60.1%,100% {
+        opacity: .1;
+    }
+}
+
+surfacelight u:nth-of-type(1), surfacelight u:nth-of-type(9) {
+    animation: s-sequence-7 var(--start);
+}
+
+@keyframes s-sequence-7 {
+    65% {
+        opacity: 0;
+    }
+
+    65.1%,100% {
+        opacity: .1;
+    }
+}
+
+/*animating the demo darkening the background*/
+/*background*/
+/*background*/
+/*background*/
+
+backlight u:nth-of-type(1), backlight u:nth-of-type(5) {
+    animation: bg-sequence-1 var(--start);
+}
+
+@keyframes bg-sequence-1 {
+    5% {
+        opacity: .05;
+    }
+
+    10% {
+        opacity: .1;
+    }
+
+    15% {
+        opacity: .15;
+    }
+
+    20% {
+        opacity: .2;
+    }
+
+    25% {
+        opacity: .25;
+    }
+
+    30% {
+        opacity: .3;
+    }
+
+    35% {
+        opacity: .35;
+    }
+
+    40% {
+        opacity: .40;
+    }
+
+    45% {
+        opacity: .45;
+    }
+
+    50% {
+        opacity: .50;
+    }
+
+    55% {
+        opacity: .55;
+    }
+
+    60% {
+        opacity: .6;
+    }
+
+    65%,100% {
+        opacity: 1;
+    }
+}
+
+backlight u:nth-of-type(2) {
+    animation: bg-sequence-2 var(--start);
+}
+
+@keyframes bg-sequence-2 {
+    60% {
+        opacity: 0;
+    }
+
+    65%,100% {
+        opacity: 1;
+    }
+}
+
+backlight u:nth-of-type(3) {
+    animation: bg-sequence-3 var(--start);
+}
+
+@keyframes bg-sequence-3 {
+    65% {
+        opacity: 0;
+    }
+
+    70%,95% {
+        opacity: 1;
+    }
+}
+
+backlight u:nth-of-type(4) {
+    animation: bg-sequence-4 var(--start);
+}
+
+@keyframes bg-sequence-4 {
+    70% {
+        opacity: 0;
+    }
+
+    75%,90% {
+        opacity: 1;
+    }
+}
+
+body:before {
+    animation: bg-on var(--start);
+}
+
+@keyframes bg-on {
+    0%,90% {
+        opacity: .1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+/*stuff for mobile*/
+
+body:has(#fast:checked) {
+    * {
+        filter: blur(0) !important;
+    }
+
+    [for="fast"]:after {
+        content: 'ON';
+    }
+}
+
+settings {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 2.1rem;
+    color: crimson;
+    z-index: 9999;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 1.75rem;
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    mix-blend-mode: color-dodge;
+
+    input {
+        appearance: none;
+        position: absolute;
+    }
+
+    [for="fast"] {
+        cursor: pointer;
+
+        &:after {
+            position: static;
+            content: 'OFF';
+        }
+
+        &:hover {
+            color: var(--yellow);
+        }
+    }
+}
+
+
+@media (hover: none) {
+    /* html {
+        --led: red !important;
+    } */
+
+    * {
+        filter: blur(0) !important;
+    }
+
+    settings {
+        display: none;
+    }
+}
+/*This is just my signature*/
+.sig {
+    &,
+    * {
+        height: 9.25em;
+        overflow: hidden;
+        border-radius: 0.5em;
+    }
+
+    position: absolute;
+    bottom: 0;
+    right: 2rem;
+    font-size: .8em;
+    color: var(--yellow);
+    width: 6.5em;
+    transform: skewX(10deg) scaleY(0.45) rotate(2deg);
+    margin: auto;
+    mix-blend-mode: color-dodge;
+    z-index: 100;
+
+    &:hover {
+        mix-blend-mode: color-burn;
+    }
+
+    &:before, *:before {
+        content: "";
+        top: 0;
+        left: 0;
+        width: 5em;
+        height: 5em;
+        background: currentColor;
+        transform: translate3d(-2.5em, 0, 0) rotate(-45deg);
+        box-shadow: -3em 3em 0 0 currentColor;
+        border-radius: 0.5em 2em 0.5em 2em;
+    }
+
+    * {
+        width: 5em;
+        transform: translate3d(3.75em, 0, 0) scaleY(0.95);
+        display: block !important;
+
+        &:before {
+            transform: translate3d(-3em, -2em, 0) rotate(-45deg);
+            box-shadow: -3em 3em 0 0 currentColor, -6em 6em 0 0 currentColor;
+            border-radius: 0.5em;
+        }
+    }
+}

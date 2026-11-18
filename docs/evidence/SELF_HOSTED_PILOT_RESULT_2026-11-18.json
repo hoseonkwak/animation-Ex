@@ -1,0 +1,179 @@
+{
+  "checkedAt": "2026-11-18T06:26:19.989Z",
+  "selected": 24,
+  "packagesAvailable": 0,
+  "runtimePassed": 0,
+  "visualComparisonPassed": 0,
+  "readyForExpansion": false,
+  "expansionBlocker": "SOURCE_AND_RUNTIME_VERIFICATION_INCOMPLETE",
+  "results": [
+    {
+      "slug": "bulk-01m6n39yq3hceq7ajctb3yv4cm",
+      "category": "button",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n39z35d5myxhfy1zfc0wm9",
+      "category": "button",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3a6yp3txg276bt1eaahkb",
+      "category": "text",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a555wcch6rt77q992634jh",
+      "category": "text",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n39srva5crkt8pmge7xq9q",
+      "category": "navigation",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3a0ppn1t9h7vxw7328ccq",
+      "category": "navigation",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "pen-01m7mamftpna4e8xaqq2zdhgd1",
+      "category": "image",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n39s0e757bha48r5kt5y54",
+      "category": "image",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6faw6vvj8k3228n0dzn7n",
+      "category": "slider",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6fg301z76s7s9nfeghktg",
+      "category": "slider",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6gtc5zv32jfp12b2rvpad",
+      "category": "loading",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6j2n7qtb0msedc4x79wfn",
+      "category": "loading",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "pen-01m7mamh2zdxgsvfca0mqygt4f",
+      "category": "card",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3a5v5ej44ahzz4m3r9nm6",
+      "category": "card",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3a4anz8njg4cvf22syfjh",
+      "category": "background",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6g1mjvdsy9ajhbkbnmq2h",
+      "category": "background",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3a1j92j60m6xyh8cksdhq",
+      "category": "form",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m6n3abcr25jbxgwkr5nnxakx",
+      "category": "form",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6f4936gfqmz472a9nrm63",
+      "category": "modal",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6fcgc9bp78ta08nmn0pb7",
+      "category": "modal",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6fn6x1x19h0xyjr4bhqxg",
+      "category": "gallery",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m7a6g4epkggddqyy70z1q47p",
+      "category": "gallery",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "bulk-01m4wq43pqxkgjqgsj42qyd0y6",
+      "category": "hero",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    },
+    {
+      "slug": "pen-mubangadv-onabglw-515c6v",
+      "category": "hero",
+      "runtimeStatus": "not-tested",
+      "visualComparisonStatus": "not-tested",
+      "failureCode": "SOURCE_PACKAGE_MISSING"
+    }
+  ]
+}
