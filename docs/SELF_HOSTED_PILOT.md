@@ -102,3 +102,12 @@ npx wrangler d1 execute kwak-motion-lab-local --local --file .wrangler/internal-
 ```
 
 브라우저 회귀는 `tests/e2e/internal-preview.spec.ts`, 공개 상태·sandbox·파일 허용 목록은 `tests/contracts/internalPreview.spec.ts`, 배포 해시는 `tests/operations/internalPreviewRelease.spec.ts`가 확인한다. 로컬 시각 증거는 `.wrangler/internal-preview/evidence`에 보관한다. 실패·미확보·비교 보류는 자동 공개 전환 대상에서 제외한다.
+
+## 운영 배포 확인 (2026-11-18)
+
+- 소스 커밋: `7c55cf1` (master와 codex/phase2-practice)
+- [CI 및 Preview·Production 배포](https://github.com/hoseonkwak/animation-Ex/actions/runs/44264873311): 성공
+- 운영 증거: `evidence/SELF_HOSTED_PRODUCTION_2026-11-18.json`
+- 12개 공개 상세 API에서 내부 버전 선택, 실행 파일 64개의 SHA-256 및 썸네일 응답을 확인했다. 운영 D1의 공개 콘텐츠를 새로 등록하거나 수정하지 않았다.
+- 실제 Production 페이지에서 데스크톱 12개·모바일 표본 3개를 확인했다. CodePen 실행 요청 0, 실행 오류 0, 부모 문서 접근 차단을 확인했다. 목록 모달의 토글 상호작용과 닫을 때 iframe 제거도 통과했다.
+- 로컬 단위·계약·파일 무결성 검사 163개, Chromium 연습·관리자·자체 실행 회귀 50개가 통과했다. 원본과 시점 차이가 큰 파일럿 10개는 비교 보류이며 전체 확대 판정은 하지 않았다.
